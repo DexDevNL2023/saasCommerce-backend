@@ -1,0 +1,210 @@
+package io.dexproject.achatservice.generic.controller.impl;
+
+import io.dexproject.achatservice.generic.controller.ControllerGeneric;
+import io.dexproject.achatservice.generic.entity.BaseEntity;
+import io.dexproject.achatservice.generic.entity.BaseReponseDto;
+import io.dexproject.achatservice.generic.entity.BaseRequestDto;
+import io.dexproject.achatservice.generic.service.ServiceGeneric;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@SuppressWarnings({ "unchecked", "rawtypes" })
+@ResponseBody
+public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements ControllerGeneric<D, R, E> {
+
+	private final ServiceGeneric<D, R, E> service;
+
+  public ControllerGenericImpl(ServiceGeneric<D, R, E> service) {
+    this.service = service;
+  }
+
+  /**
+   * @param dto
+   * @return R
+   */
+  @Override
+  @PostMapping
+  @Operation(summary = "Save a entity by list")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Saved the entity", content = @Content),
+    @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content) })
+  public ResponseEntity<R> save(@Valid @RequestBody D dto) {
+    try {
+      return new ResponseEntity(service.save(dto),HttpStatus.CREATED);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity("Erreur de sauvegarde", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * @param dtos
+   * @return List<R>
+   */
+  @Override
+  @PostMapping("/all")
+  @Operation(summary = "Save all a entity by list")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Saved all the entity", content = @Content),
+    @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content) })
+  public ResponseEntity<List<R>> saveAll(@Valid @RequestBody List<D> dtos) {
+    try {
+      return new ResponseEntity(service.saveAll(dtos),HttpStatus.CREATED);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity("Erreur de sauvegarde!", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * @param id
+   * @return String
+   */
+  @Override
+  @DeleteMapping("/{id}")
+  @Operation(summary = "Delete a entity by its id")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Deleted the entity", content = @Content),
+    @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content) })
+  public ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
+    try {
+      service.delete(id);
+      return new ResponseEntity("Suppression avec succes!", HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity("Erreur de suppression!", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * @param ids
+   * @return String
+   */
+  @Override
+  @Operation(summary = "Delete all a entity by its id")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Deleted all the entity", content = @Content),
+    @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content) })
+  public ResponseEntity<String> deleteAll(@RequestBody List<Long> ids) {
+    try {
+      service.deleteAll(ids);
+      return new ResponseEntity("Suppression avec succes!", HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity("Erreur de suppression!", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * @param id
+   * @return R
+   */
+  @Override
+  @GetMapping("/{id}")
+  @Operation(summary = "Get a entity by its id")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Found the entity", content = @Content),
+    @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content) })
+  public ResponseEntity<R> getOne(@PathVariable("id") Long id) {
+    try {
+      return new ResponseEntity(service.getOne(id), HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity("Erreur lors de la recherche!", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * @param id
+   * @return E
+   */
+  @Override
+  @GetMapping("/{id}")
+  @Operation(summary = "Get a entity by its id")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Found the entity", content = @Content),
+    @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content) })
+  public ResponseEntity<E> getById(@PathVariable("id") Long id) {
+    try {
+      return new ResponseEntity(service.getById(id), HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity("Erreur lors de la recherche!", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * @return List<R>
+   */
+  @Override
+  @GetMapping
+  @Operation(summary = "Get all a entity")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Found the entity", content = @Content),
+    @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content) })
+  public ResponseEntity<List<R>> getAll() {
+    try {
+      return new ResponseEntity(service.getAll(), HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity("Erreur lors de la recherche!", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * @param pageable
+   * @return Page<R>
+   */
+  @Override
+  @GetMapping("/page-query")
+  @Operation(summary = "Get a entity by page")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Found the entity", content = @Content),
+    @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content) })
+  public ResponseEntity<Page<R>> getByPage(Pageable pageable) {
+    try {
+      return new ResponseEntity(service.getByPage(pageable), HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity("Erreur lors de la recherche!", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * @param dto
+   * @param id
+   * @return R
+   */
+  @Override
+  @PostMapping("/{id}")
+  @Operation(summary = "Update a entity by its id")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Updated the entity", content = @Content),
+    @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content) })
+  public ResponseEntity<R> update(@Valid @RequestBody D dto, @PathVariable("id") Long id) {
+    try {
+      return new ResponseEntity(service.update(dto, id), HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity("Erreur de modification!", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+}
