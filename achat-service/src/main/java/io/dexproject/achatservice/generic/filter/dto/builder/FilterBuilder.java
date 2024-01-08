@@ -1,8 +1,8 @@
 package io.dexproject.achatservice.generic.filter.dto.builder;
 
-import com.dexproject.shop.api.generic.filter.dto.Filter;
-import com.dexproject.shop.api.generic.filter.dto.InternalOperator;
-import com.dexproject.shop.api.generic.filter.dto.ValueType;
+import io.dexproject.achatservice.generic.filter.dto.Filter;
+import io.dexproject.achatservice.generic.filter.dto.InternalOperator;
+import io.dexproject.achatservice.generic.filter.dto.ValueType;
 
 public class FilterBuilder implements Builder<Filter> {
 

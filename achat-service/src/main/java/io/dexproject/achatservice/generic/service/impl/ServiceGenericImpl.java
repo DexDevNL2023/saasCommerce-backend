@@ -10,9 +10,12 @@ import io.dexproject.achatservice.exceptions.SuppressionException;
 import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.entity.BaseReponseDto;
 import io.dexproject.achatservice.generic.entity.BaseRequestDto;
+import io.dexproject.achatservice.generic.filter.dao.FilterRepo;
+import io.dexproject.achatservice.generic.filter.dto.FilterWrap;
 import io.dexproject.achatservice.generic.mapper.GenericMapper;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
+import io.dexproject.achatservice.validators.LogExecution;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +26,12 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
 
   protected final GenericRepository<E> repository;
   private final GenericMapper<D, R, E> mapper;
+  protected final FilterRepo filterRepo;
 
-  public ServiceGenericImpl(GenericRepository<E> repository, GenericMapper<D, R, E> mapper) {
+  public ServiceGenericImpl(GenericRepository<E> repository, GenericMapper<D, R, E> mapper, FilterRepo filterRepo) {
     this.repository = repository;
     this.mapper = mapper;
+    this.filterRepo = filterRepo;
   }
 
   /**
@@ -35,9 +40,12 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
-  public R save(D dto) throws ResourceNotFoundException {
+  @LogExecution
+  public R save(D dto, Class<E> clazz) throws ResourceNotFoundException {
     try {
-      return mapper.toDto(repository.save(mapper.toEntity(dto)));
+      E e = repository.save(mapper.toEntity(dto));
+      e.set
+      return mapper.toDto(e);
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -49,11 +57,12 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
-  public List<R> saveAll(List<D> dtos) throws ResourceNotFoundException {
+  @LogExecution
+  public List<R> saveAll(List<D> dtos, Class<E> clazz) throws ResourceNotFoundException {
     try {
       List<R> list = new ArrayList<>();
-      dtos.forEach(dto -> list.add(save(dto)));
-      return list;
+      dtos.forEach(dto -> list.add(save(dto, clazz)));
+      return getAll(clazz);
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -65,9 +74,10 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    */
   @Override
   @Transactional
-  public void delete(Long id) throws SuppressionException {
+  @LogExecution
+  public void delete(Long id, Class<E> clazz) throws SuppressionException {
     try {
-      if (!exist(id)) throw new SuppressionException("La ressource avec l'id " + id + " n'existe pas");
+      if (!exist(id, clazz)) throw new SuppressionException("La ressource avec l'id " + id + " n'existe pas");
       repository.deleteById(id);
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
@@ -80,9 +90,10 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    */
   @Override
   @Transactional
-  public void deleteAll(List<Long> ids) throws SuppressionException {
+  @LogExecution
+  public void deleteAll(List<Long> ids, Class<E> clazz) throws SuppressionException {
     try {
-      ids.forEach(this::delete);
+      ids.forEach(this::delete, clazz);
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -94,9 +105,10 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
-  public Boolean exist(Long id) throws ResourceNotFoundException {
+  @LogExecution
+  public Boolean exist(Long id, Class<E> clazz) throws ResourceNotFoundException {
     try {
-      return repository.existsById(id);
+      return repository.existsById(id, clazz);
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -108,9 +120,10 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
-  public R getOne(Long id) throws ResourceNotFoundException {
+  @LogExecution
+  public R getOne(Long id, Class<E> clazz) throws ResourceNotFoundException {
     try {
-      return mapper.toDto(getById(id));
+      return mapper.toDto(getById(id, clazz));
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -123,13 +136,13 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    */
   @Override
   @Transactional
-  public E getById(Long id) throws ResourceNotFoundException {
+  @LogExecution
+  public E getById(Long id, Class<E> clazz) throws ResourceNotFoundException {
     try {
-      return repository.findById(id).orElseThrow(
-        () -> new RuntimeException("La ressource avec l'id " + id + " n'existe pas")
-      );
+      FilterWrap filterWrap = new FilterWrap();
+      return filterRepo.filterOne(filterWrap, clazz);
     } catch (Exception e) {
-      throw new InternalException(e.getMessage());
+      throw new InternalException("La ressource avec l'id " + id + " n'existe pas. Cause : "+e.getMessage());
     }
   }
 
@@ -138,11 +151,11 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
-  public List<R> getAll() throws ResourceNotFoundException {
+  @LogExecution
+  public List<R> getAll(Class<E> clazz) throws ResourceNotFoundException {
     try {
-      return repository.findAll().stream()
-        .map(mapper::toDto)
-        .collect(Collectors.toList());
+      FilterWrap filterWrap = new FilterWrap();
+      return filterRepo.filter(filterWrap,clazz).stream().map(mapper::toDto).collect(Collectors.toList());
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -154,6 +167,7 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
+  @LogExecution
   public Page<R> getByPage(Pageable pageable) throws ResourceNotFoundException {
     try {
       Page<E> entityPage = repository.findAll(pageable);
@@ -172,10 +186,11 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    */
   @Override
   @Transactional
-  public R update(D dto, Long id) throws ResourceNotFoundException {
+  @LogExecution
+  public R update(D dto, Long id, Class<E> clazz) throws ResourceNotFoundException {
     try {
       if (equalsToDto(dto, id)) throw new RuntimeException("La ressource avec les données suivante : " + dto.toString() + " existe déjà");
-      E exist = getById(id);
+      E exist = getById(id, clazz);
       dto.setId(exist.getId());
       return mapper.toDto(repository.save(mapper.toEntity(dto)));
     } catch (Exception e) {
@@ -191,9 +206,10 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    */
   @Override
   @Transactional
-  public Boolean equalsToDto(D dto, Long id) throws ResourceNotFoundException {
+  @LogExecution
+  public Boolean equalsToDto(D dto, Long id, Class<E> clazz) throws ResourceNotFoundException {
     try {
-      E ressource = getById(id);
+      E ressource = getById(id, clazz);
       return !ressource.getId().equals(id) || !ressource.equals(dto);
     } catch (Exception e) {
       throw new InternalException(e.getMessage());

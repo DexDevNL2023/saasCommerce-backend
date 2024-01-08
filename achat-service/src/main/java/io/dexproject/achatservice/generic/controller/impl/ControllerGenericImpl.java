@@ -5,6 +5,7 @@ import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.entity.BaseReponseDto;
 import io.dexproject.achatservice.generic.entity.BaseRequestDto;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
+import io.dexproject.achatservice.validators.AuthorizeUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,6 +33,7 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
    * @return R
    */
   @Override
+  @AuthorizeUser
   @PostMapping
   @Operation(summary = "Save a entity by list")
   @ApiResponses(value = {
@@ -52,6 +54,7 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
    * @return List<R>
    */
   @Override
+  @AuthorizeUser
   @PostMapping("/all")
   @Operation(summary = "Save all a entity by list")
   @ApiResponses(value = {
@@ -72,6 +75,7 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
    * @return String
    */
   @Override
+  @AuthorizeUser
   @DeleteMapping("/{id}")
   @Operation(summary = "Delete a entity by its id")
   @ApiResponses(value = {
@@ -93,6 +97,7 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
    * @return String
    */
   @Override
+  @AuthorizeUser
   @Operation(summary = "Delete all a entity by its id")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Deleted all the entity", content = @Content),
@@ -113,6 +118,7 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
    * @return R
    */
   @Override
+  @AuthorizeUser
   @GetMapping("/{id}")
   @Operation(summary = "Get a entity by its id")
   @ApiResponses(value = {
@@ -133,6 +139,7 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
    * @return E
    */
   @Override
+  @AuthorizeUser
   @GetMapping("/{id}")
   @Operation(summary = "Get a entity by its id")
   @ApiResponses(value = {
@@ -152,15 +159,16 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
    * @return List<R>
    */
   @Override
+  @AuthorizeUser
   @GetMapping
   @Operation(summary = "Get all a entity")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Found the entity", content = @Content),
     @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content) })
-  public ResponseEntity<List<R>> getAll() {
+  public ResponseEntity<List<R>> getAll(Class<E> clazz) {
     try {
-      return new ResponseEntity(service.getAll(), HttpStatus.OK);
+      return new ResponseEntity(service.getAll(clazz), HttpStatus.OK);
     } catch (Exception e) {
       e.printStackTrace();
       return new ResponseEntity("Erreur lors de la recherche!", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -172,6 +180,7 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
    * @return Page<R>
    */
   @Override
+  @AuthorizeUser
   @GetMapping("/page-query")
   @Operation(summary = "Get a entity by page")
   @ApiResponses(value = {
@@ -193,6 +202,7 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
    * @return R
    */
   @Override
+  @AuthorizeUser
   @PostMapping("/{id}")
   @Operation(summary = "Update a entity by its id")
   @ApiResponses(value = {

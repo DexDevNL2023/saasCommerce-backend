@@ -1,8 +1,8 @@
 package io.dexproject.achatservice.generic.filter.dao;
 
-import com.dexproject.shop.api.generic.filter.dto.Filter;
-import com.dexproject.shop.api.generic.filter.exception.ExceptionMessages;
-import com.dexproject.shop.api.generic.filter.exception.Executable;
+import io.dexproject.achatservice.generic.filter.dto.Filter;
+import io.dexproject.achatservice.generic.filter.exception.ExceptionMessages;
+import io.dexproject.achatservice.generic.filter.exception.Executable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,10 +37,10 @@ public class RepoUtil {
                 genericTypeClassName = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName();
             }
 
-            logger.info("field {} == {}", field.getName(), tokens[i]);
+            logger.info("champ {} == {}", field.getName(), tokens[i]);
             if (tokens[i].equals(field.getName())) {
                 if (genericTypeClassName != null) { // meaning it's a list
-                    logger.info("Das ist list of type {} ", genericTypeClassName);
+                    logger.info("Ceci est une liste de types {} ", genericTypeClassName);
                     return isHierarchyPresent(tokens, ++i, Arrays.stream(Class.forName(genericTypeClassName).getDeclaredFields()).collect(Collectors.toList()));
                 } else {
                     return isHierarchyPresent(tokens, ++i, Arrays.stream(field.getType().getDeclaredFields()).collect(Collectors.toList()));
@@ -73,17 +73,17 @@ public class RepoUtil {
     public static <T> Predicate extractCriteria(Filter filter,
                                                 CriteriaBuilder cb,
                                                 Root<T> root) {
-        logger.info("Extracting criteria ... ");
+        logger.info("Extraction des critères ... ");
 
         Join<Object, Object> joinObject = null;
         List<String> nestedFields = extractNestedFields(filter);
-        logger.info("{} nested fields", nestedFields.size());
+        logger.info("{} champs imbriqués", nestedFields.size());
 
         if (filterIsNested(filter)) {
             // Add Neccessary Joins
-            logger.info("Join java type ");
+            logger.info("Lier au type Java ");
             joinObject = getJoinObject(root, joinObject, nestedFields);
-            logger.info("Join java type {} ", joinObject.getJavaType());
+            logger.info("Lier au type Java {} ", joinObject.getJavaType());
         }
 
         Path<Double> doublePath;
@@ -109,23 +109,23 @@ public class RepoUtil {
                                 , ExceptionMessages.VALUE_IS_NOT_DOUBLE);
 
                 if (!doublePath.getJavaType().equals(Double.class)) {
-                    logger.error("Field " + filter.getField() + " should be of type Double , found " + doublePath.getJavaType());
-                    throw new IllegalArgumentException("Field " + filter.getField() + " should be of type Double , found " + doublePath.getJavaType());
+                    logger.error("Champs " + filter.getField() + " sdevrait être de type Double , trouvé " + doublePath.getJavaType());
+                    throw new IllegalArgumentException("Champs " + filter.getField() + " devrait être de type Double , trouvé " + doublePath.getJavaType());
                 }
 
                 predicate = getPredicate(filter, cb, doublePath, doubleValue);
                 break;
             case STRING:
-                logger.info("Filter field {} ",filter.getField());
+                logger.info("Champ de filtre {} ",filter.getField());
                 stringPath = joinObject != null ? joinObject.get(filter.getField().split("[.]")[nestedFields.size() - 1])
                         :
                         root.get(filter.getField());
                 stringValue = filter.getValue();
 
                 if (!stringPath.getJavaType().equals(String.class)) {
-                    logger.error("Field " + filter.getField() + " should be of type String , found " + stringPath.getJavaType().getSimpleName());
-                    throw new IllegalArgumentException("Field " + filter.getField()
-                            + " should be of type String , found " + stringPath.getJavaType().getSimpleName());
+                    logger.error("Champs " + filter.getField() + " devrait être de type String , trouvé " + stringPath.getJavaType().getSimpleName());
+                    throw new IllegalArgumentException("Champs " + filter.getField()
+                            + " devrait être de type String , trouvé " + stringPath.getJavaType().getSimpleName());
                 }
 
                 predicate = getPredicate(filter, cb, stringPath, stringValue);
@@ -137,8 +137,8 @@ public class RepoUtil {
                         root.get(filter.getField());
 
                 if (!datePath.getJavaType().equals(LocalDate.class)) {
-                    throw new IllegalArgumentException("Field " + filter.getField()
-                            + " should be of type LocalDate , found " + datePath.getJavaType());
+                    throw new IllegalArgumentException("Champs " + filter.getField()
+                            + " devrait être de type LocalDate , trouvé " + datePath.getJavaType());
                 }
 
                 lDateValue.set(
@@ -158,7 +158,7 @@ public class RepoUtil {
                         root.get(filter.getField());
 
                 if (!ldateTimePath.getJavaType().equals(LocalDateTime.class)) {
-                    throw new IllegalArgumentException("Field " + filter.getField() + " should be of type LocalDateTime");
+                    throw new IllegalArgumentException("Champs " + filter.getField() + " doit être de type LocalDateTime");
                 }
 
                 lDateTimeValue.set(
@@ -191,7 +191,7 @@ public class RepoUtil {
                                                                     Path<T> doublePath,
                                                                     T doubleValue) {
         if (filter.getOperator() == null ){
-            throw new RuntimeException("Operator cannot be null");
+            throw new RuntimeException("L'opérateur ne peut pas être nul");
         }
 
         Predicate predicate;
@@ -214,12 +214,12 @@ public class RepoUtil {
                                                           Join<Object, Object> joinObject,
                                                           List<String> nestedFields) {
 
-        logger.info("Adding necessary join predicates ... ");
+        logger.info("Ajout des prédicats de jointure nécessaires... ");
         int iteration = 1;
         Join<Object, Object> previous = null;
         for (String field : nestedFields.subList(0, nestedFields.size() - 1)) {
-            logger.info("Field {}", field);
-            logger.info("Previous Join {}", previous != null ? previous.getJavaType().getName() : null);
+            logger.info("Champs {}", field);
+            logger.info("Liason précédente {}", previous != null ? previous.getJavaType().getName() : null);
 
             if (iteration == 1) joinObject = root.join(field);
             else joinObject = previous.join(field);
@@ -227,7 +227,7 @@ public class RepoUtil {
             previous = joinObject;
             iteration++;
         }
-        logger.info("Returning Last Join as {}", joinObject.getJavaType().getName());
+        logger.info("Renvoyer la dernière jointure en tant que {}", joinObject.getJavaType().getName());
         return joinObject;
     }
 
@@ -236,14 +236,14 @@ public class RepoUtil {
     }
 
     public static boolean filterIsNested(Filter filter) {
-        logger.info("Filter contains . {} ", filter.getField().contains("."));
+        logger.info("Le filtre contient . {} ", filter.getField().contains("."));
         return filter.getField().contains(".");
     }
 
     public static Collection<Filter> extractCorrectFilters(Collection<Filter> filters,
                                                            List<Field> declaredFields) {
 
-        logger.info("Filters size {} ", filters.size());
+        logger.info("Taille des filtres {} ", filters.size());
         Map<String, Filter> filterMap = new HashMap<>();
         filters.forEach(filter -> filterMap.put(filter.getField(), filter));
 
@@ -258,7 +258,7 @@ public class RepoUtil {
                 try {
                     if (!isHierarchyPresent(tokens, 0, declaredFields)) {
                         filterMap.remove(filter);
-                        throw new IllegalArgumentException("This filter does not exist");
+                        throw new IllegalArgumentException("Ce filtre n'existe pas");
                     }
                 } catch (ClassNotFoundException e) {
                     // Do nothing

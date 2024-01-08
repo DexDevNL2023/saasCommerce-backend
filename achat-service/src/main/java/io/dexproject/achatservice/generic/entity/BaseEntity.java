@@ -48,6 +48,8 @@ public abstract class BaseEntity implements GenericEntity<BaseEntity> {
 	@Column(name = "updated_at")
     private Instant updatedAt;
 
+	protected Long companyId;
+
 	@Override
 	public Long getId() {
 		return id;

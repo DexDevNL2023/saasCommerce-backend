@@ -17,8 +17,8 @@ public interface ServiceGeneric<D extends BaseRequestDto, R extends BaseReponseD
   void deleteAll(List<Long> ids) throws SuppressionException;
   Boolean exist(Long id) throws ResourceNotFoundException;
   R getOne(Long id) throws ResourceNotFoundException;
-  E getById(Long id) throws ResourceNotFoundException;
-  List<R> getAll() throws ResourceNotFoundException;
+  E getById(Long id, Class<E> clazz) throws ResourceNotFoundException;
+  List<R> getAll(Class<E> clazz) throws ResourceNotFoundException;
   Page<R> getByPage(Pageable pageable) throws ResourceNotFoundException;
   R update(D dto, Long id) throws ResourceNotFoundException;
   Boolean equalsToDto(D dto, Long id) throws ResourceNotFoundException;

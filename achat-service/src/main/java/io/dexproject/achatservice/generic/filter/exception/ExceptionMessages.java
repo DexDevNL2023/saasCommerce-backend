@@ -6,7 +6,7 @@ public class ExceptionMessages {
         // not initializable
     }
 
-    public static String VALUE_IS_NOT_LOCAL_DATE = "Provided value isn't of type LocalDateTime, it should comply with: YYYY-MM-DD ";
-    public static String VALUE_IS_NOT_LOCAL_DATE_TIME = "Provided value isn't of type LocalDateTime, it should comply with: YYYY-MM-DD T hh:mm:ss";
-    public static String VALUE_IS_NOT_DOUBLE = "Provided value isn't of type Double";
+    public static String VALUE_IS_NOT_LOCAL_DATE = "La valeur fournie n'est pas du type Date, elle doit être conforme à : AAAA-MM-JJ";
+    public static String VALUE_IS_NOT_LOCAL_DATE_TIME = "La valeur fournie n'est pas du type LocalDateTime, elle doit être conforme à : AAAA-MM-JJ T hh:mm:ss";
+    public static String VALUE_IS_NOT_DOUBLE = "La valeur fournie n'est pas de type Double";
 }

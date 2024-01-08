@@ -1,5 +1,7 @@
 package io.dexproject.achatservice.config;
 
+import io.dexproject.achatservice.generic.filter.dao.FilterRepo;
+import io.dexproject.achatservice.generic.filter.dao.FilterRepoImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -18,5 +20,10 @@ public class AuditingConfig {
     @Bean
     public AuditorAware<String> auditorProvider() {
         return new SpringSecurityAuditAwareImpl();
+    }
+
+    @Bean
+    public FilterRepo filterRepo(){
+        return new FilterRepoImpl();
     }
 }
