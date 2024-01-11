@@ -3,6 +3,7 @@ package io.dexproject.achatservice.generic.controller;
 import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.entity.BaseReponseDto;
 import io.dexproject.achatservice.generic.entity.BaseRequestDto;
+import io.dexproject.achatservice.generic.entity.SearchRequestDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface ControllerGeneric<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> {
+  ResponseEntity<List<R>> searchPlants(SearchRequestDTO dto);
   ResponseEntity<R> save(D dto);
   ResponseEntity<List<R>> saveAll(List<D> dtos);
   ResponseEntity<String> deleteById(Long id);

@@ -4,6 +4,7 @@ import io.dexproject.achatservice.generic.controller.ControllerGeneric;
 import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.entity.BaseReponseDto;
 import io.dexproject.achatservice.generic.entity.BaseRequestDto;
+import io.dexproject.achatservice.generic.entity.SearchRequestDTO;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 import io.dexproject.achatservice.validators.AuthorizeUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,12 +22,35 @@ import java.util.List;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 @ResponseBody
+@Slf4j
 public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements ControllerGeneric<D, R, E> {
 
 	private final ServiceGeneric<D, R, E> service;
 
   public ControllerGenericImpl(ServiceGeneric<D, R, E> service) {
     this.service = service;
+  }
+
+  /**
+   * @param dto
+   * @return List<R>
+   */
+  @Override
+  @AuthorizeUser
+  @GetMapping("/search")
+  @Operation(summary = "Search a entity by full text value")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Saved the entity", content = @Content),
+          @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+          @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content) })
+  public ResponseEntity<List<R>> searchPlants(SearchRequestDTO dto) {
+    log.info("Request for plant search received with data : " + dto);
+    try {
+      return new ResponseEntity(service.search(dto.getText(), dto.getFields(), dto.getLimit()), HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity("Erreur lors de la recherche!", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   /**
