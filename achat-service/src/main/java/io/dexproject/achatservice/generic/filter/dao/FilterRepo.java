@@ -1,5 +1,6 @@
 package io.dexproject.achatservice.generic.filter.dao;
 
+import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.filter.dto.FilterWrap;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface FilterRepo {
      * <br/>
      * throws {@link IllegalArgumentException}
      */
-    <ENTITY> List<ENTITY> filter(FilterWrap filterWrap, Class<ENTITY> clazz);
+    <ENTITY extends BaseEntity> List<ENTITY> filter(FilterWrap filterWrap, Class<ENTITY> clazz);
 
     /**
      * Filter method to be used by the client
@@ -30,5 +31,5 @@ public interface FilterRepo {
      * <br/>
      * throws {@link IllegalArgumentException}
      */
-    <ENTITY> ENTITY filterOne(FilterWrap filterWrap, Class<ENTITY> clazz);
+    <ENTITY extends BaseEntity> ENTITY filterOne(FilterWrap filterWrap, Class<ENTITY> clazz);
 }
