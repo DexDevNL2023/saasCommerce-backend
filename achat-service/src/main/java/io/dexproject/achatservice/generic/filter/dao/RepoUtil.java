@@ -6,7 +6,7 @@ import io.dexproject.achatservice.generic.filter.exception.Executable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.time.LocalDate;

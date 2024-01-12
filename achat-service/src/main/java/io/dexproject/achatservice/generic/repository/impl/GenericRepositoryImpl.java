@@ -164,10 +164,7 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<E> criteriaQuery = criteriaBuilder.createQuery(clazz);
         Root<E> root = criteriaQuery.from(clazz);
-        //List<Predicate> predicates = predicates(filters, criteriaBuilder, root);
-        List<Predicate> predicates = filters.stream()
-                .map(filter -> RepoUtil.extractCriteria(filter, criteriaBuilder, root))
-                .collect(Collectors.toList());
+        List<Predicate> predicates = predicates(filters, criteriaBuilder, root);
         criteriaQuery.select(root).where(predicates.toArray(new Predicate[0]));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

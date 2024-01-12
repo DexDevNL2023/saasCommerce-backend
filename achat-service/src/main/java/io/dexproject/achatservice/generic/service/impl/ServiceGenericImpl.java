@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,24 +22,22 @@ import io.dexproject.achatservice.generic.mapper.GenericMapper;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 import io.dexproject.achatservice.validators.LogExecution;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import javax.transaction.Transactional;
-
 @Slf4j
 public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
 
+  private static final List<String> SEARCHABLE_FIELDS = Arrays.asList("author" , "name");
   protected final GenericRepository<E> repository;
   private final GenericMapper<D, R, E> mapper;
-  protected final FilterRepo filterRepo;
 
-  public ServiceGenericImpl(GenericRepository<E> repository, GenericMapper<D, R, E> mapper, FilterRepo filterRepo) {
+  public ServiceGenericImpl(GenericRepository<E> repository, GenericMapper<D, R, E> mapper) {
     this.repository = repository;
     this.mapper = mapper;
-    this.filterRepo = filterRepo;
   }
 
 
@@ -50,6 +49,7 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
+  @Transactional
   @LogExecution
   public List<R> search(String text, List<String> fields, int limit) throws ResourceNotFoundException {
     List<String> fieldsToSearchBy = fields.isEmpty() ? SEARCHABLE_FIELDS : fields;
@@ -66,6 +66,7 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
+  @Transactional
   @LogExecution
   public R save(D dto, Class<E> clazz) throws ResourceNotFoundException {
     try {
@@ -82,6 +83,7 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
+  @Transactional
   @LogExecution
   public List<R> saveAll(List<D> dtos, Class<E> clazz) throws ResourceNotFoundException {
     try {
@@ -130,6 +132,7 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
+  @Transactional
   @LogExecution
   public Boolean exist(Long id, Class<E> clazz) throws ResourceNotFoundException {
     try {
@@ -142,7 +145,7 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
               .build()
       );
       filterWrap.setFilters(filters);
-      return filterRepo.existsById(filterWrap, clazz);
+      return repository.existsById(filterWrap, clazz);
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -154,6 +157,7 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
+  @Transactional
   @LogExecution
   public R getOne(Long id, Class<E> clazz) throws ResourceNotFoundException {
     try {
@@ -174,7 +178,7 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
   public E getById(Long id, Class<E> clazz) throws ResourceNotFoundException {
     try {
       FilterWrap filterWrap = new FilterWrap();
-      return filterRepo.filterOne(filterWrap, clazz);
+      return repository.filterOne(filterWrap, clazz);
     } catch (Exception e) {
       throw new InternalException("La ressource avec l'id " + id + " n'existe pas. Cause : "+e.getMessage());
     }
@@ -185,11 +189,12 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
+  @Transactional
   @LogExecution
   public List<R> getAll(Class<E> clazz) throws ResourceNotFoundException {
     try {
       FilterWrap filterWrap = new FilterWrap();
-      return filterRepo.filter(filterWrap,clazz).stream().map(mapper::toDto).collect(Collectors.toList());
+      return repository.filter(filterWrap,clazz).stream().map(mapper::toDto).collect(Collectors.toList());
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -201,6 +206,7 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
    * @throws ResourceNotFoundException
    */
   @Override
+  @Transactional
   @LogExecution
   public Page<R> getByPage(Pageable pageable) throws ResourceNotFoundException {
     try {
