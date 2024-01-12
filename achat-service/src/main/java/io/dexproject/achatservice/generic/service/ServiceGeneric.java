@@ -12,15 +12,18 @@ import org.springframework.data.domain.Pageable;
 
 public interface ServiceGeneric<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> {
   List<R> search(String text, List<String> fields, int limit) throws ResourceNotFoundException;
-  R save(D dto, Class<E> clazz) throws ResourceNotFoundException;
-  List<R> saveAll(List<D> dtos, Class<E> clazz) throws ResourceNotFoundException;
-  void delete(Long id, Class<E> clazz) throws SuppressionException;
-  void deleteAll(List<Long> ids, Class<E> clazz) throws SuppressionException;
-  Boolean exist(Long id, Class<E> clazz) throws ResourceNotFoundException;
-  R getOne(Long id, Class<E> clazz) throws ResourceNotFoundException;
-  E getById(Long id, Class<E> clazz) throws ResourceNotFoundException;
-  List<R> getAll(Class<E> clazz) throws ResourceNotFoundException;
+  R save(D dto) throws ResourceNotFoundException;
+  List<R> saveAll(List<D> dtos) throws ResourceNotFoundException;
+  void delete(Long id) throws SuppressionException;
+  void deleteAll(List<Long> ids) throws SuppressionException;
+  Boolean exist(Long id) throws ResourceNotFoundException;
+  R getOne(Long id) throws ResourceNotFoundException;
+  R getOneByPeriode(Long id) throws ResourceNotFoundException;
+  E getById(Long id) throws ResourceNotFoundException;
+  E getByIdByPeriode(Long id) throws ResourceNotFoundException;
+  List<R> getAll() throws ResourceNotFoundException;
+  List<R> getAllByPeriode() throws ResourceNotFoundException;
   Page<R> getByPage(Pageable pageable) throws ResourceNotFoundException;
-  R update(D dto, Long id, Class<E> clazz) throws ResourceNotFoundException;
-  Boolean equalsToDto(D dto, Long id, Class<E> clazz) throws ResourceNotFoundException;
+  R update(D dto, Long id) throws ResourceNotFoundException;
+  Boolean equalsToDto(D dto, Long id) throws ResourceNotFoundException;
 }

@@ -4,7 +4,11 @@ import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.filter.dao.RepoUtil;
 import io.dexproject.achatservice.generic.filter.dto.Filter;
 import io.dexproject.achatservice.generic.filter.dto.FilterWrap;
+import io.dexproject.achatservice.generic.filter.dto.InternalOperator;
+import io.dexproject.achatservice.generic.filter.dto.ValueType;
+import io.dexproject.achatservice.generic.filter.dto.builder.FilterBuilder;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
+import io.dexproject.achatservice.generic.utils.MyUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -22,10 +26,7 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -47,68 +48,38 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
         this.entityManager = entityManager;
     }
 
-    public String newCode() {
+    @Override
+    public String newCode(String prefixe) {
         String code = "";
         entityManager.getTransaction().begin();
-        final Optional<E> resultList = Optional.ofNullable(entityManager.find(clazz, id));
-        entityManager.getTransaction().commit();
-        entityManager.close();
         do {
-            String newCode =  getCode();
-            appEntityCode = appEntityCodeRepository.findByCode(newCode);
-            if(appEntityCode == null) {
+            String newCode = MyUtils.GenerateCode(prefixe);
+            FilterWrap filterWrap = new FilterWrap();
+            List<Filter> filters = Collections.singletonList(FilterBuilder
+                    .createFilter("code")
+                    .value(newCode)
+                    .operator(InternalOperator.EQUALS)
+                    .type(ValueType.STRING)
+                    .build()
+            );
+            filterWrap.setFilters(filters);
+            final E result = filterOne(filterWrap);
+            if(result == null) {
                 code = newCode;
             }
-        }while(appEntityCode != null);
+        }while(!code.isEmpty());
+        entityManager.getTransaction().commit();
+        entityManager.close();
         return code;
     }
 
     @Override
-    public void save(E entity) {
+    public Boolean exist(FilterWrap filterWrap) {
         entityManager.getTransaction().begin();
-        entityManager.persist(entity);
+        final E resultList = filterOne(filterWrap);
         entityManager.getTransaction().commit();
         entityManager.close();
-    }
-
-    @Override
-    public void update(E entity) {
-        entityManager.getTransaction().begin();
-        entityManager.merge(entity);
-        entityManager.getTransaction().commit();
-        entityManager.close();
-    }
-
-    @Override
-    public void remove(E entity) {
-        entityManager.getTransaction().begin();
-        final E managedEntity = entityManager.find(clazz, entity.getId());
-        if(managedEntity != null) {
-            entityManager.remove(managedEntity);
-        }
-        entityManager.getTransaction().commit();
-        entityManager.close();
-    }
-
-    @Override
-    public Optional<E> findById(Long id) {
-        entityManager.getTransaction().begin();
-        final Optional<E> resultList = Optional.ofNullable(entityManager.find(clazz, id));
-        entityManager.getTransaction().commit();
-        entityManager.close();
-        return resultList;
-    }
-
-    @Override
-    public List<E> findAll() {
-        final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<E> criteria = criteriaBuilder.createQuery(clazz);
-        final Root<E> root = criteria.from(clazz);
-        criteria.select(root);
-        final TypedQuery<E> query = entityManager.createQuery(criteria);
-        final List<E> resultList = query.getResultList();
-        entityManager.close();
-        return resultList;
+        return (resultList == null);
     }
 
     @Override
@@ -118,21 +89,27 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
     }
 
     private SearchResult<E> getSearchResult(String text, int limit, String[] fields) {
+        entityManager.getTransaction().begin();
         SearchSession searchSession = Search.session(entityManager);
         SearchResult<E> result = searchSession.search(getDomainClass())
                 .where(f -> f.match().fields(fields).matching(text).fuzzy(2))
                 .fetch(limit);
+        entityManager.getTransaction().commit();
+        entityManager.close();
         return result;
     }
 
     @Override
     public void reIndex(String indexClassName) throws IndexNotFoundException {
         try {
+            entityManager.getTransaction().begin();
             SearchSession searchSession = Search.session(entityManager);
             Class<?> classToIndex = Class.forName(indexClassName);
             MassIndexer indexer = searchSession.massIndexer(classToIndex)
                     .threadsToLoadObjects(THREAD_NUMBER);
             indexer.startAndWait();
+            entityManager.getTransaction().commit();
+            entityManager.close();
         } catch (ClassNotFoundException e) {
             throw new IndexNotFoundException("Classe invalide " + indexClassName+" . Cause : "+e.getMessage());
         } catch (InterruptedException e) {
@@ -142,6 +119,7 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
 
     @Override
     public List<E> filter(FilterWrap filterWrap) {
+        entityManager.getTransaction().begin();
         Collection<Filter> filters = filterWrap.getFilters();
         List<Field> declaredClassFields = Arrays
                 .stream(clazz.getDeclaredFields())
@@ -152,11 +130,16 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
         Root<E> root = criteriaQuery.from(clazz);
         List<Predicate> predicates = predicates(filters, criteriaBuilder, root);
         criteriaQuery.select(root).where(predicates.toArray(new Predicate[0]));
-        return entityManager.createQuery(criteriaQuery).getResultList();
+        final TypedQuery<E> query = entityManager.createQuery(criteriaQuery);
+        final List<E> resultList = query.getResultList();
+        entityManager.getTransaction().commit();
+        entityManager.close();
+        return resultList;
     }
 
     @Override
     public E filterOne(FilterWrap filterWrap) {
+        entityManager.getTransaction().begin();
         Collection<Filter> filters = filterWrap.getFilters();
         List<Field> declaredClassFields = Arrays.stream(clazz.getDeclaredFields())
                 .collect(Collectors.toList());
@@ -166,7 +149,11 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
         Root<E> root = criteriaQuery.from(clazz);
         List<Predicate> predicates = predicates(filters, criteriaBuilder, root);
         criteriaQuery.select(root).where(predicates.toArray(new Predicate[0]));
-        return entityManager.createQuery(criteriaQuery).getSingleResult();
+        final TypedQuery<E> query = entityManager.createQuery(criteriaQuery);
+        final E resultList = query.getSingleResult();
+        entityManager.getTransaction().commit();
+        entityManager.close();
+        return resultList;
     }
 
     private List<Predicate> predicates(Collection<Filter> filters, CriteriaBuilder criteriaBuilder, Root<E> root) {
