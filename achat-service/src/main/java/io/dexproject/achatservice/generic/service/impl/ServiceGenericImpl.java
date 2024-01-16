@@ -1,9 +1,10 @@
 package io.dexproject.achatservice.generic.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import io.dexproject.achatservice.exceptions.InternalException;
@@ -32,17 +33,14 @@ import org.springframework.data.domain.Pageable;
 public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
 
   private static final List<String> SEARCHABLE_FIELDS = Arrays.asList("id" , "companyId");
-  private static final String DEFAULT_FILTABLE_FIELDS = "companyId";
-  private static final List<String> PERIODE_FILTABLE_FIELDS = Arrays.asList("companyId", "createdAt");
+  private static final String COMPANY_FILTABLE_FIELD = "companyId";
+  private static final String PERIODE_FILTABLE_FIELD = "createdAt";
   protected final GenericRepository<E> repository;
   private final GenericMapper<D, R, E> mapper;
-  @CurrentCompany
-  private final Long currentCompanyId;
 
-  public ServiceGenericImpl(GenericRepository<E> repository, GenericMapper<D, R, E> mapper, @CurrentCompany Long currentCompanyId) {
+  public ServiceGenericImpl(GenericRepository<E> repository, GenericMapper<D, R, E> mapper) {
     this.repository = repository;
     this.mapper = mapper;
-    this.currentCompanyId = currentCompanyId;
   }
 
   /**
@@ -218,11 +216,13 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
     }
   }
 
-  private FilterWrap getFiltres() {
+  private static FilterWrap getFiltres() {
+    @CurrentCompany
+    long currentCompanyId = -1L;
     FilterWrap filterWrap = new FilterWrap();
     List<Filter> filters = new ArrayList<>();
-    Filter filter = FilterBuilder.createFilter(DEFAULT_FILTABLE_FIELDS)
-            .value(currentCompanyId.toString())
+    Filter filter = FilterBuilder.createFilter(COMPANY_FILTABLE_FIELD)
+            .value(Long.toString(currentCompanyId))
             .operator(InternalOperator.EQUALS)
             .type(ValueType.NUMERIC)
             .build();
@@ -231,32 +231,35 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
     return filterWrap;
   }
 
-  private FilterWrap getFiltresByPeriode() {
+  private static FilterWrap getFiltresByPeriode() throws ParseException {
+    @CurrentCompany
+    long currentCompanyId = -1L;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+    int CurrentYear = Calendar.getInstance().get(Calendar.YEAR);
+    String financiyalYearFrom="01-01-"+(CurrentYear)+" 07:00:00";
+    String financiyalYearTo="31-12-"+(CurrentYear)+" 23:59:59";
+    LocalDate fromdayDateTime = LocalDate.parse(financiyalYearFrom, formatter);
+    LocalDate todayDateTime = LocalDate.parse(financiyalYearTo, formatter);
     FilterWrap filterWrap = new FilterWrap();
     List<Filter> filters = new ArrayList<>();
-    for (String field : PERIODE_FILTABLE_FIELDS) {
-      if (field.equals(DEFAULT_FILTABLE_FIELDS)) {
-        Filter filter = FilterBuilder.createFilter(DEFAULT_FILTABLE_FIELDS)
-                .value(currentCompanyId.toString())
-                .operator(InternalOperator.EQUALS)
-                .type(ValueType.NUMERIC)
-                .build();
-        filters.add(filter);
-      } else {
-        Filter filterDebut = FilterBuilder.createFilter(field)
-                .value(currentCompanyId.toString())
-                .operator(InternalOperator.GREATER_THAN)
-                .type(ValueType.LOCAL_DATE_TIME)
-                .build();
-        filters.add(filterDebut);
-        Filter filterFin = FilterBuilder.createFilter(field)
-                .value(currentCompanyId.toString())
-                .operator(InternalOperator.LESS_THAN)
-                .type(ValueType.LOCAL_DATE_TIME)
-                .build();
-        filters.add(filterFin);
-      }
-    }
+    Filter filter = FilterBuilder.createFilter(COMPANY_FILTABLE_FIELD)
+            .value(Long.toString(currentCompanyId))
+            .operator(InternalOperator.EQUALS)
+            .type(ValueType.NUMERIC)
+            .build();
+    filters.add(filter);
+    Filter filterDebut = FilterBuilder.createFilter(PERIODE_FILTABLE_FIELD)
+            .value(fromdayDateTime.toString())
+            .operator(InternalOperator.GREATER_THAN)
+            .type(ValueType.LOCAL_DATE_TIME)
+            .build();
+    filters.add(filterDebut);
+    Filter filterFin = FilterBuilder.createFilter(PERIODE_FILTABLE_FIELD)
+            .value(todayDateTime.toString())
+            .operator(InternalOperator.GREATER_THAN)
+            .type(ValueType.LOCAL_DATE_TIME)
+            .build();
+    filters.add(filterFin);
     filterWrap.setFilters(filters);
     return filterWrap;
   }
