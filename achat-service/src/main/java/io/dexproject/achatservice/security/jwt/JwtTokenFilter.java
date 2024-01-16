@@ -63,6 +63,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)	throws ServletException, IOException {
 		try {
+			response.addHeader("Access-Control-Allow-Headers",
+					"Access-Control-Allow-Origin, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+			if (response.getHeader("Access-Control-Allow-Origin") == null)
+				response.addHeader("Access-Control-Allow-Origin", "*");
+
 			// extract token information
 			String jwt = jwtUtils.getJwtFromRequest(request);
 	        System.out.println("jwt="+jwt);

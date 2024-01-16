@@ -19,6 +19,15 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Date;
+import org.springframework.core.env.Environment;
+import org.springframework.web.multipart.MultipartFile;
+
 @Slf4j
 public class GenericUtils {
 
@@ -188,5 +197,47 @@ public class GenericUtils {
 
   public static String generateTokenNumber() {
     return UUID.randomUUID().toString().replace("-", "");
+  }
+
+  public static Path FileStorageService(Environment env) {
+    Path fileStorageLocation = Paths.get(env.getProperty("app.file.upload-dir", "./uploads/files"))
+            .toAbsolutePath().normalize();
+
+    try {
+      return Files.createDirectories(fileStorageLocation);
+    } catch (Exception ex) {
+      throw new RuntimeException(
+              "Impossible de créer le répertoire dans lequel les fichiers téléchargés seront stockés.", ex);
+    }
+  }
+
+  private static String getFileExtension(String fileName) {
+    if (fileName == null) {
+      return null;
+    }
+    String[] fileNameParts = fileName.split("\\.");
+
+    return fileNameParts[fileNameParts.length - 1];
+  }
+
+  public static String storeFile(MultipartFile file, Path fileStorageLocation) {
+    // Normalize file name
+    String fileName =
+            new Date().getTime() + "-file." + getFileExtension(file.getOriginalFilename());
+
+    try {
+      // Check if the filename contains invalid characters
+      if (fileName.contains("..")) {
+        throw new RuntimeException(
+                "Désolé! Le nom du fichier contient une séquence de chemin non valide" + fileName);
+      }
+
+      Path targetLocation = fileStorageLocation.resolve(fileName);
+      Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+      return fileName;
+    } catch (IOException ex) {
+      throw new RuntimeException("Impossible de stocker le fichier " + fileName + ". Veuillez réessayer!", ex);
+    }
   }
 }
