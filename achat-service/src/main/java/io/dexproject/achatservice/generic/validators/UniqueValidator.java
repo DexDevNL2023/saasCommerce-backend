@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.validators;
+package io.dexproject.achatservice.generic.validators;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

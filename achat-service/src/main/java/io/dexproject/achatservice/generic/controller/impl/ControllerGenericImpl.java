@@ -6,7 +6,7 @@ import io.dexproject.achatservice.generic.entity.BaseReponseDto;
 import io.dexproject.achatservice.generic.entity.BaseRequestDto;
 import io.dexproject.achatservice.generic.entity.SearchRequestDTO;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
-import io.dexproject.achatservice.validators.AuthorizeUser;
+import io.dexproject.achatservice.generic.validators.AuthorizeUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -43,7 +43,7 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
           @ApiResponse(responseCode = "200", description = "Saved the entity", content = @Content),
           @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
           @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content) })
-  public ResponseEntity<List<R>> searchPlants(SearchRequestDTO dto) {
+  public ResponseEntity<List<R>> search(SearchRequestDTO dto) {
     log.info("Request for plant search received with data : " + dto);
     try {
       return new ResponseEntity(service.search(dto.getText(), dto.getFields(), dto.getLimit()), HttpStatus.OK);

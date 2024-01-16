@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.validators;
+package io.dexproject.achatservice.generic.validators;
 
 import io.dexproject.achatservice.security.dto.request.SignupRequest;
 import jakarta.validation.ConstraintValidator;

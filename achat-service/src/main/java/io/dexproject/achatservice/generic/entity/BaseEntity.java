@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.entity;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.time.Instant;
 
 import jakarta.persistence.*;
@@ -20,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
         value = {"createdBy", "createdAt", "updatedBy", "updatedAt"},
         allowGetters = true
 )
-public abstract class BaseEntity implements GenericEntity<BaseEntity> {
+public abstract class BaseEntity implements GenericEntity<BaseEntity>, Serializable {
 
     @Serial
 	private static final long serialVersionUID = 1L;
@@ -47,9 +48,6 @@ public abstract class BaseEntity implements GenericEntity<BaseEntity> {
     @LastModifiedDate
 	@Column(name = "updated_at")
     private Instant updatedAt;
-
-	@Column(nullable = false, updatable = false)
-	protected Long companyId;
 
 	@Override
 	public Long getId() {

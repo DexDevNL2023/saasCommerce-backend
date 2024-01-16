@@ -1,7 +1,6 @@
 package io.dexproject.achatservice.generic.service.impl;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -21,10 +20,11 @@ import io.dexproject.achatservice.generic.filter.dto.builder.FilterBuilder;
 import io.dexproject.achatservice.generic.mapper.GenericMapper;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
-import io.dexproject.achatservice.validators.CurrentCompany;
-import io.dexproject.achatservice.validators.LogExecution;
+import io.dexproject.achatservice.generic.validators.CurrentCompany;
+import io.dexproject.achatservice.generic.validators.LogExecution;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.index.IndexNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -32,8 +32,8 @@ import org.springframework.data.domain.Pageable;
 @Slf4j
 public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
 
-  private static final List<String> SEARCHABLE_FIELDS = Arrays.asList("id" , "companyId");
-  private static final String COMPANY_FILTABLE_FIELD = "companyId";
+  private static final List<String> SEARCHABLE_FIELDS = Arrays.asList("id" , "createdAt");
+  private static final String ID_FILTABLE_FIELD = "id";
   private static final String PERIODE_FILTABLE_FIELD = "createdAt";
   protected final GenericRepository<E> repository;
   private final GenericMapper<D, R, E> mapper;
@@ -90,7 +90,7 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
   public List<R> saveAll(List<D> dtos) throws ResourceNotFoundException {
     try {
       dtos.forEach(this::save);
-      return getAll();
+      return getAll(null);
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -160,25 +160,9 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
   @Override
   @Transactional
   @LogExecution
-  public R getOne(Long id) throws ResourceNotFoundException {
+  public R getOne(Long id, Boolean byPeriode) throws ResourceNotFoundException {
     try {
-      return mapper.toDto(getById(id));
-    } catch (Exception e) {
-      throw new InternalException(e.getMessage());
-    }
-  }
-
-  /**
-   * @param id
-   * @return R
-   * @throws ResourceNotFoundException
-   */
-  @Override
-  @Transactional
-  @LogExecution
-  public R getOneByPeriode(Long id) throws ResourceNotFoundException {
-    try {
-      return mapper.toDto(getById(id));
+      return mapper.toDto(getById(id, byPeriode));
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -192,90 +176,17 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
   @Override
   @Transactional
   @LogExecution
-  public E getById(Long id) throws ResourceNotFoundException {
+  public E getById(Long id, Boolean byPeriode) throws ResourceNotFoundException {
     try {
-      return repository.filterOne(getFiltres());
+      if (byPeriode) {
+        return repository.filterOne(getFiltresByPeriode(id));
+      } else {
+        return repository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("La ressource avec l'id " + id + " n'existe pas")
+        );
+      }
     } catch (Exception e) {
       throw new InternalException("La ressource avec l'id " + id + " n'existe pas. Cause : "+e.getMessage());
-    }
-  }
-
-  /**
-   * @param id
-   * @return E
-   * @throws ResourceNotFoundException
-   */
-  @Override
-  @Transactional
-  @LogExecution
-  public E getByIdByPeriode(Long id) throws ResourceNotFoundException {
-    try {
-      return repository.filterOne(getFiltresByPeriode());
-    } catch (Exception e) {
-      throw new InternalException("La ressource avec l'id " + id + " n'existe pas. Cause : "+e.getMessage());
-    }
-  }
-
-  private static FilterWrap getFiltres() {
-    @CurrentCompany
-    long currentCompanyId = -1L;
-    FilterWrap filterWrap = new FilterWrap();
-    List<Filter> filters = new ArrayList<>();
-    Filter filter = FilterBuilder.createFilter(COMPANY_FILTABLE_FIELD)
-            .value(Long.toString(currentCompanyId))
-            .operator(InternalOperator.EQUALS)
-            .type(ValueType.NUMERIC)
-            .build();
-    filters.add(filter);
-    filterWrap.setFilters(filters);
-    return filterWrap;
-  }
-
-  private static FilterWrap getFiltresByPeriode() throws ParseException {
-    @CurrentCompany
-    long currentCompanyId = -1L;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-    int CurrentYear = Calendar.getInstance().get(Calendar.YEAR);
-    String financiyalYearFrom="01-01-"+(CurrentYear)+" 07:00:00";
-    String financiyalYearTo="31-12-"+(CurrentYear)+" 23:59:59";
-    LocalDate fromdayDateTime = LocalDate.parse(financiyalYearFrom, formatter);
-    LocalDate todayDateTime = LocalDate.parse(financiyalYearTo, formatter);
-    FilterWrap filterWrap = new FilterWrap();
-    List<Filter> filters = new ArrayList<>();
-    Filter filter = FilterBuilder.createFilter(COMPANY_FILTABLE_FIELD)
-            .value(Long.toString(currentCompanyId))
-            .operator(InternalOperator.EQUALS)
-            .type(ValueType.NUMERIC)
-            .build();
-    filters.add(filter);
-    Filter filterDebut = FilterBuilder.createFilter(PERIODE_FILTABLE_FIELD)
-            .value(fromdayDateTime.toString())
-            .operator(InternalOperator.GREATER_THAN)
-            .type(ValueType.LOCAL_DATE_TIME)
-            .build();
-    filters.add(filterDebut);
-    Filter filterFin = FilterBuilder.createFilter(PERIODE_FILTABLE_FIELD)
-            .value(todayDateTime.toString())
-            .operator(InternalOperator.GREATER_THAN)
-            .type(ValueType.LOCAL_DATE_TIME)
-            .build();
-    filters.add(filterFin);
-    filterWrap.setFilters(filters);
-    return filterWrap;
-  }
-
-  /**
-   * @return List<R>
-   * @throws ResourceNotFoundException
-   */
-  @Override
-  @Transactional
-  @LogExecution
-  public List<R> getAll() throws ResourceNotFoundException {
-    try {
-      return repository.filter(getFiltres()).stream().map(mapper::toDto).collect(Collectors.toList());
-    } catch (Exception e) {
-      throw new InternalException(e.getMessage());
     }
   }
 
@@ -286,9 +197,13 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
   @Override
   @Transactional
   @LogExecution
-  public List<R> getAllByPeriode() throws ResourceNotFoundException {
+  public List<R> getAll(Boolean byPeriode) throws ResourceNotFoundException {
     try {
-      return repository.filter(getFiltresByPeriode()).stream().map(mapper::toDto).collect(Collectors.toList());
+      if (byPeriode) {
+        return repository.filter(getFiltresByPeriode(null)).stream().map(mapper::toDto).collect(Collectors.toList());
+      } else {
+        return repository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
+      }
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -349,5 +264,52 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
+  }
+
+  /**
+   * @throws ResourceNotFoundException
+   */
+  @Override
+  @Transactional
+  @LogExecution
+  public void reIndex(String indexClassName) throws IndexNotFoundException {
+    try {
+      repository.reIndex(indexClassName);
+    } catch (Exception e) {
+      throw new InternalException(e.getMessage());
+    }
+  }
+
+  private static FilterWrap getFiltresByPeriode(Long id) throws ParseException {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+    int CurrentYear = Calendar.getInstance().get(Calendar.YEAR);
+    String financiyalYearFrom="01-01-"+(CurrentYear)+" 07:00:00";
+    String financiyalYearTo="31-12-"+(CurrentYear)+" 23:59:59";
+    LocalDate fromdayDateTime = LocalDate.parse(financiyalYearFrom, formatter);
+    LocalDate todayDateTime = LocalDate.parse(financiyalYearTo, formatter);
+    FilterWrap filterWrap = new FilterWrap();
+    List<Filter> filters = new ArrayList<>();
+    if (id != null) {
+      Filter filterDebut = FilterBuilder.createFilter(ID_FILTABLE_FIELD)
+              .value(Long.toString(id))
+              .operator(InternalOperator.EQUALS)
+              .type(ValueType.NUMERIC)
+              .build();
+      filters.add(filterDebut);
+    }
+    Filter filterDebut = FilterBuilder.createFilter(PERIODE_FILTABLE_FIELD)
+            .value(fromdayDateTime.toString())
+            .operator(InternalOperator.GREATER_THAN)
+            .type(ValueType.LOCAL_DATE_TIME)
+            .build();
+    filters.add(filterDebut);
+    Filter filterFin = FilterBuilder.createFilter(PERIODE_FILTABLE_FIELD)
+            .value(todayDateTime.toString())
+            .operator(InternalOperator.GREATER_THAN)
+            .type(ValueType.LOCAL_DATE_TIME)
+            .build();
+    filters.add(filterFin);
+    filterWrap.setFilters(filters);
+    return filterWrap;
   }
 }

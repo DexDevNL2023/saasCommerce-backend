@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.validators;
+package io.dexproject.achatservice.generic.validators;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

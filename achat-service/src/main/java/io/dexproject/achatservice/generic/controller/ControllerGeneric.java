@@ -4,6 +4,7 @@ import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.entity.BaseReponseDto;
 import io.dexproject.achatservice.generic.entity.BaseRequestDto;
 import io.dexproject.achatservice.generic.entity.SearchRequestDTO;
+import org.apache.lucene.index.IndexNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface ControllerGeneric<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> {
-  ResponseEntity<List<R>> searchPlants(SearchRequestDTO dto);
+  ResponseEntity<List<R>> search(SearchRequestDTO dto);
   ResponseEntity<R> save(D dto);
   ResponseEntity<List<R>> saveAll(List<D> dtos);
   ResponseEntity<String> deleteById(Long id);
@@ -21,4 +22,5 @@ public interface ControllerGeneric<D extends BaseRequestDto, R extends BaseRepon
   ResponseEntity<List<R>> getAll();
   ResponseEntity<Page<R>> getByPage(Pageable pageable);
   ResponseEntity<R> update(D dto, Long id);
+  void reIndex(String indexClassName);
 }

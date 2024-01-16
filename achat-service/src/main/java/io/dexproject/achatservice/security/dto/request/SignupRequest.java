@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.security.dto.request;
 
-import io.dexproject.achatservice.validators.PasswordMatches;
+import io.dexproject.achatservice.generic.validators.PasswordMatches;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Value;
 

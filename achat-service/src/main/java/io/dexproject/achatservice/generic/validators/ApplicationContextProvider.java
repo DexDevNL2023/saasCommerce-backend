@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.validators;
+package io.dexproject.achatservice.generic.validators;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
