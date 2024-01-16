@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
         value = {"createdBy", "createdAt", "updatedBy", "updatedAt"},
         allowGetters = true
 )
-public abstract class BaseEntity implements GenericEntity<BaseEntity>, Serializable {
+public abstract class BaseEntity implements GenericEntity, Serializable {
 
     @Serial
 	private static final long serialVersionUID = 1L;

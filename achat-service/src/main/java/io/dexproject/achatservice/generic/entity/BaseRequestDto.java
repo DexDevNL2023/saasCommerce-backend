@@ -1,12 +1,11 @@
 package io.dexproject.achatservice.generic.entity;
 
+import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
-
-import javax.persistence.MappedSuperclass;
 
 @Data
 @MappedSuperclass
-public abstract class BaseRequestDto implements GenericEntity<BaseRequestDto> {
+public abstract class BaseRequestDto implements GenericEntity {
 	private Long id;
 
 	@Override

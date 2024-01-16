@@ -7,8 +7,8 @@ import io.dexproject.achatservice.exceptions.SuppressionException;
 import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.entity.BaseReponseDto;
 import io.dexproject.achatservice.generic.entity.BaseRequestDto;
+import io.dexproject.achatservice.generic.page.PagedResponse;
 import org.apache.lucene.index.IndexNotFoundException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ServiceGeneric<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> {
@@ -18,11 +18,11 @@ public interface ServiceGeneric<D extends BaseRequestDto, R extends BaseReponseD
   void delete(Long id) throws SuppressionException;
   void deleteAll(List<Long> ids) throws SuppressionException;
   Boolean exist(Long id) throws ResourceNotFoundException;
-  R getOne(Long id, Boolean byPeriode) throws ResourceNotFoundException;
-  E getById(Long id, Boolean byPeriode) throws ResourceNotFoundException;
+  R getOne(Long id) throws ResourceNotFoundException;
+  E getById(Long id) throws ResourceNotFoundException;
   List<R> getAll(Boolean byPeriode) throws ResourceNotFoundException;
-  Page<R> getByPage(Pageable pageable) throws ResourceNotFoundException;
+  PagedResponse<R> getByPage(Pageable pageable) throws ResourceNotFoundException;
   R update(D dto, Long id) throws ResourceNotFoundException;
   Boolean equalsToDto(D dto, Long id) throws ResourceNotFoundException;
-  void reIndex(String indexClassName) throws IndexNotFoundException;
+  void reIndex() throws IndexNotFoundException;
 }

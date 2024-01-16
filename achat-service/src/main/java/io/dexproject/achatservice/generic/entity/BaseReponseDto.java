@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @MappedSuperclass
-public abstract class BaseReponseDto implements GenericEntity<BaseReponseDto> {
+public abstract class BaseReponseDto implements GenericEntity {
 	private Long id;
 	private String createdBy;
     private Instant createdAt;

@@ -12,13 +12,9 @@ import java.util.List;
 public interface GenericRepository<E extends BaseEntity> extends JpaRepository<E, Long> {
     String newCode(String prefixe);
 
-    Boolean exist(FilterWrap filterWrap);
-
-    List<E> searchBy(String text, int limit, String... fields);
-
-    void reIndex(String indexClassName) throws IndexNotFoundException;
+    void reIndex() throws IndexNotFoundException;
 
     List<E> filter(FilterWrap filterWrap);
 
-    E filterOne(FilterWrap filterWrap);
+    List<E> searchBy(String text, int limit, String... fields);
 }

@@ -6,7 +6,7 @@ import io.dexproject.achatservice.generic.entity.GenericEntity;
 import lombok.Value;
 
 @Value
-public class PagedResponse<E extends GenericEntity<E>> {
+public class PagedResponse<E extends GenericEntity> {
     private List<E> content = new ArrayList<>();
     private int page;
     private int size;
