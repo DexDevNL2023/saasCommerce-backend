@@ -1,4 +1,4 @@
-package com.dexproject.shop.api.util;
+package io.dexproject.achatservice.generic.utils;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -20,5 +20,5 @@ public interface AppConstants {
     String PayPalUrlSucces = PayPalUrl + "/success";
     String PayPalUrlCancel = PayPalUrl + "/cancel";
     String SUPPORT_EMAIL = "vnlangessama@gmail.com";
-    String COMPANY_NAME = "eShop app";
+    String COMPANY_NAME = "saasCommerce app";
 }

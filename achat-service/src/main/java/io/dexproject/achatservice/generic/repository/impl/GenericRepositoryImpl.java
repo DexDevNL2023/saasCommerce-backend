@@ -5,7 +5,7 @@ import io.dexproject.achatservice.generic.filter.dao.RepoUtil;
 import io.dexproject.achatservice.generic.filter.dto.Filter;
 import io.dexproject.achatservice.generic.filter.dto.FilterWrap;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
-import io.dexproject.achatservice.generic.utils.MyUtils;
+import io.dexproject.achatservice.generic.utils.GenericUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -50,7 +50,7 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
         String code = "";
         entityManager.getTransaction().begin();
         do {
-            String newCode = MyUtils.GenerateCode(prefixe);
+            String newCode = GenericUtils.GenerateCode(prefixe);
             final E result = entityManager.find(clazz, newCode);
             if(result == null) {
                 code = newCode;

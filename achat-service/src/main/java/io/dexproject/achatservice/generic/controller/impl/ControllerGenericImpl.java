@@ -1,12 +1,10 @@
 package io.dexproject.achatservice.generic.controller.impl;
 
+import io.dexproject.achatservice.exceptions.InternalException;
 import io.dexproject.achatservice.generic.controller.ControllerGeneric;
-import io.dexproject.achatservice.generic.entity.BaseEntity;
-import io.dexproject.achatservice.generic.entity.BaseReponseDto;
-import io.dexproject.achatservice.generic.entity.BaseRequestDto;
-import io.dexproject.achatservice.generic.entity.SearchRequestDTO;
-import io.dexproject.achatservice.generic.page.PagedResponse;
+import io.dexproject.achatservice.generic.entity.*;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
+import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.validators.AuthorizeUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,7 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
+import org.apache.lucene.index.IndexNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,14 +41,12 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
           @ApiResponse(responseCode = "200", description = "Liste d'entité retrouvée", content = @Content),
           @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
           @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<List<R>> search(SearchRequestDTO dto) {
+  public ResponseEntity<ResourceResponse> search(SearchRequestDTO dto) {
     try {
       log.info("Demande de recherche reçue avec les données : " + dto);
-      return new ResponseEntity(service.search(dto.getText(), dto.getFields(), dto.getLimit()), HttpStatus.OK);
-      return new ResponseEntity<>(new ResourceResponse("Payment create successfully!", payment), HttpStatus.OK);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ResponseEntity("Erreur lors de la recherche!", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new ResourceResponse("Recherche de donnée effectuée avec succès!", service.search(dto.getText(), dto.getFields(), dto.getLimit())), HttpStatus.OK);
+    } catch (InternalException e) {
+      return new ResponseEntity(new ResourceResponse(false, "Erreur de recherche de donnée.\n\n Cause : "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -66,13 +62,12 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
     @ApiResponse(responseCode = "200", description = "Entité enregistrée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<R> save(@Valid @RequestBody D dto) {
+  public ResponseEntity<ResourceResponse> save(@Valid @RequestBody D dto) {
     try {
       log.info("Demande de sauvegarde reçue avec les données : " + dto);
-      return new ResponseEntity(service.save(dto),HttpStatus.CREATED);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ResponseEntity("Erreur de sauvegarde", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new ResourceResponse("Enregistrement de donnée effectuée avec succès!", service.save(dto)), HttpStatus.CREATED);
+    } catch (InternalException e) {
+      return new ResponseEntity(new ResourceResponse(false, "Erreur de sauvegarde de donnée.\n\n Cause : "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -88,13 +83,12 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
     @ApiResponse(responseCode = "200", description = "Liste d'entité enregistrée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<List<R>> saveAll(@Valid @RequestBody List<D> dtos) {
+  public ResponseEntity<ResourceResponse> saveAll(@Valid @RequestBody List<D> dtos) {
     try {
       log.info("Demande de sauvegarde reçue avec les données : " + dtos);
-      return new ResponseEntity(service.saveAll(dtos),HttpStatus.CREATED);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ResponseEntity("Erreur de sauvegarde!", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new ResourceResponse("Enregistrement de donnée effectuée avec succès!", service.saveAll(dtos)), HttpStatus.CREATED);
+    } catch (InternalException e) {
+      return new ResponseEntity(new ResourceResponse(false, "Erreur de sauvegarde de donnée.\n\n Cause : "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -110,14 +104,13 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
     @ApiResponse(responseCode = "200", description = "Entité supprimée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
+  public ResponseEntity<ResourceResponse> deleteById(@PathVariable("id") Long id) {
     try {
       log.info("Demande de suppression reçue pour la donnée avec l'id : " + id);
       service.delete(id);
-      return new ResponseEntity("Suppression avec succes!", HttpStatus.OK);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ResponseEntity("Erreur de suppression!", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new ResourceResponse("Suppression de donnée effectuée avec succès!"), HttpStatus.OK);
+    } catch (InternalException e) {
+      return new ResponseEntity(new ResourceResponse(false, "Erreur de suppression de donnée.\n\n Cause : "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -132,14 +125,13 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
     @ApiResponse(responseCode = "200", description = "Liste d'entité supprimée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<String> deleteAll(@RequestBody List<Long> ids) {
+  public ResponseEntity<ResourceResponse> deleteAll(@RequestBody List<Long> ids) {
     try {
       log.info("Demande de suppression reçue pour la donnée avec l'id : " + ids);
       service.deleteAll(ids);
-      return new ResponseEntity("Suppression avec succes!", HttpStatus.OK);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ResponseEntity("Erreur de suppression!", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new ResourceResponse("Suppression de donnée effectuée avec succès!"), HttpStatus.OK);
+    } catch (InternalException e) {
+      return new ResponseEntity(new ResourceResponse(false, "Erreur de suppression de donnée.\n\n Cause : "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -155,13 +147,12 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
     @ApiResponse(responseCode = "200", description = "Entité trouvée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<R> getOne(@PathVariable("id") Long id) {
+  public ResponseEntity<ResourceResponse> getOne(@PathVariable("id") Long id) {
     try {
       log.info("Demande d'affichage reçue pour la donnée avec l'id : " + id);
-      return new ResponseEntity(service.getOne(id), HttpStatus.OK);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ResponseEntity("Erreur lors de la recherche!", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new ResourceResponse("Recupération de donnée effectuée avec succès!", service.getOne(id)), HttpStatus.OK);
+    } catch (InternalException e) {
+      return new ResponseEntity(new ResourceResponse(false, "Erreur de recupération de donnée.\n\n Cause : "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -177,13 +168,12 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
     @ApiResponse(responseCode = "200", description = "Entité trouvée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<E> getById(@PathVariable("id") Long id) {
+  public ResponseEntity<ResourceResponse> getById(@PathVariable("id") Long id) {
     try {
       log.info("Demande d'affichage reçue pour la donnée avec l'id : " + id);
-      return new ResponseEntity(service.getById(id), HttpStatus.OK);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ResponseEntity("Erreur lors de la recherche!", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new ResourceResponse("Recupération de donnée effectuée avec succès!", service.getById(id)), HttpStatus.OK);
+    } catch (InternalException e) {
+      return new ResponseEntity(new ResourceResponse(false, "Erreur de recupération de donnée.\n\n Cause : "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -197,18 +187,18 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Liste d'entité trouvée", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<List<R>> getAll(Boolean byPeriode) {
+  public ResponseEntity<ResourceResponse> getAll(Boolean byPeriode) {
     try {
       log.info("Demande d'affichage reçue pour la liste de donnée par période : " + byPeriode);
-      return new ResponseEntity(service.getAll(byPeriode), HttpStatus.OK);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ResponseEntity("Erreur lors de la recherche!", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new ResourceResponse("Recupération de donnée effectuée avec succès!", service.getAll(byPeriode)), HttpStatus.OK);
+    } catch (InternalException e) {
+      return new ResponseEntity(new ResourceResponse(false, "Erreur de recupération de donnée.\n\n Cause : "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   /**
-   * @param pageable
+   * @param page
+   * @param size
    * @return PagedResponse<R>
    */
   @Override
@@ -218,13 +208,13 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Liste d'entité trouvée", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<PagedResponse<R>> getByPage(Pageable pageable) {
+  public ResponseEntity<ResourceResponse> getByPage(@RequestParam(name = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER)Integer page,
+                                                    @RequestParam(name = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE)Integer size) {
     try {
-      log.info("Demande d'affichage reçue pour la liste de donnée par page : " + pageable);
-      return new ResponseEntity(service.getByPage(pageable), HttpStatus.OK);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ResponseEntity("Erreur lors de la recherche!", HttpStatus.INTERNAL_SERVER_ERROR);
+      log.info("Demande d'affichage reçue pour la liste de donnée pour la page : " + page + ", nombre : " + size);
+      return new ResponseEntity<>(new ResourceResponse("Recupération de donnée effectuée avec succès!", service.getByPage(page, size)), HttpStatus.OK);
+    } catch (InternalException e) {
+      return new ResponseEntity(new ResourceResponse(false, "Erreur de recupération de donnée.\n\n Cause : "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -241,13 +231,12 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
     @ApiResponse(responseCode = "200", description = "Etité mise à jour", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<R> update(@Valid @RequestBody D dto, @PathVariable("id") Long id) {
+  public ResponseEntity<ResourceResponse> update(@Valid @RequestBody D dto, @PathVariable("id") Long id) {
     try {
       log.info("Demande de mise à jour reçue avec les données : " + dto + " pour l'entité avec l'id : " + id);
-      return new ResponseEntity(service.update(dto, id), HttpStatus.OK);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ResponseEntity("Erreur de modification!", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new ResourceResponse("Modification de donnée effectuée avec succès!", service.update(dto, id)), HttpStatus.OK);
+    } catch (InternalException e) {
+      return new ResponseEntity(new ResourceResponse(false, "Erreur de modification de donnée.\n\n Cause : "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -260,14 +249,13 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = "Found the entity", content = @Content),
           @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<?> reIndex() {
+  public ResponseEntity<ResourceResponse> reIndex() {
     try {
       log.info("Demande de reindexation des fichiers de données");
       service.reIndex();
-      return new ResponseEntity("Reindexation réussie!", HttpStatus.OK);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new ResponseEntity("Erreur lors de la recherche!", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new ResourceResponse("Reindexation réussie!"), HttpStatus.OK);
+    } catch (IndexNotFoundException e) {
+      return new ResponseEntity(new ResourceResponse(false, "Erreur de reindexation de donnée.\n\n Cause : "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

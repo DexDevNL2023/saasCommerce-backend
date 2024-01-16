@@ -21,13 +21,12 @@ import io.dexproject.achatservice.generic.mapper.GenericMapper;
 import io.dexproject.achatservice.generic.page.PagedResponse;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
+import io.dexproject.achatservice.generic.utils.GenericUtils;
 import io.dexproject.achatservice.generic.validators.LogExecution;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.index.IndexNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 
 @Slf4j
 public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
@@ -196,18 +195,26 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
   }
 
   /**
-   * @param pageable
+   * @param page
+   * @param size
    * @return PagedResponse<R>
    * @throws ResourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public PagedResponse<R> getByPage(Pageable pageable) throws ResourceNotFoundException {
+  public PagedResponse<R> getByPage(Integer page, Integer size) throws ResourceNotFoundException {
     try {
-      Page<E> entityPage = repository.findAll(pageable);
-      List<E> entities = entityPage.getContent();
-      return new PageImpl<>(mapper.toDto(entities), pageable, entityPage.getTotalElements());
+      // Vérifier la syntaxe de page et size
+      GenericUtils.validatePageNumberAndSize(page, size);
+      // Construire la pagination
+      Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, PERIODE_FILTABLE_FIELD);
+      // on récupere les données
+      Page<E> list = repository.findAll(pageable);
+      if (list.getNumberOfElements() == 0) throw new ResourceNotFoundException("La liste de recherche est vide!");
+      // Mapper Dto
+      List<R> listDto = mapper.toDto(list.getContent());
+      return new PagedResponse<R>(listDto, list.getNumber(), list.getSize(), list.getTotalElements(), list.getTotalPages(), list.isLast());
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }

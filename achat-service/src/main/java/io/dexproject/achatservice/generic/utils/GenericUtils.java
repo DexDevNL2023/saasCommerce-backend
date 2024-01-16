@@ -1,8 +1,10 @@
 package io.dexproject.achatservice.generic.utils;
 
+import io.dexproject.achatservice.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.internal.bytebuddy.utility.RandomString;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -18,7 +20,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 @Slf4j
-public class MyUtils {
+public class GenericUtils {
 
   public static String upperCaseTrim(String str) {
     return str == null ? null : str.toUpperCase().trim();
@@ -159,5 +161,32 @@ public class MyUtils {
     uniqueId = UUID.randomUUID().toString();
     uniqueId = uniqueId.replace("-", "");
     return uniqueId;
+  }
+
+  public static List<SimpleGrantedAuthority> buildSimpleGrantedAuthorities(final RoleName role) {
+    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+    authorities.add(new SimpleGrantedAuthority(role.getValue()));
+    return authorities;
+  }
+
+  public static void validatePageNumberAndSize(final Integer page, final Integer size) {
+    if(page < 0) {
+      throw new ResourceNotFoundException("Le numéro de page ne peut pas être inférieur à zéro.");
+    }
+
+    if(size > AppConstants.MAX_PAGE_SIZE) {
+      throw new ResourceNotFoundException("La taille de la page ne doit pas être supérieure à " + AppConstants.MAX_PAGE_SIZE);
+    }
+  }
+
+  public static Date calculateExpiryDate(final int expiryTimeInMinutes) {
+    final Calendar cal = Calendar.getInstance();
+    cal.setTimeInMillis(new Date().getTime());
+    cal.add(Calendar.MINUTE, expiryTimeInMinutes);
+    return new Date(cal.getTime().getTime());
+  }
+
+  public static String generateTokenNumber() {
+    return UUID.randomUUID().toString().replace("-", "");
   }
 }
