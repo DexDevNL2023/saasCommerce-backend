@@ -10,7 +10,7 @@ import java.util.List;
 
 @NoRepositoryBean
 public interface GenericRepository<E extends BaseEntity> extends JpaRepository<E, Long> {
-    String newCode(String prefixe);
+    String newNumOrder(String prefixe);
 
     void reIndex() throws IndexNotFoundException;
 

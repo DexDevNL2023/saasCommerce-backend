@@ -4,29 +4,27 @@ import io.dexproject.achatservice.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.internal.bytebuddy.utility.RandomString;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Pattern;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Date;
-import org.springframework.core.env.Environment;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 public class GenericUtils {
@@ -94,10 +92,15 @@ public class GenericUtils {
     return pass;
   }
 
-  public static String GenerateCode(String prefixe) {
+  public static String GenerateNumOrder(String prefixe) {
     String randomCode = RandomString.make(64);
     String number = String.format("%04d", randomCode.charAt(10000));
     return prefixe+"-"+number;
+  }
+
+  public static String GenerateCode() {
+    String randomCode = RandomString.make(8);
+    return String.format("%04d", randomCode.charAt(10000));
   }
 
   public static String GenerateMatricule(String prefixe) {

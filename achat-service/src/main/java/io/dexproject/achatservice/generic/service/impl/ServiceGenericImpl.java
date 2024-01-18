@@ -1,11 +1,5 @@
 package io.dexproject.achatservice.generic.service.impl;
 
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import io.dexproject.achatservice.exceptions.InternalException;
 import io.dexproject.achatservice.exceptions.ResourceNotFoundException;
 import io.dexproject.achatservice.exceptions.SuppressionException;
@@ -26,13 +20,27 @@ import io.dexproject.achatservice.generic.validators.LogExecution;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.index.IndexNotFoundException;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
 
   private static final List<String> SEARCHABLE_FIELDS = Arrays.asList("id" , "createdAt");
   private static final String PERIODE_FILTABLE_FIELD = "createdAt";
+  private static final String CODE_FILTABLE_FIELD = "code";
   protected final GenericRepository<E> repository;
   private final GenericMapper<D, R, E> mapper;
 
@@ -60,20 +68,19 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
     return repository.searchBy(text, limit, fieldsToSearchBy.toArray(new String[0])).stream().map(mapper::toDto).collect(Collectors.toList());
   }
 
-  /**
-   * @param dto
-   * @return R
-   * @throws ResourceNotFoundException
-   */
-  @Override
-  @Transactional
-  @LogExecution
-  public R save(D dto) throws ResourceNotFoundException {
+  public static boolean isFieldExist(Class<?> clazz, String property) {
+    String[] fields = property.split("\\.");
     try {
-      E e = repository.save(mapper.toEntity(dto));
-      return getOne(e.getId());
-    } catch (Exception e) {
-      throw new InternalException(e.getMessage());
+      Field file = clazz.getDeclaredField(fields[0]);
+      if (fields.length > 1) {
+        return isFieldExist(file.getType(), property.substring(property.indexOf('.') + 1));
+      }
+      return true;
+    } catch (NoSuchFieldException | SecurityException e) {
+      if (clazz.getSuperclass() != null) {
+        return isFieldExist(clazz.getSuperclass(), property);
+      }
+      return false;
     }
   }
 
@@ -95,16 +102,19 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
   }
 
   /**
-   * @param id
-   * @throws SuppressionException
+   * @param dto
+   * @return R
+   * @throws ResourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public void delete(Long id) throws SuppressionException {
+  public R save(D dto) throws ResourceNotFoundException {
     try {
-      if (!exist(id)) throw new SuppressionException("La ressource avec l'id " + id + " n'existe pas");
-      repository.deleteById(id);
+      E e = mapper.toEntity(dto);
+      if (isFieldExist(e, CODE_FILTABLE_FIELD)) e.setNumOrder(repository.newNumOrder(e.getEntityPrefixe()));
+      e = repository.save(e);
+      return getOne(e.getId());
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -159,19 +169,17 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
 
   /**
    * @param id
-   * @return E
-   * @throws ResourceNotFoundException
+   * @throws SuppressionException
    */
   @Override
   @Transactional
   @LogExecution
-  public E getById(Long id) throws ResourceNotFoundException {
+  public void delete(Long id) throws SuppressionException {
     try {
-      return repository.findById(id).orElseThrow(
-              () -> new ResourceNotFoundException("La ressource avec l'id " + id + " n'existe pas")
-      );
+      if (!exist(id)) throw new SuppressionException(e.getEntityName() + " avec l'id " + id + " n'existe pas");
+      repository.deleteById(id);
     } catch (Exception e) {
-      throw new InternalException("Une erreur est survenue pendant le traitement de votre requête. Cause : "+e.getMessage());
+      throw new InternalException(e.getMessage());
     }
   }
 
@@ -221,23 +229,20 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
   }
 
   /**
-   * @param dto
    * @param id
-   * @return R
+   * @return E
    * @throws ResourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public R update(D dto, Long id) throws ResourceNotFoundException {
+  public E getById(Long id) throws ResourceNotFoundException {
     try {
-      if (equalsToDto(dto, id)) throw new RuntimeException("La ressource avec les données suivante : " + dto.toString() + " existe déjà");
-      E entity = getById(id);
-      dto.setId(entity.getId());
-      entity = repository.save(mapper.toEntity(dto));
-      return getOne(entity.getId());
+      return repository.findById(id).orElseThrow(
+              () -> new ResourceNotFoundException(e.getEntityName() + " avec l'id " + id + " n'existe pas")
+      );
     } catch (Exception e) {
-      throw new InternalException(e.getMessage());
+      throw new InternalException("Une erreur est survenue pendant le traitement de votre requête. Cause : "+e.getMessage());
     }
   }
 
@@ -271,6 +276,38 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
+  }
+
+  /**
+   * @param dto
+   * @param id
+   * @return R
+   * @throws ResourceNotFoundException
+   */
+  @Override
+  @Transactional
+  @LogExecution
+  public R update(D dto, Long id) throws ResourceNotFoundException {
+    try {
+      if (equalsToDto(dto, id))
+        throw new RuntimeException(e.getEntityName() + " avec les données suivante : " + dto.toString() + " existe déjà");
+      E entity = getById(id);
+      dto.setId(entity.getId());
+      entity = repository.save(mapper.toEntity(dto));
+      return getOne(entity.getId());
+    } catch (Exception e) {
+      throw new InternalException(e.getMessage());
+    }
+  }
+
+  public boolean isFieldExist(Object object, String fieldName) {
+    Class<?> objectClass = object.getClass();
+    for (Field field : objectClass.getFields()) {
+      if (field.getName().equals(fieldName)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static FilterWrap getFiltresByPeriode() throws ParseException {

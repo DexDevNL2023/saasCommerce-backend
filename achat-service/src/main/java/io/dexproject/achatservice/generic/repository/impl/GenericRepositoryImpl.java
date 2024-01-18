@@ -17,13 +17,15 @@ import jakarta.transaction.Transactional;
 import org.apache.lucene.index.IndexNotFoundException;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -46,19 +48,22 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
     }
 
     @Override
-    public String newCode(String prefixe) {
-        String code = "";
+    public String newNumOrder(String prefixe) {
+        String num = "";
         entityManager.getTransaction().begin();
         do {
-            String newCode = GenericUtils.GenerateCode(prefixe);
-            final E result = entityManager.find(clazz, newCode);
+            String newNum = GenericUtils.GenerateNumOrder(prefixe);
+            //final E result = entityManager.find(clazz, newNum);
+            final E result = entityManager.createQuery("SELECT e from " + clazz.getName() + " e WHERE e.numOrder = :newNum", clazz).
+                    setParameter("numOrder", newNum)
+                    .getSingleResult();
             if(result == null) {
-                code = newCode;
+                num = newNum;
             }
-        }while(!code.isEmpty());
+        } while (!num.isEmpty());
         entityManager.getTransaction().commit();
         entityManager.close();
-        return code;
+        return num;
     }
 
     @Override
