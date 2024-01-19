@@ -1,9 +1,9 @@
 package io.dexproject.achatservice.generic.validators;
 
+import io.dexproject.achatservice.generic.entity.BaseEntity;
 import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
 
-public class UniqueValidatorConstraint implements ConstraintValidator<UniqueValidator, Object> {
+public class UniqueValidatorConstraint implements ConstraintValidator<UniqueValidator,<E extends BaseEntity>>{
     private FieldValueExists service;
     private String fieldName;
 

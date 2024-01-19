@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaRepository<E, Long> implements GenericRepository<E> {
     private final Class<E> clazz;
     private final JpaEntityInformation<E, Long> entityInformation;
-    private static final int THREAD_NUMBER = 4;
     @PersistenceContext
     private final EntityManager entityManager;
 
@@ -85,7 +84,7 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
             entityManager.getTransaction().begin();
             SearchSession searchSession = Search.session(entityManager);
             MassIndexer indexer = searchSession.massIndexer(clazz)
-                    .threadsToLoadObjects(THREAD_NUMBER);
+                    .threadsToLoadObjects(AppConstants.THREAD_NUMBER);
             indexer.startAndWait();
             entityManager.getTransaction().commit();
             entityManager.close();

@@ -1,8 +1,8 @@
-package io.dexproject.achatservice.generic.page;
+package io.dexproject.achatservice.generic.entity;
+
+import lombok.Value;
 
 import java.util.List;
-import io.dexproject.achatservice.generic.entity.GenericEntity;
-import lombok.Value;
 
 @Value
 public class PagedResponse<R extends GenericEntity> {

@@ -1,14 +1,14 @@
 package io.dexproject.achatservice.generic.service;
 
-import java.util.List;
-
 import io.dexproject.achatservice.exceptions.ResourceNotFoundException;
 import io.dexproject.achatservice.exceptions.SuppressionException;
 import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.entity.BaseReponseDto;
 import io.dexproject.achatservice.generic.entity.BaseRequestDto;
-import io.dexproject.achatservice.generic.page.PagedResponse;
+import io.dexproject.achatservice.generic.entity.PagedResponse;
 import org.apache.lucene.index.IndexNotFoundException;
+
+import java.util.List;
 
 public interface ServiceGeneric<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> {
   List<R> search(String text, List<String> fields, int limit) throws ResourceNotFoundException;

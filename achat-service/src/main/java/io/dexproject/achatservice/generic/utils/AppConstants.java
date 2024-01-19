@@ -28,4 +28,5 @@ public interface AppConstants {
     List<String> SEARCHABLE_FIELDS = Arrays.asList("id", "createdAt");
     String PERIODE_FILTABLE_FIELD = "createdAt";
     String CODE_FILTABLE_FIELD = "numOrder";
+    int THREAD_NUMBER = 4;
 }
