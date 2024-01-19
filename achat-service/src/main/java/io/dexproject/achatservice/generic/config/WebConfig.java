@@ -58,6 +58,7 @@ public class WebConfig implements WebMvcConfigurer {
         registrar.setUseIsoFormat(true);
         registrar.registerFormatters(registry);
 
+		// Gére la convertion des valeurs des énumérateurs en énumérateur
 		ApplicationConversionService.configure(registry);
     }
 

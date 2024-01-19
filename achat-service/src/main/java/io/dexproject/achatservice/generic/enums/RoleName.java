@@ -39,9 +39,4 @@ public enum RoleName implements GenericEnum<RoleName> {
     public Optional<RoleName> toEnum(String label) {
         return Stream.of(RoleName.values()).filter(e -> e.getLabel().equals(label)).findFirst();
     }
-
-    @Override
-    public String toLabel(RoleName enumaration) {
-        return Optional.ofNullable(enumaration).map(RoleName::getLabel).orElse(null);
-    }
 }

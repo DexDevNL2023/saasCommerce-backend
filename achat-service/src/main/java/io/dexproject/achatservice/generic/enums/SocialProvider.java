@@ -41,9 +41,4 @@ public enum SocialProvider implements GenericEnum<SocialProvider> {
     public Optional<SocialProvider> toEnum(String label) {
         return Stream.of(SocialProvider.values()).filter(e -> e.getLabel().equals(label)).findFirst();
     }
-
-    @Override
-    public String toLabel(SocialProvider enumaration) {
-        return Optional.ofNullable(enumaration).map(SocialProvider::getLabel).orElse(null);
-    }
 }
