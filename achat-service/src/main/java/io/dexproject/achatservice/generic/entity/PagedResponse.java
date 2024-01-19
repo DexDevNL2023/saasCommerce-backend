@@ -5,7 +5,7 @@ import lombok.Value;
 import java.util.List;
 
 @Value
-public class PagedResponse<R extends GenericEntity> {
+public class PagedResponse<R extends BaseReponseDto> {
     private List<R> content;
     private int page;
     private int size;

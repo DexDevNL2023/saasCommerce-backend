@@ -1,20 +1,16 @@
 package io.dexproject.achatservice.generic.entity;
 
-import java.time.Instant;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 
+import java.time.Instant;
+
 @Data
 @MappedSuperclass
-public abstract class BaseReponseDto implements GenericEntity {
+public abstract class BaseReponseDto {
 	private Long id;
 	private String createdBy;
     private Instant createdAt;
 	private String updatedBy;
     private Instant updatedAt;
-
-	@Override
-	public Long getId() {
-		return id;
-	}
 }

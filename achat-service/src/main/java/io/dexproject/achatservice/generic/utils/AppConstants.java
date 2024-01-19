@@ -17,9 +17,12 @@ public interface AppConstants {
     int EXPIRATION = 60 * 24;
 
 	@Value("${app.base.url}")
-    String BaseUrl = "http://localhost:9000";
-    String AuthUrl = BaseUrl + "/api/auth/";
-    String PayPalUrl = BaseUrl + "/api/paypal";
+    String BaseUrl = "http://localhost";
+    @Value("${app.base.port}")
+    String BasePort = "10000";
+    String fullUrl = BaseUrl + ":" + BasePort;
+    String AuthUrl = fullUrl + "/api/auth/";
+    String PayPalUrl = fullUrl + "/api/paypal";
     String PayPalUrlSucces = PayPalUrl + "/success";
     String PayPalUrlCancel = PayPalUrl + "/cancel";
     String SUPPORT_EMAIL = "vnlangessama@gmail.com";
@@ -28,5 +31,17 @@ public interface AppConstants {
     List<String> SEARCHABLE_FIELDS = Arrays.asList("id", "createdAt");
     String PERIODE_FILTABLE_FIELD = "createdAt";
     String CODE_FILTABLE_FIELD = "numOrder";
+
     int THREAD_NUMBER = 4;
+
+    String SPRING_PROFILE_DEVELOPMENT = "dev";
+    String SPRING_PROFILE_TEST = "test";
+    String SPRING_PROFILE_PRODUCTION = "prod";
+
+    @Value("${app.default.package.name}")
+    String DefaultPackageName = "io.dexproject";
+
+    String OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME = "oauth2_auth_request";
+    String REDIRECT_URI_PARAM_COOKIE_NAME = "redirect_uri";
+    int cookieExpireSeconds = 180;
 }

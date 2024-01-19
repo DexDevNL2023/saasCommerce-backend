@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.utils;
 
-import io.dexproject.achatservice.exceptions.ResourceNotFoundException;
+import io.dexproject.achatservice.generic.enums.RoleName;
+import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.internal.bytebuddy.utility.RandomString;

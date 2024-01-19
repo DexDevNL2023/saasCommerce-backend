@@ -1,8 +1,8 @@
 package io.dexproject.achatservice.generic.controller.impl;
 
-import io.dexproject.achatservice.exceptions.InternalException;
 import io.dexproject.achatservice.generic.controller.ControllerGeneric;
 import io.dexproject.achatservice.generic.entity.*;
+import io.dexproject.achatservice.generic.exceptions.InternalException;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.validators.AuthorizeUser;
@@ -16,6 +16,7 @@ import org.apache.lucene.index.IndexNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })

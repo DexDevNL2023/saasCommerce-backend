@@ -5,11 +5,6 @@ import lombok.Data;
 
 @Data
 @MappedSuperclass
-public abstract class BaseRequestDto implements GenericEntity {
+public abstract class BaseRequestDto {
 	private Long id;
-
-	@Override
-	public Long getId() {
-		return id;
-	}
 }

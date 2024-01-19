@@ -17,4 +17,6 @@ public interface GenericRepository<E extends BaseEntity> extends JpaRepository<E
     List<E> filter(FilterWrap filterWrap);
 
     List<E> searchBy(String text, int limit, String... fields);
+
+    boolean existsByFieldValue(Object value, String fieldName);
 }

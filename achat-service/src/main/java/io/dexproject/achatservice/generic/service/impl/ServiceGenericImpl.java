@@ -1,12 +1,12 @@
 package io.dexproject.achatservice.generic.service.impl;
 
-import io.dexproject.achatservice.exceptions.InternalException;
-import io.dexproject.achatservice.exceptions.ResourceNotFoundException;
-import io.dexproject.achatservice.exceptions.SuppressionException;
 import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.entity.BaseReponseDto;
 import io.dexproject.achatservice.generic.entity.BaseRequestDto;
 import io.dexproject.achatservice.generic.entity.PagedResponse;
+import io.dexproject.achatservice.generic.exceptions.InternalException;
+import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
+import io.dexproject.achatservice.generic.exceptions.SuppressionException;
 import io.dexproject.achatservice.generic.filter.dto.Filter;
 import io.dexproject.achatservice.generic.filter.dto.FilterWrap;
 import io.dexproject.achatservice.generic.filter.dto.InternalOperator;
@@ -79,8 +79,8 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
   public R save(D dto) throws ResourceNotFoundException {
     try {
       E e = mapper.toEntity(dto);
-        if (isFieldExist(e, AppConstants.CODE_FILTABLE_FIELD))
-            e.setNumOrder(repository.newNumOrder(e.getEntityPrefixe()));
+      if (isFieldExist(e, AppConstants.CODE_FILTABLE_FIELD))
+        e.setNumOrder(repository.newNumOrder(e.getEntityPrefixe()));
       e = repository.save(e);
       return getOne(e.getId());
     } catch (Exception e) {
@@ -280,6 +280,19 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
   public void reIndex() throws IndexNotFoundException {
     try {
       repository.reIndex();
+    } catch (Exception e) {
+      throw new InternalException(e.getMessage());
+    }
+  }
+
+  @Override
+  public boolean fieldValueExists(Object value, String fieldName) throws UnsupportedOperationException {
+    try {
+      if (value == null) {
+        return false;
+      }
+
+      return this.repository.existsByFieldValue(value, fieldName);
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }

@@ -27,6 +27,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -53,13 +54,17 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
     @Override
     public String newNumOrder(String prefixe) {
         String num = "";
+        String fieldName = AppConstants.CODE_FILTABLE_FIELD;
+        if (!isFieldExist(fieldName)) {
+            throw new UnsupportedOperationException("Le champ " + fieldName + " non pris en charge");
+        }
         entityManager.getTransaction().begin();
         do {
             String newNum = GenericUtils.GenerateNumOrder(prefixe);
             String queryString = String.format("select from %s x where %s = :newNum",
                     this.entityInformation.getEntityName(),
                     "%s",
-                    AppConstants.CODE_FILTABLE_FIELD);
+                    fieldName);
             final E result = entityManager.createQuery(queryString, clazz).
                     setParameter("newNum", newNum)
                     .getSingleResult();
@@ -76,6 +81,23 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
     public List<E> searchBy(String text, int limit, String... fields) {
         SearchResult<E> result = getSearchResult(text, limit, fields);
         return result.hits();
+    }
+
+    @Override
+    public boolean existsByFieldValue(Object value, String fieldName) {
+        if (!isFieldExist(fieldName)) {
+            throw new UnsupportedOperationException("Le champ " + fieldName + " non pris en charge");
+        }
+
+        String queryString = String.format("select from %s x where %s = :value",
+                this.entityInformation.getEntityName(),
+                "%s",
+                fieldName);
+        final Optional<E> result = Optional.ofNullable(entityManager.createQuery(queryString, clazz).
+                setParameter("value", value.toString())
+                .getSingleResult());
+
+        return result.isPresent();
     }
 
     @Override
@@ -114,6 +136,11 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
     }
 
     private SearchResult<E> getSearchResult(String text, int limit, String[] fields) {
+        for (String fieldName : fields) {
+            if (!isFieldExist(fieldName)) {
+                throw new UnsupportedOperationException("Le champ " + fieldName + " non pris en charge");
+            }
+        }
         entityManager.getTransaction().begin();
         SearchSession searchSession = Search.session(entityManager);
         SearchResult<E> result = searchSession.search(getDomainClass())
@@ -128,5 +155,14 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
         return filters.stream()
                 .map(filter -> RepoUtil.extractCriteria(filter, criteriaBuilder, root))
                 .collect(Collectors.toList());
+    }
+
+    public boolean isFieldExist(String fieldName) {
+        for (Field field : clazz.getFields()) {
+            if (field.getName().equals(fieldName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,16 +1,17 @@
 package io.dexproject.achatservice.generic.service;
 
-import io.dexproject.achatservice.exceptions.ResourceNotFoundException;
-import io.dexproject.achatservice.exceptions.SuppressionException;
 import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.entity.BaseReponseDto;
 import io.dexproject.achatservice.generic.entity.BaseRequestDto;
 import io.dexproject.achatservice.generic.entity.PagedResponse;
+import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
+import io.dexproject.achatservice.generic.exceptions.SuppressionException;
+import io.dexproject.achatservice.generic.validators.FieldValueExists;
 import org.apache.lucene.index.IndexNotFoundException;
 
 import java.util.List;
 
-public interface ServiceGeneric<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> {
+public interface ServiceGeneric<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> extends FieldValueExists {
   List<R> search(String text, List<String> fields, int limit) throws ResourceNotFoundException;
   R save(D dto) throws ResourceNotFoundException;
   List<R> saveAll(List<D> dtos) throws ResourceNotFoundException;

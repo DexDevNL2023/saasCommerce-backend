@@ -1,11 +1,16 @@
 package io.dexproject.achatservice.generic.validators;
 
 import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
-public class UniqueValidatorConstraint implements ConstraintValidator<UniqueValidator, E> {
+public class UniqueValidatorConstraint implements ConstraintValidator<UniqueValidator, Object> {
+    @Autowired
+    private ApplicationContext applicationContext;
+    @Autowired
     private FieldValueExists service;
     private String fieldName;
-    private final GenericRepository<E> repository;
 
     @Override
     public void initialize(UniqueValidator unique) {
@@ -14,9 +19,9 @@ public class UniqueValidatorConstraint implements ConstraintValidator<UniqueVali
         String serviceQualifier = unique.serviceQualifier();
 
         if (!serviceQualifier.equals("")) {
-            this.service = (FieldValueExists) ApplicationContextProvider.getBean(serviceQualifier, clazz);
+            this.service = this.applicationContext.getBean(serviceQualifier, clazz);
         } else {
-            this.service = (FieldValueExists) ApplicationContextProvider.getBean(clazz);
+            this.service = this.applicationContext.getBean(clazz);
         }
     }
 
