@@ -5,6 +5,7 @@ import io.dexproject.achatservice.generic.filter.dao.RepoUtil;
 import io.dexproject.achatservice.generic.filter.dto.Filter;
 import io.dexproject.achatservice.generic.filter.dto.FilterWrap;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
+import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.GenericUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -31,19 +32,22 @@ import java.util.stream.Collectors;
 @Transactional
 public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaRepository<E, Long> implements GenericRepository<E> {
     private final Class<E> clazz;
+    private final JpaEntityInformation<E, Long> entityInformation;
     private static final int THREAD_NUMBER = 4;
     @PersistenceContext
     private final EntityManager entityManager;
 
-    public GenericRepositoryImpl(Class<E> clazz, EntityManager entityManager) {
+    public GenericRepositoryImpl(Class<E> clazz, JpaEntityInformation<E, Long> entityInformation, EntityManager entityManager) {
         super(clazz, entityManager);
         this.clazz = clazz;
+        this.entityInformation = entityInformation;
         this.entityManager = entityManager;
     }
 
     public GenericRepositoryImpl(JpaEntityInformation<E, Long> entityInformation, Class<E> clazz, EntityManager entityManager) {
         super(entityInformation, entityManager);
         this.clazz = clazz;
+        this.entityInformation = entityInformation;
         this.entityManager = entityManager;
     }
 
@@ -53,9 +57,12 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
         entityManager.getTransaction().begin();
         do {
             String newNum = GenericUtils.GenerateNumOrder(prefixe);
-            //final E result = entityManager.find(clazz, newNum);
-            final E result = entityManager.createQuery("SELECT e from " + clazz.getName() + " e WHERE e.numOrder = :newNum", clazz).
-                    setParameter("numOrder", newNum)
+            String queryString = String.format("select from %s x where %s = :newNum",
+                    this.entityInformation.getEntityName(),
+                    "%s",
+                    AppConstants.CODE_FILTABLE_FIELD);
+            final E result = entityManager.createQuery(queryString, clazz).
+                    setParameter("newNum", newNum)
                     .getSingleResult();
             if(result == null) {
                 num = newNum;

@@ -2,10 +2,13 @@ package io.dexproject.achatservice.generic.utils;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Arrays;
+import java.util.List;
+
 public interface AppConstants {
-	public static final String TOKEN_INVALID = "INVALID";
-	public static final String TOKEN_EXPIRED = "EXPIRED";
-	public static final String TOKEN_VALID = "VALID";
+    String TOKEN_INVALID = "INVALID";
+    String TOKEN_EXPIRED = "EXPIRED";
+    String TOKEN_VALID = "VALID";
 	
     String DEFAULT_PAGE_NUMBER = "0";
     String DEFAULT_PAGE_SIZE = "30";
@@ -21,4 +24,8 @@ public interface AppConstants {
     String PayPalUrlCancel = PayPalUrl + "/cancel";
     String SUPPORT_EMAIL = "vnlangessama@gmail.com";
     String COMPANY_NAME = "saasCommerce app";
+
+    List<String> SEARCHABLE_FIELDS = Arrays.asList("id", "createdAt");
+    String PERIODE_FILTABLE_FIELD = "createdAt";
+    String CODE_FILTABLE_FIELD = "numOrder";
 }
