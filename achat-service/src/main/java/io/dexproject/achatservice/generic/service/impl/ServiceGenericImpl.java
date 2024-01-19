@@ -295,22 +295,6 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
     return false;
   }
 
-  public static boolean isFieldExist(Class<?> clazz, String property) {
-    String[] fields = property.split("\\.");
-    try {
-      Field file = clazz.getDeclaredField(fields[0]);
-      if (fields.length > 1) {
-        return isFieldExist(file.getType(), property.substring(property.indexOf('.') + 1));
-      }
-      return true;
-    } catch (NoSuchFieldException | SecurityException e) {
-      if (clazz.getSuperclass() != null) {
-        return isFieldExist(clazz.getSuperclass(), property);
-      }
-      return false;
-    }
-  }
-
   private static FilterWrap getFiltresByPeriode() throws ParseException {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     int CurrentYear = Calendar.getInstance().get(Calendar.YEAR);

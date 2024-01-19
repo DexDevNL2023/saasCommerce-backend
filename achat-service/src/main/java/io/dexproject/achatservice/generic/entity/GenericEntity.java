@@ -5,7 +5,5 @@ public interface GenericEntity {
 
     void setNumOrder(String numberOrder);
 
-    String getEntityName();
-
     String getEntityPrefixe();
 }
