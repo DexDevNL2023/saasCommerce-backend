@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.entity;
+package io.dexproject.achatservice.generic.security.crud.dto.reponse;
 
 import lombok.Value;
 

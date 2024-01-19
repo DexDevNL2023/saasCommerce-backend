@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.entity;
+package io.dexproject.achatservice.generic.security.crud.dto.reponse;
 
 import lombok.Value;
 
@@ -25,4 +25,10 @@ public class ResourceResponse {
 	    this.message = message;
 	    this.objectValue = objectValue;
 	}
+
+    public ResourceResponse(Boolean success, Object objectValue) {
+        this.success = success;
+        this.message = "Une erreur est survenue pendant le traitement de votre requête.";
+        this.objectValue = objectValue;
+    }
 }

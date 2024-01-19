@@ -1,10 +1,10 @@
 package io.dexproject.achatservice.generic.repository.impl;
 
-import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.filter.dao.RepoUtil;
 import io.dexproject.achatservice.generic.filter.dto.Filter;
 import io.dexproject.achatservice.generic.filter.dto.FilterWrap;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
+import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.GenericUtils;
 import jakarta.persistence.EntityManager;

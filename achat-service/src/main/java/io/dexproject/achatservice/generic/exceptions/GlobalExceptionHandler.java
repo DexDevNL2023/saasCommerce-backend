@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.exceptions;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.ResourceResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -25,7 +26,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException exception, WebRequest request, Locale locale) {
         ErrorDetails errorDetails = new ErrorDetails(exception.getMessage(), request.getDescription(true));
-        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new ResourceResponse(false, errorDetails), HttpStatus.NOT_FOUND);
     }
 
     //handler Badrequest
@@ -33,7 +34,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> handleBadAttribeExceptionException(HttpClientErrorException.BadRequest exception, WebRequest request, Locale locale) {
         ErrorDetails errorDetails = new ErrorDetails(exception.getMessage(), request.getDescription(false));
-        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ResourceResponse(false, errorDetails), HttpStatus.BAD_REQUEST);
     }
 
     //handler global exception
@@ -41,7 +42,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<?> handleGlobalException(Exception exception, WebRequest request, Locale locale){
         ErrorDetails errorDetails = new ErrorDetails(exception.getMessage(), request.getDescription(false));
-        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ResourceResponse(false, errorDetails), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -54,15 +55,14 @@ public class GlobalExceptionHandler {
             ErrorDetails errorDetails = new ErrorDetails(errorMessage, request.getDescription(false));
             errors.add(errorDetails);
         });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ResourceResponse(false, errors), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity handleHttpMessageNotReadable(HttpMessageNotReadableException exception, WebRequest request, Locale locale) {
-        String genericMessage = "JSON inacceptable " + exception.getMessage();
-        String errorDetails = genericMessage;
+    public ResponseEntity<?> handleHttpMessageNotReadable(HttpMessageNotReadableException exception, WebRequest request, Locale locale) {
+        String errorDetails = "JSON inacceptable " + exception.getMessage();
         if (exception.getCause() instanceof InvalidFormatException ifx) {
             if (ifx.getTargetType() != null) {
                 if (ifx.getTargetType().isEnum()) {
@@ -71,6 +71,13 @@ public class GlobalExceptionHandler {
                 }
             }
         }
-        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ResourceResponse(false, errorDetails), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = OAuth2AuthenticationProcessingException.class)
+    @ResponseStatus(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED)
+    @ResponseBody
+    public ResponseEntity<?> exception(OAuth2AuthenticationProcessingException exception) {
+        return new ResponseEntity<>(new ResourceResponse(false, exception.getMessage()), HttpStatus.NETWORK_AUTHENTICATION_REQUIRED);
     }
 }

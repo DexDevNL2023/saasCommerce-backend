@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.security.dto.reponse;
+package io.dexproject.achatservice.generic.security.crud.dto.reponse;
 
 import lombok.Value;
 

@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.enums;
+package io.dexproject.achatservice.generic.security.crud.entities.enums;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.MediaTypes;

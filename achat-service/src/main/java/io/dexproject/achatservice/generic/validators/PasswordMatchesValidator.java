@@ -1,13 +1,13 @@
 package io.dexproject.achatservice.generic.validators;
 
-import io.dexproject.achatservice.generic.security.dto.request.SignupRequest;
+import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormPasswordRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, SignupRequest> {
+public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, UserFormPasswordRequest> {
 
 	@Override
-	public boolean isValid(final SignupRequest user, final ConstraintValidatorContext context) {
-		return user.getPasswordTxt().equals(user.getMatchingPassword());
+    public boolean isValid(final UserFormPasswordRequest user, final ConstraintValidatorContext context) {
+        return user.getNewPassword().equals(user.getMatchingPassword());
 	}
 }

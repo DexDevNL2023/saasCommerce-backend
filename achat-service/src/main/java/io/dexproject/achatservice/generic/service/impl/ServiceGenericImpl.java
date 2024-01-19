@@ -1,9 +1,5 @@
 package io.dexproject.achatservice.generic.service.impl;
 
-import io.dexproject.achatservice.generic.entity.BaseEntity;
-import io.dexproject.achatservice.generic.entity.BaseReponseDto;
-import io.dexproject.achatservice.generic.entity.BaseRequestDto;
-import io.dexproject.achatservice.generic.entity.PagedResponse;
 import io.dexproject.achatservice.generic.exceptions.InternalException;
 import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
 import io.dexproject.achatservice.generic.exceptions.SuppressionException;
@@ -14,6 +10,10 @@ import io.dexproject.achatservice.generic.filter.dto.ValueType;
 import io.dexproject.achatservice.generic.filter.dto.builder.FilterBuilder;
 import io.dexproject.achatservice.generic.mapper.GenericMapper;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponseDto;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
+import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequestDto;
+import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.GenericUtils;

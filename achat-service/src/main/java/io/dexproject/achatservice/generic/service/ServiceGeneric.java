@@ -1,11 +1,11 @@
 package io.dexproject.achatservice.generic.service;
 
-import io.dexproject.achatservice.generic.entity.BaseEntity;
-import io.dexproject.achatservice.generic.entity.BaseReponseDto;
-import io.dexproject.achatservice.generic.entity.BaseRequestDto;
-import io.dexproject.achatservice.generic.entity.PagedResponse;
 import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
 import io.dexproject.achatservice.generic.exceptions.SuppressionException;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponseDto;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
+import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequestDto;
+import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.validators.FieldValueExists;
 import org.apache.lucene.index.IndexNotFoundException;
 

@@ -1,7 +1,7 @@
 package io.dexproject.achatservice.generic.repository;
 
-import io.dexproject.achatservice.generic.entity.BaseEntity;
 import io.dexproject.achatservice.generic.filter.dto.FilterWrap;
+import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import org.apache.lucene.index.IndexNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;

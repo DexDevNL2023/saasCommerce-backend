@@ -1,7 +1,10 @@
 package io.dexproject.achatservice.generic.controller;
 
-import io.dexproject.achatservice.generic.entity.*;
-import org.springframework.data.domain.Pageable;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponseDto;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.ResourceResponse;
+import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequestDto;
+import io.dexproject.achatservice.generic.security.crud.dto.request.SearchRequestDTO;
+import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.generic.security;
 
-import io.dexproject.achatservice.generic.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
 import io.dexproject.achatservice.generic.security.jwt.JwtTokenFilter;
 import io.dexproject.achatservice.generic.security.oauth2.*;
 import org.springframework.context.annotation.Bean;

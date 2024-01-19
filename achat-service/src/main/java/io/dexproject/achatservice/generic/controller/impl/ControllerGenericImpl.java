@@ -1,8 +1,12 @@
 package io.dexproject.achatservice.generic.controller.impl;
 
 import io.dexproject.achatservice.generic.controller.ControllerGeneric;
-import io.dexproject.achatservice.generic.entity.*;
 import io.dexproject.achatservice.generic.exceptions.InternalException;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponseDto;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.ResourceResponse;
+import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequestDto;
+import io.dexproject.achatservice.generic.security.crud.dto.request.SearchRequestDTO;
+import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.validators.AuthorizeUser;
