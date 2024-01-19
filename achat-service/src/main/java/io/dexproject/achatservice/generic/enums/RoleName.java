@@ -1,37 +1,45 @@
 package io.dexproject.achatservice.generic.enums;
 
-public enum RoleName {
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+public enum RoleName implements GenericEnum<RoleName> {
     CUSTOMER("customer"),
     MERCHANT("merchant"),
     ADMIN("admin");
 
-    public static List<RoleName> orderedValues = new ArrayList<>();
+    private final String label;
 
-    static {
-        orderedValues.addAll(Arrays.asList(RoleName.values()));
+    RoleName(String label) {
+        this.label = label;
     }
 
-    private final String value;
-
-    RoleName(String value) {
-        this.value = value;
+    @Override
+    @JsonCreator
+    public Optional<RoleName> toEnum(String label) {
+        return Stream.of(RoleName.values()).filter(e -> e.getLabel().equals(label)).findFirst();
     }
 
-    public static Optional<RoleName> toEnum(String label) {
-        if (label == null) {
-            return Optional.empty();
-        }
-
-        for (RoleName mine : RoleName.values()) {
-            if (label.equals(mine.getValue())) {
-                return Optional.of(mine);
-            }
-        }
-
-        throw new IllegalArgumentException("no supported");
+    @Override
+    public String toLabel(RoleName enumaration) {
+        return Stream.of(RoleName.values()).filter(e -> e.getLabel().equals(label)).findFirst();
     }
 
-    public String getValue() {
-        return value;
+    @Override
+    @JsonValue
+    public String getLabel() {
+        return this.label;
+    }
+
+    @Override
+    public List<RoleName> getAll() {
+        return Arrays.asList(RoleName.values());
     }
 }

@@ -1,6 +1,5 @@
 package io.dexproject.achatservice.generic.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -9,10 +8,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 class SpringSecurityAuditAwareImpl implements AuditorAware<String> {
 
     private final UserAccountService userService;
+
+    public SpringSecurityAuditAwareImpl(UserAccountService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public Optional<String> getCurrentAuditor() {
