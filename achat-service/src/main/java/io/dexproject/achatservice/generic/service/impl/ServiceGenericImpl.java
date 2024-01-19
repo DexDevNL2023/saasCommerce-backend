@@ -88,47 +88,6 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
     }
   }
 
-  public static boolean isFieldExist(Class<?> clazz, String property) {
-    String[] fields = property.split("\\.");
-    try {
-      Field file = clazz.getDeclaredField(fields[0]);
-      if (fields.length > 1) {
-        return isFieldExist(file.getType(), property.substring(property.indexOf('.') + 1));
-      }
-      return true;
-    } catch (NoSuchFieldException | SecurityException e) {
-      if (clazz.getSuperclass() != null) {
-        return isFieldExist(clazz.getSuperclass(), property);
-      }
-      return false;
-    }
-  }
-
-  private static FilterWrap getFiltresByPeriode() throws ParseException {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-    int CurrentYear = Calendar.getInstance().get(Calendar.YEAR);
-    String financiyalYearFrom = "01-01-" + (CurrentYear) + " 07:00:00";
-    String financiyalYearTo = "31-12-" + (CurrentYear) + " 23:59:59";
-    LocalDate fromdayDateTime = LocalDate.parse(financiyalYearFrom, formatter);
-    LocalDate todayDateTime = LocalDate.parse(financiyalYearTo, formatter);
-    FilterWrap filterWrap = new FilterWrap();
-    List<Filter> filters = new ArrayList<>();
-    Filter filterDebut = FilterBuilder.createFilter(AppConstants.PERIODE_FILTABLE_FIELD)
-            .value(fromdayDateTime.toString())
-            .operator(InternalOperator.GREATER_THAN)
-            .type(ValueType.LOCAL_DATE_TIME)
-            .build();
-    filters.add(filterDebut);
-    Filter filterFin = FilterBuilder.createFilter(AppConstants.PERIODE_FILTABLE_FIELD)
-            .value(todayDateTime.toString())
-            .operator(InternalOperator.GREATER_THAN)
-            .type(ValueType.LOCAL_DATE_TIME)
-            .build();
-    filters.add(filterFin);
-    filterWrap.setFilters(filters);
-    return filterWrap;
-  }
-
   /**
    * @param dtos
    * @return List<R>
@@ -334,5 +293,46 @@ public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseD
       }
     }
     return false;
+  }
+
+  public static boolean isFieldExist(Class<?> clazz, String property) {
+    String[] fields = property.split("\\.");
+    try {
+      Field file = clazz.getDeclaredField(fields[0]);
+      if (fields.length > 1) {
+        return isFieldExist(file.getType(), property.substring(property.indexOf('.') + 1));
+      }
+      return true;
+    } catch (NoSuchFieldException | SecurityException e) {
+      if (clazz.getSuperclass() != null) {
+        return isFieldExist(clazz.getSuperclass(), property);
+      }
+      return false;
+    }
+  }
+
+  private static FilterWrap getFiltresByPeriode() throws ParseException {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+    int CurrentYear = Calendar.getInstance().get(Calendar.YEAR);
+    String financiyalYearFrom = "01-01-" + (CurrentYear) + " 07:00:00";
+    String financiyalYearTo = "31-12-" + (CurrentYear) + " 23:59:59";
+    LocalDate fromdayDateTime = LocalDate.parse(financiyalYearFrom, formatter);
+    LocalDate todayDateTime = LocalDate.parse(financiyalYearTo, formatter);
+    FilterWrap filterWrap = new FilterWrap();
+    List<Filter> filters = new ArrayList<>();
+    Filter filterDebut = FilterBuilder.createFilter(AppConstants.PERIODE_FILTABLE_FIELD)
+            .value(fromdayDateTime.toString())
+            .operator(InternalOperator.GREATER_THAN)
+            .type(ValueType.LOCAL_DATE_TIME)
+            .build();
+    filters.add(filterDebut);
+    Filter filterFin = FilterBuilder.createFilter(AppConstants.PERIODE_FILTABLE_FIELD)
+            .value(todayDateTime.toString())
+            .operator(InternalOperator.GREATER_THAN)
+            .type(ValueType.LOCAL_DATE_TIME)
+            .build();
+    filters.add(filterFin);
+    filterWrap.setFilters(filters);
+    return filterWrap;
   }
 }
