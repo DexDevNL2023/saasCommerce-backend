@@ -1,5 +1,6 @@
 package io.dexproject.achatservice.generic.config;
 
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,6 +57,8 @@ public class WebConfig implements WebMvcConfigurer {
         DateTimeFormatterRegistrar registrar = new DateTimeFormatterRegistrar();
         registrar.setUseIsoFormat(true);
         registrar.registerFormatters(registry);
+
+		ApplicationConversionService.configure(registry);
     }
 
 	@Bean

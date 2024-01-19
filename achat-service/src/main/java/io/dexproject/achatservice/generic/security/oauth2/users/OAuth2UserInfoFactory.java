@@ -7,15 +7,15 @@ import java.util.Map;
 
 public class OAuth2UserInfoFactory {
 	public static OAuth2UserInfo getOAuth2UserInfo(String registrationId, Map<String, Object> attributes) {
-		if (registrationId.equalsIgnoreCase(SocialProvider.GOOGLE.getProviderType())) {
+		if (registrationId.equalsIgnoreCase(SocialProvider.GOOGLE.getLabel())) {
 			return new GoogleOAuth2UserInfo(attributes);
-		} else if (registrationId.equalsIgnoreCase(SocialProvider.FACEBOOK.getProviderType())) {
+		} else if (registrationId.equalsIgnoreCase(SocialProvider.FACEBOOK.getLabel())) {
 			return new FacebookOAuth2UserInfo(attributes);
-		} else if (registrationId.equalsIgnoreCase(SocialProvider.GITHUB.getProviderType())) {
+		} else if (registrationId.equalsIgnoreCase(SocialProvider.GITHUB.getLabel())) {
 			return new GithubOAuth2UserInfo(attributes);
-		} else if (registrationId.equalsIgnoreCase(SocialProvider.LINKEDIN.getProviderType())) {
+		} else if (registrationId.equalsIgnoreCase(SocialProvider.LINKEDIN.getLabel())) {
 			return new LinkedinOAuth2UserInfo(attributes);
-		} else if (registrationId.equalsIgnoreCase(SocialProvider.TWITTER.getProviderType())) {
+		} else if (registrationId.equalsIgnoreCase(SocialProvider.TWITTER.getLabel())) {
 			return new GithubOAuth2UserInfo(attributes);
 		} else {
 			throw new OAuth2AuthenticationProcessingException("Désolé! la connexion avec " + registrationId + " n'est pas encore pris en charge.");

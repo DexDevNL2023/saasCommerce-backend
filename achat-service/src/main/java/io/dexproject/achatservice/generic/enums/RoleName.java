@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -17,8 +18,20 @@ public enum RoleName implements GenericEnum<RoleName> {
 
     private final String label;
 
+    public static final List<RoleName> orderedValues = new ArrayList<>();
+
+    static {
+        orderedValues.addAll(Arrays.asList(RoleName.values()));
+    }
+
     RoleName(String label) {
         this.label = label;
+    }
+
+    @Override
+    @JsonValue
+    public String getLabel() {
+        return this.label;
     }
 
     @Override
@@ -29,17 +42,6 @@ public enum RoleName implements GenericEnum<RoleName> {
 
     @Override
     public String toLabel(RoleName enumaration) {
-        return Stream.of(RoleName.values()).filter(e -> e.getLabel().equals(label)).findFirst();
-    }
-
-    @Override
-    @JsonValue
-    public String getLabel() {
-        return this.label;
-    }
-
-    @Override
-    public List<RoleName> getAll() {
-        return Arrays.asList(RoleName.values());
+        return Optional.ofNullable(enumaration).map(RoleName::getLabel).orElse(null);
     }
 }

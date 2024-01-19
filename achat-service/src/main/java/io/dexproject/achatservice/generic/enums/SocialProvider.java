@@ -1,12 +1,17 @@
 package io.dexproject.achatservice.generic.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-public enum SocialProvider {
-
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+public enum SocialProvider implements GenericEnum<SocialProvider> {
     FACEBOOK("facebook"),
     TWITTER("twitter"),
     LINKEDIN("linkedin"),
@@ -14,33 +19,31 @@ public enum SocialProvider {
     GITHUB("github"),
     LOCAL("local");
 
-    public static List<SocialProvider> orderedValues = new ArrayList<>();
+    public static final List<SocialProvider> orderedValues = new ArrayList<>();
+    private final String label;
 
     static {
         orderedValues.addAll(Arrays.asList(SocialProvider.values()));
     }
 
-    private final String value;
-
-    SocialProvider(String value) {
-        this.value = value;
+    SocialProvider(String label) {
+        this.label = label;
     }
 
-    public static Optional<SocialProvider> toEnum(String label) {
-        if (label == null) {
-            return Optional.empty();
-        }
-
-        for (SocialProvider mine : SocialProvider.values()) {
-            if (label.equals(mine.getValue())) {
-                return Optional.of(mine);
-            }
-        }
-
-        throw new IllegalArgumentException("no supported");
+    @Override
+    @JsonValue
+    public String getLabel() {
+        return this.label;
     }
 
-    public String getValue() {
-        return value;
+    @Override
+    @JsonCreator
+    public Optional<SocialProvider> toEnum(String label) {
+        return Stream.of(SocialProvider.values()).filter(e -> e.getLabel().equals(label)).findFirst();
+    }
+
+    @Override
+    public String toLabel(SocialProvider enumaration) {
+        return Optional.ofNullable(enumaration).map(SocialProvider::getLabel).orElse(null);
     }
 }

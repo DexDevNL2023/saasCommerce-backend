@@ -38,7 +38,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		try {
 			Map<String, Object> attributes = new HashMap<>(oAuth2User.getAttributes());
 			String provider = oAuth2UserRequest.getClientRegistration().getRegistrationId();
-			if (provider.equals(SocialProvider.LINKEDIN.getProviderType())) {
+			if (provider.equals(SocialProvider.LINKEDIN.getLabel())) {
 				populateEmailAddressFromLinkedIn(oAuth2UserRequest, attributes);
 			}
 			return userService.processOAuthRegister(provider, attributes, null, null);

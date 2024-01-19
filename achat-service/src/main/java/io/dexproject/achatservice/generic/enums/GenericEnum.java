@@ -1,6 +1,5 @@
 package io.dexproject.achatservice.generic.enums;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface GenericEnum<E extends Enum<E> & GenericEnum<E>> {
@@ -9,6 +8,4 @@ public interface GenericEnum<E extends Enum<E> & GenericEnum<E>> {
     String toLabel(E enumaration);
 
     String getLabel();
-
-    List<E> getAll();
 }
