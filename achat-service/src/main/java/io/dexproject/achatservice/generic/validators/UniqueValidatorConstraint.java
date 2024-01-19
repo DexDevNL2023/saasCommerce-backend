@@ -1,11 +1,11 @@
 package io.dexproject.achatservice.generic.validators;
 
-import io.dexproject.achatservice.generic.entity.BaseEntity;
 import jakarta.validation.ConstraintValidator;
 
-public class UniqueValidatorConstraint implements ConstraintValidator<UniqueValidator,<E extends BaseEntity>>{
+public class UniqueValidatorConstraint implements ConstraintValidator<UniqueValidator, E> {
     private FieldValueExists service;
     private String fieldName;
+    private final GenericRepository<E> repository;
 
     @Override
     public void initialize(UniqueValidator unique) {
