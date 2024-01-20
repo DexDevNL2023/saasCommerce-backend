@@ -8,4 +8,5 @@ public class LoginRequest {
     @NotBlank(message = "Veillez renseignez votre login svp!")
     private String emailOrPhone;
 	private String passwordTxt;
+    private Boolean generatePassword = false;
 }

@@ -178,7 +178,7 @@ public class GenericUtils {
 
   public static List<SimpleGrantedAuthority> buildSimpleGrantedAuthorities(final RoleName role) {
     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-    authorities.add(new SimpleGrantedAuthority(role.getValue()));
+    authorities.add(new SimpleGrantedAuthority(role.getLabel()));
     return authorities;
   }
 
@@ -243,5 +243,13 @@ public class GenericUtils {
     } catch (IOException ex) {
       throw new RuntimeException("Impossible de stocker le fichier " + fileName + ". Veuillez réessayer!", ex);
     }
+  }
+
+  public static String verifieFormatLangue(String langKey) {
+    return switch (langKey) {
+        case "En" -> "En";
+        case "Esp" -> "Esp";
+        default -> "Fr"; // default language
+    };
   }
 }

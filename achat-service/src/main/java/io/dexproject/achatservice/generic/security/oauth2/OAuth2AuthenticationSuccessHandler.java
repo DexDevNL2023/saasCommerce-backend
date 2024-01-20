@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.security.oauth2;
 
 import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
+import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.CookieUtils;
 import jakarta.servlet.ServletException;

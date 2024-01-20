@@ -35,19 +35,19 @@ public abstract class AbstractToken implements Serializable {
     public AbstractToken(String token) {
         super();
         this.token = token;
-        this.expiryDate = GenericUtils.calculateExpiryDate(AppConstants.EXPIRATION);
+        this.expiryDate = GenericUtils.calculateExpiryDate(AppConstants.TOKEN_EXPIRATION);
     }
 
     public AbstractToken(UserAccount user, String token) {
         super();
         this.token = token;
         this.user = user;
-        this.expiryDate = GenericUtils.calculateExpiryDate(AppConstants.EXPIRATION);
+        this.expiryDate = GenericUtils.calculateExpiryDate(AppConstants.TOKEN_EXPIRATION);
     }
 
     public void updateToken(String token) {
         this.token = token;
-        this.expiryDate = GenericUtils.calculateExpiryDate(AppConstants.EXPIRATION);
+        this.expiryDate = GenericUtils.calculateExpiryDate(AppConstants.TOKEN_EXPIRATION);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package io.dexproject.achatservice.generic.security.jwt;
 
+import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
+import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import io.dexproject.achatservice.generic.utils.GenericUtils;
 import io.dexproject.achatservice.generic.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
@@ -68,14 +70,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 			if (StringUtils.hasText(jwt) && jwtUtils.validateToken(jwt)) {
 		        System.out.println("JWT is valided="+jwt);
 		        // recup username+roles
-		        String userEmail = jwtUtils.getUserNameFromToken(jwt);
-		        System.out.println("Username from JWT accessToken: " + userEmail);
-		        if (StringUtils.hasText(userEmail) && SecurityContextHolder.getContext().getAuthentication() == null) {
-		        	UserAccount user = userService.loadUserByUserEmail(userEmail);
+		        String username = jwtUtils.getUserNameFromToken(jwt);
+		        System.out.println("Username from JWT accessToken: " + username);
+		        if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
+		        	UserAccount user = userService.loadUserByEmailOrPhone(username);
 					Collection<? extends GrantedAuthority> authorities = GenericUtils.buildSimpleGrantedAuthorities(user.getRole());
 		            System.out.println("roles="+ authorities);
 	                SecurityContext context = SecurityContextHolder.createEmptyContext();
-	                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userEmail, null, authorities);
+	                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
 	                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 	                context.setAuthentication(authToken);
 	                SecurityContextHolder.setContext(context);

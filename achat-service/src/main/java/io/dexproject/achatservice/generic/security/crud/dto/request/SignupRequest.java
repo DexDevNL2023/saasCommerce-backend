@@ -10,6 +10,7 @@ import lombok.Value;
 
 @Value
 public class SignupRequest {
+	private String emailOrPhone;
 	@NotBlank(message = "Le nom est obligatoire")
 	private String lastName;
 	@NotEmpty
@@ -26,16 +27,18 @@ public class SignupRequest {
 	@EnumValidator(enumClass = RoleName.class)
 	private RoleName role;
 
-	public SignupRequest(String lastName, String firstName, String email, String langKey, String imageUrl, RoleName role) {
+	public SignupRequest(String lastName, String firstName, String email, String phone, String langKey, String imageUrl, RoleName role) {
 		this.lastName = lastName;
 		this.firstName = firstName;
 		this.langKey = langKey;
 		this.imageUrl = imageUrl;
 		this.email = email;
-		this.phone = null;
+		this.phone = phone;
 		this.adresse = null;
 		this.usingQr = false;
 		this.role = role == null ? RoleName.CUSTOMER : role;
+		// on construit e;ailOrPhone
+		this.emailOrPhone = this.email.isEmpty() ? this.phone : this.email;
 	}
 
 	public static Builder getBuilder() {
@@ -46,6 +49,7 @@ public class SignupRequest {
 		private String lastName;
 		private String firstName;
 		private String email;
+		private String phone;
 		private String langKey;
 		private String imageUrl;
 		private RoleName role;
@@ -55,13 +59,18 @@ public class SignupRequest {
 			return this;
 		}
 
-		public Builder addFirstName(final String displayName) {
+		public Builder addFirstName(final String firstName) {
 			this.firstName = firstName;
 			return this;
 		}
 
 		public Builder addEmail(final String email) {
 			this.email = email;
+			return this;
+		}
+
+		public Builder addPhone(final String phone) {
+			this.phone = phone;
 			return this;
 		}
 
@@ -81,7 +90,7 @@ public class SignupRequest {
 		}
 
 		public SignupRequest build() {
-			return new SignupRequest(lastName, firstName, email, langKey, imageUrl, role);
+			return new SignupRequest(lastName, firstName, email, phone, langKey, imageUrl, role);
 		}
 	}
 }

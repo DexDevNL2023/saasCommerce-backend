@@ -2,6 +2,7 @@ package io.dexproject.achatservice.generic.security.oauth2;
 
 import io.dexproject.achatservice.generic.exceptions.OAuth2AuthenticationProcessingException;
 import io.dexproject.achatservice.generic.security.crud.entities.enums.SocialProvider;
+import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

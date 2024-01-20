@@ -1,5 +1,7 @@
 package io.dexproject.achatservice.generic.config;
 
+import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
+import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,15 +21,13 @@ class SpringSecurityAuditAwareImpl implements AuditorAware<String> {
     @Override
     public Optional<String> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if (authentication == null ||
                 !authentication.isAuthenticated() ||
                 authentication instanceof AnonymousAuthenticationToken) {
             return Optional.ofNullable("root");
         }
-
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
-        UserAccount auditUser = userService.loadUserByUserEmail(userPrincipal.getUsername());
+        UserAccount auditUser = userService.loadUserByEmailOrPhone(userPrincipal.getUsername());
         if (auditUser != null) {
             return Optional.ofNullable(auditUser.getEmail());
         } else {

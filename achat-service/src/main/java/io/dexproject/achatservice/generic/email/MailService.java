@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.generic.email;
 
-import com.dexproject.shop.api.entities.UserAccount;
+import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 
 public interface MailService {
 	void sendVerificationToken(UserAccount user, String token);

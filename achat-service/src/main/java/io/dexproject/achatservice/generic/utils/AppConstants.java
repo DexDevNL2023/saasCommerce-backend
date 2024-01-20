@@ -6,6 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public interface AppConstants {
+    String GENERIC_PREFIX="X";
+
+    String JWT_HEADER_NAME="Authorization";
+    String SECRET="vnlangessama@gmail.com";
+    long EXPIRATION=24 * 60 * 60 * 1000; // 24 hour
+    String HEADER_PREFIX="Bearer ";
+
     String TOKEN_INVALID = "INVALID";
     String TOKEN_EXPIRED = "EXPIRED";
     String TOKEN_VALID = "VALID";
@@ -14,7 +21,7 @@ public interface AppConstants {
     String DEFAULT_PAGE_SIZE = "30";
 
     int MAX_PAGE_SIZE = 50;
-    int EXPIRATION = 60 * 24;
+    int TOKEN_EXPIRATION = 60 * 24;
 
 	@Value("${app.base.url}")
     String BaseUrl = "http://localhost";

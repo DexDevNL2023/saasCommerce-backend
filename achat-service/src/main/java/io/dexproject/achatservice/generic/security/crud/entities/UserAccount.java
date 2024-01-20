@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -37,6 +38,8 @@ public class UserAccount implements OAuth2User, OidcUser, Serializable {
     private String displayName;
     private String lastName;
     private String firstName;
+    @Transient
+    private String emailOrPhone;
     private String email;
     private String phone;
     private String adresse;
@@ -53,6 +56,7 @@ public class UserAccount implements OAuth2User, OidcUser, Serializable {
     private String imageUrl;
     @Enumerated(EnumType.STRING)
     private RoleName role;
+    @Setter
     @Transient
     private Map<String, Object> attributes;
 
@@ -91,6 +95,14 @@ public class UserAccount implements OAuth2User, OidcUser, Serializable {
         return localUser;
     }
 
+    public String getDisplayName() {
+        return this.displayName = !this.firstName.isEmpty() ? this.lastName + " " + this.firstName : this.lastName;
+    }
+
+    public String getEmailOrPhone() {
+        return this.emailOrPhone = this.email.isEmpty() ? this.phone : this.email;
+    }
+
     @Override
     public String getName() {
         return this.getDisplayName();
@@ -99,10 +111,6 @@ public class UserAccount implements OAuth2User, OidcUser, Serializable {
     @Override
     public Map<String, Object> getAttributes() {
         return this.attributes;
-    }
-
-    public void setAttributes(Map<String, Object> attributes) {
-        this.attributes = attributes;
     }
 
     @Override

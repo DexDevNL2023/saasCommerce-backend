@@ -4,6 +4,7 @@ import com.google.zxing.WriterException;
 import freemarker.template.Configuration;
 import io.dexproject.achatservice.generic.config.MessageService;
 import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
+import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.QRCodeGenerator;
 import jakarta.mail.MessagingException;

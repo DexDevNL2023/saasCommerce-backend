@@ -43,9 +43,9 @@ public class LoggingAspect {
      * Pointcut qui correspond à tous les beans Spring dans les principaux packages de l'application.
      */
     @Pointcut(
-            "within(" + AppConstants.DefaultPackageName + ".repository..*)" +
-                    " || within(" + AppConstants.DefaultPackageName + ".service..*)" +
-                    " || within(" + AppConstants.DefaultPackageName + ".controller..*)"
+            "within(" + AppConstants.DefaultPackageName + ".repositories..*)" +
+                    " || within(" + AppConstants.DefaultPackageName + ".services..*)" +
+                    " || within(" + AppConstants.DefaultPackageName + ".controllers..*)"
     )
     public void applicationPackagePointcut() {
         // La méthode est vide car il ne s'agit que d'un Pointcut, les implémentations sont dans les conseils.

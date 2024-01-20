@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.security;
 
 import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import io.dexproject.achatservice.generic.security.jwt.JwtTokenFilter;
 import io.dexproject.achatservice.generic.security.oauth2.*;
 import org.springframework.context.annotation.Bean;
@@ -61,6 +62,7 @@ public class SecurityConfig {
         // Si Spring MVC est sur le chemin de classe et qu'aucun CorsConfigurationSource n'est fourni,
         // Spring Security utilisera la configuration CORS fournie à Spring MVC
         http.cors(Customizer.withDefaults())
+        //http.cors().and()
 			.formLogin().disable()
 			.httpBasic().disable()
 			.csrf(AbstractHttpConfigurer::disable)
