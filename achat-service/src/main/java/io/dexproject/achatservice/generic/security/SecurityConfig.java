@@ -61,10 +61,24 @@ public class SecurityConfig {
         corsConfiguration.setExposedHeaders(List.of("Authorization"));
         // Si Spring MVC est sur le chemin de classe et qu'aucun CorsConfigurationSource n'est fourni,
         // Spring Security utilisera la configuration CORS fournie à Spring MVC
-        http.cors(Customizer.withDefaults())
-        //http.cors().and()
+
+        return http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/token/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+                .httpBasic(Customizer.withDefaults())
+                .build();
+
+        return http.cors(Customizer.withDefaults())
+                //return http.cors().and()
 			.formLogin().disable()
+                .formLogin(Customizer.withDefaults())
 			.httpBasic().disable()
+                .httpBasic(Customizer.withDefaults())
 			.csrf(AbstractHttpConfigurer::disable)
         	.headers().frameOptions().disable().and()
                 .authorizeHttpRequests(request -> request
@@ -75,11 +89,10 @@ public class SecurityConfig {
 			.oauth2Login().authorizationEndpoint().authorizationRequestRepository(cookieAuthorizationRequestRepository()).and()
 			.redirectionEndpoint().and()
 			.userInfoEndpoint().oidcUserService(cOidcUserService()).userService(cOAuth2UserService()).and()
-			.successHandler(oAuth2SuccessHandler()).failureHandler(oAuth2FailureHandler());
-
-		// Add our custom Token based authentication filter
-		http.addFilterBefore(authorizationFiler(), UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+                .successHandler(oAuth2SuccessHandler()).failureHandler(oAuth2FailureHandler()).and()
+                // Add our custom Token based authentication filter
+                .addFilterBefore(authorizationFiler(), UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
 	/*

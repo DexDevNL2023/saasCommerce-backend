@@ -19,7 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-@PreAuthorize("hasRole('admin') or hasRole('merchant') or hasRole('customer')")
+@PreAuthorize("hasRole('admin') or hasRole('partner') or hasRole('merchant') or hasRole('customer')")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -47,7 +47,7 @@ public class UserController {
 		return new ResponseEntity<>(new ResourceResponse("User logout successfully!"), HttpStatus.OK);
 	}
 
-	@Secured({"admin", "merchant"})
+	@Secured({"admin", "partner"})
 	@PostMapping("/create")
 	public ResponseEntity<ResourceResponse> createUser(@NotEmpty @Valid @RequestBody UserFormRequest userFormRequest) {
 		return new ResponseEntity<>(new ResourceResponse("User created successfully!", userService.createUser(userFormRequest)), HttpStatus.OK);
@@ -63,7 +63,7 @@ public class UserController {
 		return new ResponseEntity<>(new ResourceResponse("User password updated successfully!", userService.editPassword(userFormPasswordRequest)), HttpStatus.OK);
 	}
 
-	@Secured({"admin", "merchant"})
+	@Secured({"admin", "partner"})
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<ResourceResponse> deleteUser(@NotEmpty @PathVariable("id") Long id) {
 		userService.deleteUserById(id);
@@ -76,26 +76,26 @@ public class UserController {
 		return new ResponseEntity<>(new ResourceResponse("User suspended successfully!", userService.suspendUserById(id)), HttpStatus.OK);
 	}
 
-	@Secured({"admin", "merchant"})
+	@Secured({"admin", "partner", "merchant"})
 	@GetMapping("/get/{id}")
 	public ResponseEntity<ResourceResponse> findUser(@NotEmpty @PathVariable("id") Long id) {
 		return new ResponseEntity<>(new ResourceResponse("User finded successfully!", userService.findUserById(id)), HttpStatus.OK);
 	}
 
-	@Secured({"admin", "merchant"})
+	@Secured({"admin", "partner", "merchant"})
 	@GetMapping("/get/all")
 	public ResponseEntity<ResourceResponse> getAllUsers() {
 		return new ResponseEntity<>(new ResourceResponse("User finded successfully!!", userService.getAllUsers()), HttpStatus.OK);
 	}
 
-	@Secured({"admin", "merchant"})
+	@Secured({"admin", "partner", "merchant"})
 	@GetMapping("/get/page")
 	public ResponseEntity<ResourceResponse> getAllUsersByPage(@RequestParam(name = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
 															   @RequestParam(name = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page) {
 		return new ResponseEntity<>(new ResourceResponse("User finded successfully!", userService.getUsersByPage(page, size)), HttpStatus.OK);
 	}
 
-	@Secured({"admin", "merchant"})
+	@Secured({"admin", "partner", "merchant"})
 	@GetMapping("/search/by")
 	public ResponseEntity<ResourceResponse> searchUser(@RequestParam(name = "motCle", defaultValue = "") String motCle) {
 		return new ResponseEntity<>(new ResourceResponse("User finded successfully!", userService.search(motCle)), HttpStatus.OK);

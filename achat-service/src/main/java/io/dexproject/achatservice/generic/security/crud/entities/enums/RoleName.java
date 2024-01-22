@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum RoleName implements GenericEnum<RoleName> {
+    PARTNER("partner"),
     CUSTOMER("customer"),
     MERCHANT("merchant"),
     ADMIN("admin");
