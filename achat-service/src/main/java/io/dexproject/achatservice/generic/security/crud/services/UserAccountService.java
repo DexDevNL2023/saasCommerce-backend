@@ -13,6 +13,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormPass
 import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 import io.dexproject.achatservice.generic.security.crud.entities.VerifyToken;
+import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
 import io.dexproject.achatservice.generic.security.crud.repositories.UserAccountRepository;
 import io.dexproject.achatservice.generic.security.crud.repositories.VerifyTokenRepository;
 import io.dexproject.achatservice.generic.security.oauth2.users.OAuth2UserInfo;
@@ -369,4 +370,57 @@ public class UserAccountService implements UserDetailsService {
 			throw new ResourceNotFoundException("Could not find any user account with the token " + token);
 		}
 	}
+
+    public void addDefaultUsers(RoleName roleCle) {
+        UserAccount user = null;
+        String userEmail;
+        String userDisplayName;
+
+        // On initialise l'utlisateurroot
+        switch (roleCle) {
+            case CUSTOMER:
+                //Verifying whether role already exists
+                userDisplayName = "customer";
+                userEmail = "customer@default.lan";
+                if (!userRepository.existsByEmailOrPhone(userEmail)) {
+                    user = new UserAccount(userDisplayName, userEmail, bCryptPasswordEncoder.encode(""), "656668310", "Yaoundé, Cameroun", true);
+                    user.setRole(RoleName.CUSTOMER);
+                }
+                break;
+            case MERCHANT:
+                //Verifying whether role already exists
+                userDisplayName = "merchant";
+                userEmail = "merchant@default.lan";
+                if (!userRepository.existsByEmailOrPhone(userEmail)) {
+                    user = new UserAccount(userDisplayName, userEmail, bCryptPasswordEncoder.encode(""), "656668310", "Yaoundé, Cameroun", true);
+                    user.setRole(RoleName.MERCHANT);
+                }
+                break;
+            case PARTNER:
+                //Verifying whether role already exists
+                userDisplayName = "partner";
+                userEmail = "partner@default.lan";
+                if (!userRepository.existsByEmailOrPhone(userEmail)) {
+                    user = new UserAccount(userDisplayName, userEmail, bCryptPasswordEncoder.encode(""), "656668310", "Yaoundé, Cameroun", true);
+                    user.setRole(RoleName.ADMIN);
+                }
+                break;
+            default:
+                //Verifying whether role already exists
+                userDisplayName = "root";
+                userEmail = "root@default.lan";
+                if (!userRepository.existsByEmailOrPhone(userEmail)) {
+                    user = new UserAccount(userDisplayName, userEmail, bCryptPasswordEncoder.encode(""), "656668310", "Yaoundé, Cameroun", true);
+                    user.setRole(RoleName.ADMIN);
+                }
+                break;
+        }
+
+        if (user != null) {
+            // Genered url de login
+            final String loginURL = AppConstants.AuthUrl + "usingqr?email=" + user.getEmail();
+            user.setLoginUrl(loginURL);
+            userRepository.saveAndFlush(user);
+        }
+    }
 }

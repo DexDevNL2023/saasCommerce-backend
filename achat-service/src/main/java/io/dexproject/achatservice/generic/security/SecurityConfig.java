@@ -3,11 +3,11 @@ package io.dexproject.achatservice.generic.security;
 import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import io.dexproject.achatservice.generic.security.jwt.JwtTokenFilter;
+import io.dexproject.achatservice.generic.security.jwt.RestAuthenticationEntryPoint;
 import io.dexproject.achatservice.generic.security.oauth2.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +22,8 @@ import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /*
 
@@ -69,20 +71,33 @@ public class SecurityConfig {
         corsConfiguration.setExposedHeaders(List.of("Authorization"));
         // Si Spring MVC est sur le chemin de classe et qu'aucun CorsConfigurationSource n'est fourni,
         // Spring Security utilisera la configuration CORS fournie à Spring MVC
-        http.cors(Customizer.withDefaults())
+        http.cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers
                         .cacheControl(HeadersConfigurer.CacheControlConfig::disable)
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+                        .httpStrictTransportSecurity(withDefaults())
+                        .xssProtection(withDefaults())
+                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
                 )
-                .formLogin(Customizer.withDefaults())
-                .httpBasic(Customizer.withDefaults())
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/api/auth/login")
+                        .defaultSuccessUrl("/", true).permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/users/logout").permitAll()
+                )
+                .rememberMe(withDefaults())
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer
+                        .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+                )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 //Access configuration
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .requestMatchers("/**/*.pdf").permitAll()
-                        .requestMatchers("/auth/*", "/public/", "/oauth2/*", "/v3/api-docs/", "/swagger-ui/*").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/oauth2/**", "/public/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .requestMatchers("/management/**").hasAuthority(RoleName.ADMIN.getLabel())
                         .anyRequest().authenticated())
                 //######## OAUTH2-Login configuration ########
@@ -92,7 +107,7 @@ public class SecurityConfig {
                                         .authorizationEndpoint(authorizationEndpointConfig -> {
                                                     try {
                                                         authorizationEndpointConfig
-                                                                .baseUri("/oauth2/authorize")
+                                                                .baseUri("/api/oauth2/authorize")
                                                                 .authorizationRequestRepository(cookieAuthorizationRequestRepository());
                                                     } catch (Exception e) {
                                                         throw new RuntimeException(e);
@@ -100,7 +115,7 @@ public class SecurityConfig {
                                                 }
                                         )
                                         .redirectionEndpoint(redirectionEndpointConfig -> redirectionEndpointConfig
-                                                .baseUri("/oauth2/callback/*")
+                                                .baseUri("/api/oauth2/callback/**")
                                         )
                                         .userInfoEndpoint(userInfoEndpointConfig -> {
                                                     try {
