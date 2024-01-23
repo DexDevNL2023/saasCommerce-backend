@@ -9,6 +9,7 @@ import io.dexproject.achatservice.generic.security.crud.services.UserAccountServ
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("hasRole('admin') or hasRole('merchant') or hasRole('customer')")
 @RestController
 @RequestMapping("/api/users")
+@RefreshScope
 public class UserController {
 
 	private final UserAccountService userService;

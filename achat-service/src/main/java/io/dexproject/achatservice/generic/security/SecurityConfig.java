@@ -69,7 +69,7 @@ public class SecurityConfig {
         	.headers().frameOptions().disable().and()
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/auth/**", "/public/**", "/oauth2/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                        .requestMatchers("/management/**").hasAuthority(RoleName.ADMIN.getValue())
+                        .requestMatchers("/management/**").hasAuthority(RoleName.ADMIN.getLabel())
                         .anyRequest().authenticated())
             .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.oauth2Login().authorizationEndpoint().authorizationRequestRepository(cookieAuthorizationRequestRepository()).and()

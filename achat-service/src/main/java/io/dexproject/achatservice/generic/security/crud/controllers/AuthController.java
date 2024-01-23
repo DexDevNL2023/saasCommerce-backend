@@ -7,12 +7,14 @@ import io.dexproject.achatservice.generic.security.crud.dto.request.SignupReques
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@RefreshScope
 public class AuthController {
 
     private final UserAccountService userService;
