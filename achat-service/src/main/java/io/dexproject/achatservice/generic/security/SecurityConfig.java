@@ -6,15 +6,19 @@ import io.dexproject.achatservice.generic.security.jwt.JwtTokenFilter;
 import io.dexproject.achatservice.generic.security.oauth2.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.accept.ContentNegotiationStrategy;
+import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
@@ -40,7 +44,11 @@ Let me explain the code above.
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
+@EnableGlobalMethodSecurity(
+        securedEnabled = true,
+        jsr250Enabled = true,
+        prePostEnabled = true
+)
 public class SecurityConfig {
 
     private final UserAccountService userAccountService;
@@ -61,38 +69,60 @@ public class SecurityConfig {
         corsConfiguration.setExposedHeaders(List.of("Authorization"));
         // Si Spring MVC est sur le chemin de classe et qu'aucun CorsConfigurationSource n'est fourni,
         // Spring Security utilisera la configuration CORS fournie à Spring MVC
-
-        return http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/token/**").permitAll()
-                        .anyRequest().authenticated()
+        http.cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers -> headers
+                        .cacheControl(HeadersConfigurer.CacheControlConfig::disable)
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
                 )
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-                .httpBasic(Customizer.withDefaults())
-                .build();
-
-        return http.cors(Customizer.withDefaults())
-                //return http.cors().and()
-			.formLogin().disable()
                 .formLogin(Customizer.withDefaults())
-			.httpBasic().disable()
                 .httpBasic(Customizer.withDefaults())
-			.csrf(AbstractHttpConfigurer::disable)
-        	.headers().frameOptions().disable().and()
+                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                //Access configuration
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/auth/**", "/public/**", "/oauth2/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                        .requestMatchers("/**/*.pdf").permitAll()
+                        .requestMatchers("/auth/*", "/public/", "/oauth2/*", "/v3/api-docs/", "/swagger-ui/*").permitAll()
                         .requestMatchers("/management/**").hasAuthority(RoleName.ADMIN.getLabel())
                         .anyRequest().authenticated())
-            .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.oauth2Login().authorizationEndpoint().authorizationRequestRepository(cookieAuthorizationRequestRepository()).and()
-			.redirectionEndpoint().and()
-			.userInfoEndpoint().oidcUserService(cOidcUserService()).userService(cOAuth2UserService()).and()
-                .successHandler(oAuth2SuccessHandler()).failureHandler(oAuth2FailureHandler()).and()
-                // Add our custom Token based authentication filter
-                .addFilterBefore(authorizationFiler(), UsernamePasswordAuthenticationFilter.class)
-                .build();
+                //######## OAUTH2-Login configuration ########
+                .oauth2Login(httpSecurityOAuth2LoginConfigurer -> {
+                            try {
+                                httpSecurityOAuth2LoginConfigurer
+                                        .authorizationEndpoint(authorizationEndpointConfig -> {
+                                                    try {
+                                                        authorizationEndpointConfig
+                                                                .baseUri("/oauth2/authorize")
+                                                                .authorizationRequestRepository(cookieAuthorizationRequestRepository());
+                                                    } catch (Exception e) {
+                                                        throw new RuntimeException(e);
+                                                    }
+                                                }
+                                        )
+                                        .redirectionEndpoint(redirectionEndpointConfig -> redirectionEndpointConfig
+                                                .baseUri("/oauth2/callback/*")
+                                        )
+                                        .userInfoEndpoint(userInfoEndpointConfig -> {
+                                                    try {
+                                                        userInfoEndpointConfig
+                                                                .oidcUserService(cOidcUserService())
+                                                                .userService(cOAuth2UserService());
+                                                    } catch (Exception e) {
+                                                        throw new RuntimeException(e);
+                                                    }
+                                                }
+                                        )
+                                        .successHandler(oAuth2SuccessHandler())
+                                        .failureHandler(oAuth2FailureHandler());
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                );
+        http.setSharedObject(ContentNegotiationStrategy.class, new HeaderContentNegotiationStrategy());
+        // Add our custom Token based authentication filter
+        http.addFilterBefore(authorizationFiler(), UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
 
 	/*
