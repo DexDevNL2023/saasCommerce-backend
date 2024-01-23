@@ -26,7 +26,7 @@ public interface AppConstants {
 	@Value("${app.base.url}")
     String BaseUrl = "http://localhost";
     @Value("${app.base.port}")
-    String BasePort = "10000";
+    String BasePort = "9000";
     String fullUrl = BaseUrl + ":" + BasePort;
     String AuthUrl = fullUrl + "/api/auth/";
     String PayPalUrl = fullUrl + "/api/paypal";
