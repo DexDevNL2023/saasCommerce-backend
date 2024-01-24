@@ -1,12 +1,10 @@
 package io.dexproject.achatservice.generic.security.oauth2.users;
 
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
-@Getter
 @Data
 @NoArgsConstructor
 public abstract class OAuth2UserInfo {
