@@ -14,6 +14,7 @@ public abstract class UserAccountMapperAbstract extends AbstractGenericMapper<Us
         super(repository);
     }
 
+    final ADto dto = Mappers.getMapper(AMapper.class).toDto(a);
     protected UserAccount newInstance() {
         return new UserAccount();
     }

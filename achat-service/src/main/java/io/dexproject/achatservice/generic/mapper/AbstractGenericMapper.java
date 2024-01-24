@@ -18,7 +18,7 @@ public abstract class AbstractGenericMapper<D extends BaseRequestDto, R extends 
     protected abstract E newInstance();
 
     @Override
-    public final E map(Long id) {
+    public final E byId(Long id) {
         E entity = newInstance();
         if (id != null) {
             Optional<E> find = repository.findById(id);
@@ -29,7 +29,7 @@ public abstract class AbstractGenericMapper<D extends BaseRequestDto, R extends 
     }
 
     @Override
-    public final Long map(E entity) {
+    public final Long toId(E entity) {
         if (entity == null) {
             return null;
         }
