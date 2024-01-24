@@ -1,21 +1,22 @@
 package io.dexproject.achatservice.generic.config;
 
-import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 class SpringSecurityAuditAwareImpl implements AuditorAware<String> {
 
-    private final UserAccountService userService;
+    private final UserAccountService userAccountService;
 
-    public SpringSecurityAuditAwareImpl(UserAccountService userService) {
-        this.userService = userService;
+    public SpringSecurityAuditAwareImpl(UserAccountService userAccountService) {
+        this.userAccountService = userAccountService;
     }
 
     @Override
@@ -27,9 +28,9 @@ class SpringSecurityAuditAwareImpl implements AuditorAware<String> {
             return Optional.ofNullable("root");
         }
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
-        UserAccount auditUser = userService.loadUserByEmailOrPhone(userPrincipal.getUsername());
-        if (auditUser != null) {
-            return Optional.ofNullable(auditUser.getEmail());
+        userPrincipal = userAccountService.loadUserByUsername(userPrincipal.getUsername());
+        if (userPrincipal != null) {
+            return Optional.ofNullable(userPrincipal.getUsername());
         } else {
             return Optional.ofNullable("root");
         }

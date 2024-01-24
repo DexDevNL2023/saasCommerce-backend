@@ -1,7 +1,12 @@
 package io.dexproject.achatservice.generic.security.oauth2.users;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Map;
 
+@Data
+@NoArgsConstructor
 public class FacebookOAuth2UserInfo extends OAuth2UserInfo {
 	public FacebookOAuth2UserInfo(Map<String, Object> attributes) {
 		super(attributes);

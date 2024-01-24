@@ -1,8 +1,10 @@
 package io.dexproject.achatservice.generic.security.crud.dto.reponse;
 
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
+@NoArgsConstructor
 public class ResourceResponse {
     private Boolean success;
 	private String message;

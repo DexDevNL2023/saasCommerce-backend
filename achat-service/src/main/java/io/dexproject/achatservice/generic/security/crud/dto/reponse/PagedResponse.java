@@ -1,10 +1,12 @@
 package io.dexproject.achatservice.generic.security.crud.dto.reponse;
 
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Value
+@Data
+@NoArgsConstructor
 public class PagedResponse<R extends BaseReponseDto> {
     private List<R> content;
     private int page;

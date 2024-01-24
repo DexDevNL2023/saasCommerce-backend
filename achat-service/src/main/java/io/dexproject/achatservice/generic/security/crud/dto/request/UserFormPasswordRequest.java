@@ -2,9 +2,11 @@ package io.dexproject.achatservice.generic.security.crud.dto.request;
 
 import io.dexproject.achatservice.generic.validators.PasswordMatches;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
+@NoArgsConstructor
 @PasswordMatches
 public class UserFormPasswordRequest {
     @NotBlank(message = "Veillez renseignez votre login svp!")

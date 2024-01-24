@@ -26,80 +26,80 @@ import org.springframework.web.bind.annotation.*;
 @RefreshScope
 public class UserController {
 
-	private final UserAccountService userService;
+	private final UserAccountService userAccountService;
 
-    public UserController(UserAccountService userService) {
-        this.userService = userService;
+	public UserController(UserAccountService userAccountService) {
+		this.userAccountService = userAccountService;
     }
 
     @GetMapping("/me")
 	public ResponseEntity<ResourceResponse> getCurrentUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-			return new ResponseEntity<>(new ResourceResponse(false, "User not exist or not activeted!"), HttpStatus.OK);
+			return new ResponseEntity<>(new ResourceResponse(false, "L'utilisateur n'existe pas ou n'est pas activé!"), HttpStatus.OK);
 		}
 		UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
-		UserAccount profileAccount = userService.loadUserByEmailOrPhone(userPrincipal.getUsername());
-		return new ResponseEntity<>(new ResourceResponse("User finded successfully!", profileAccount), HttpStatus.OK);
+		UserAccount profileAccount = userAccountService.loadUserByEmailOrPhone(userPrincipal.getUsername());
+		return new ResponseEntity<>(new ResourceResponse("Utilisateur trouvé avec succès!", profileAccount), HttpStatus.OK);
 	}
 
 	@PostMapping("/logout")
 	public ResponseEntity<ResourceResponse> logoutUser(@NotEmpty @Valid @RequestBody LoginRequest loginRequest) {
-		userService.logoutUser(loginRequest);
-		return new ResponseEntity<>(new ResourceResponse("User logout successfully!"), HttpStatus.OK);
+		userAccountService.logoutUser(loginRequest);
+		return new ResponseEntity<>(new ResourceResponse("Déconnexion de l'utilisateur réussie!"), HttpStatus.OK);
 	}
 
 	@Secured({"admin", "partner"})
 	@PostMapping("/create")
 	public ResponseEntity<ResourceResponse> createUser(@NotEmpty @Valid @RequestBody UserFormRequest userFormRequest) {
-		return new ResponseEntity<>(new ResourceResponse("User created successfully!", userService.createUser(userFormRequest)), HttpStatus.OK);
+		return new ResponseEntity<>(new ResourceResponse("Utilisateur créé avec succès!", userAccountService.createUser(userFormRequest)), HttpStatus.OK);
 	}
 
 	@PostMapping("/update")
 	public ResponseEntity<ResourceResponse> editUser(@NotEmpty @Valid @RequestBody UserFormRequest userFormRequest) {
-		return new ResponseEntity<>(new ResourceResponse("User updated successfully!", userService.editUser(userFormRequest)), HttpStatus.OK);
+		return new ResponseEntity<>(new ResourceResponse("L'utilisateur a été mis à jour avec succès!", userAccountService.editUser(userFormRequest)), HttpStatus.OK);
 	}
 
 	@PostMapping("/edit/password")
 	public ResponseEntity<ResourceResponse> editPassword(@NotEmpty @Valid @RequestBody UserFormPasswordRequest userFormPasswordRequest) {
-		return new ResponseEntity<>(new ResourceResponse("User password updated successfully!", userService.editPassword(userFormPasswordRequest)), HttpStatus.OK);
+		return new ResponseEntity<>(new ResourceResponse("Mot de passe utilisateur mis à jour avec succès!", userAccountService.editPassword(userFormPasswordRequest)), HttpStatus.OK);
 	}
 
 	@Secured({"admin", "partner"})
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<ResourceResponse> deleteUser(@NotEmpty @PathVariable("id") Long id) {
-		userService.deleteUserById(id);
-		return new ResponseEntity<>(new ResourceResponse("User deleted successfully!"), HttpStatus.OK);
+		userAccountService.deleteUserById(id);
+		return new ResponseEntity<>(new ResourceResponse("Utilisateur supprimé avec succès!"), HttpStatus.OK);
 	}
 
 	@Secured("admin")
 	@DeleteMapping("/suspend/{id}")
 	public ResponseEntity<ResourceResponse> suspendUser(@NotEmpty @PathVariable("id") Long id) {
-		return new ResponseEntity<>(new ResourceResponse("User suspended successfully!", userService.suspendUserById(id)), HttpStatus.OK);
+		return new ResponseEntity<>(new ResourceResponse("Utilisateur suspendu avec succès!", userAccountService.suspendUserById(id)), HttpStatus.OK);
 	}
 
 	@Secured({"admin", "partner", "merchant"})
 	@GetMapping("/get/{id}")
 	public ResponseEntity<ResourceResponse> findUser(@NotEmpty @PathVariable("id") Long id) {
-		return new ResponseEntity<>(new ResourceResponse("User finded successfully!", userService.findUserById(id)), HttpStatus.OK);
+		return new ResponseEntity<>(new ResourceResponse("Utilisateur trouvé avec succès!", userAccountService.findUserById(id)), HttpStatus.OK);
 	}
 
 	@Secured({"admin", "partner", "merchant"})
 	@GetMapping("/get/all")
 	public ResponseEntity<ResourceResponse> getAllUsers() {
-		return new ResponseEntity<>(new ResourceResponse("User finded successfully!!", userService.getAllUsers()), HttpStatus.OK);
+		return new ResponseEntity<>(new ResourceResponse("Utilisateur trouvé avec succès!!", userAccountService.getAllUsers()), HttpStatus.OK);
 	}
 
 	@Secured({"admin", "partner", "merchant"})
 	@GetMapping("/get/page")
 	public ResponseEntity<ResourceResponse> getAllUsersByPage(@RequestParam(name = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
 															   @RequestParam(name = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page) {
-		return new ResponseEntity<>(new ResourceResponse("User finded successfully!", userService.getUsersByPage(page, size)), HttpStatus.OK);
+		return new ResponseEntity<>(new ResourceResponse("Utilisateur trouvé avec succès!", userAccountService.getUsersByPage(page, size)), HttpStatus.OK);
 	}
 
 	@Secured({"admin", "partner", "merchant"})
 	@GetMapping("/search/by")
 	public ResponseEntity<ResourceResponse> searchUser(@RequestParam(name = "motCle", defaultValue = "") String motCle) {
-		return new ResponseEntity<>(new ResourceResponse("User finded successfully!", userService.search(motCle)), HttpStatus.OK);
+		return new ResponseEntity<>(new ResourceResponse("Utilisateur trouvé avec succès!", userAccountService.search(motCle)), HttpStatus.OK);
 	}
 }

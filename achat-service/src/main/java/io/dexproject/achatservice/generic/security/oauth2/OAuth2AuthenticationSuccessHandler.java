@@ -26,10 +26,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Value("${app.oauth2.authorizedRedirectUris}")
     private List<String> listAuthorizedRedirectUri;
 	private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
-	private final UserAccountService userService;
+	private final UserAccountService userAccountService;
 
-	public OAuth2AuthenticationSuccessHandler(UserAccountService userService, HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
-		this.userService = userService;
+	public OAuth2AuthenticationSuccessHandler(UserAccountService userAccountService, HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
+		this.userAccountService = userAccountService;
 		this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
 	}
 
@@ -56,7 +56,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 		String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
-		String token = userService.processOAuthLogin(userPrincipal);
+		String token = userAccountService.processOAuthLogin(userPrincipal);
 
 		return UriComponentsBuilder.fromUriString(targetUrl).queryParam("token", token).build().toUriString();
 	}

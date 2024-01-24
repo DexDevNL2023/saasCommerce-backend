@@ -4,7 +4,6 @@ import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -19,7 +18,6 @@ get username from JWT
 validate a JWT
 */
 @Component
-@RequiredArgsConstructor
 public class JwtUtils {
 	
     // parse JWT token from request

@@ -6,9 +6,7 @@ import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.GenericUtils;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -16,8 +14,6 @@ import java.util.Date;
 
 @Data
 @NoArgsConstructor
-@Getter
-@Setter
 @MappedSuperclass
 public abstract class AbstractToken implements Serializable {
     @Serial

@@ -17,54 +17,54 @@ import org.springframework.web.bind.annotation.*;
 @RefreshScope
 public class AuthController {
 
-    private final UserAccountService userService;
+    private final UserAccountService userAccountService;
 
-    public AuthController(UserAccountService userService) {
-        this.userService = userService;
+    public AuthController(UserAccountService userAccountService) {
+        this.userAccountService = userAccountService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<ResourceResponse> loginUser(@NotEmpty @Valid @RequestBody LoginRequest loginRequest) {
-        LoginReponse loginDto = userService.loginUser(loginRequest);
-        return new ResponseEntity<>(new ResourceResponse("User login successfully!", loginDto), HttpStatus.OK);
+        LoginReponse loginDto = userAccountService.loginUser(loginRequest);
+        return new ResponseEntity<>(new ResourceResponse("L'utilisateur s'est connecté avec succès!", loginDto), HttpStatus.OK);
     }
 
     @PostMapping("/usingqr/{emailOrPhone}")
     public ResponseEntity<ResourceResponse> verifyCode(@NotEmpty @Valid @RequestParam(value = "emailOrPhone") String emailOrPhone) {
-        LoginReponse loginDto = userService.loginUsingQrCode(emailOrPhone);
-        return new ResponseEntity<>(new ResourceResponse("User login successfully!", loginDto), HttpStatus.OK);
+        LoginReponse loginDto = userAccountService.loginUsingQrCode(emailOrPhone);
+        return new ResponseEntity<>(new ResourceResponse("L'utilisateur s'est connecté avec succès!", loginDto), HttpStatus.OK);
     }
 
     @PostMapping("/register")
     public ResponseEntity<ResourceResponse> registerUser(@NotEmpty @Valid @RequestBody SignupRequest signUpRequest) {
-        userService.registerUser(signUpRequest);
-        return new ResponseEntity<>(new ResourceResponse("User registered successfully!"), HttpStatus.OK);
+        userAccountService.registerUser(signUpRequest);
+        return new ResponseEntity<>(new ResourceResponse("Utilisateur enregistré avec succès!"), HttpStatus.OK);
     }
 
     @PostMapping("/token/verify/{token}")
     public ResponseEntity<ResourceResponse> confirmRegistration(@NotEmpty @Valid @RequestParam(value = "token") String token) {
-        String result = userService.validateVerificationToken(token);
-        return new ResponseEntity<>(new ResourceResponse("Verification user registration successfully!", result), HttpStatus.OK);
+        String result = userAccountService.validateVerificationToken(token);
+        return new ResponseEntity<>(new ResourceResponse("Vérification de l'enregistrement avec succès!", result), HttpStatus.OK);
     }
 
     @PostMapping("/token/resend/{token}")
     @ResponseBody
     public ResponseEntity<ResourceResponse> resendRegistrationToken(@NotEmpty @Valid @RequestParam(value = "token") String token) {
-        if (!userService.resendVerificationToken(token)) {
-            return new ResponseEntity<>(new ResourceResponse("Token not found!!"), HttpStatus.OK);
+        if (!userAccountService.resendVerificationToken(token)) {
+            return new ResponseEntity<>(new ResourceResponse("Jeton introuvable!!"), HttpStatus.OK);
         }
-        return new ResponseEntity<>(new ResourceResponse("Resend registration token successfully!"), HttpStatus.OK);
+        return new ResponseEntity<>(new ResourceResponse("Renvoyer le jeton d'enregistrement avec succès!"), HttpStatus.OK);
     }
 
-    @PostMapping("/password/forgot/{emailOrPhone}")
-    public ResponseEntity<ResourceResponse> forgotPassword(@NotEmpty @Valid @RequestParam(value = "emailOrPhone") String emailOrPhone) {
-        userService.forgotPassword(emailOrPhone);
-        return new ResponseEntity<>(new ResourceResponse("Forgot password token successfully!"), HttpStatus.OK);
+    @PostMapping("/password/forgot/{email}")
+    public ResponseEntity<ResourceResponse> forgotPassword(@NotEmpty @Valid @RequestParam(value = "email") String email) {
+        userAccountService.forgotPassword(email);
+        return new ResponseEntity<>(new ResourceResponse("Jeton de mot de passe oublié avec succès!"), HttpStatus.OK);
     }
 
     @PostMapping("/password/reset/{token}")
     public ResponseEntity<ResourceResponse> resetPassword(@NotEmpty @Valid @RequestParam(value = "token") String token) {
-        userService.resetPassword(token);
-        return new ResponseEntity<>(new ResourceResponse("Reset password successfully!"), HttpStatus.OK);
+        userAccountService.resetPassword(token);
+        return new ResponseEntity<>(new ResourceResponse("Réinitialiser le mot de passe avec succès!"), HttpStatus.OK);
     }
 }

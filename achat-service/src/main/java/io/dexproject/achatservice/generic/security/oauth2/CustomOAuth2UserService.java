@@ -27,10 +27,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Value("${linkedin.email.address.uri}")
 	String emailEndpointUri;
 
-	private final UserAccountService userService;
+	private final UserAccountService userAccountService;
 
-    public CustomOAuth2UserService(UserAccountService userService) {
-		this.userService = userService;
+	public CustomOAuth2UserService(UserAccountService userAccountService) {
+		this.userAccountService = userAccountService;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			if (provider.equals(SocialProvider.LINKEDIN.getLabel())) {
 				populateEmailAddressFromLinkedIn(oAuth2UserRequest, attributes);
 			}
-			return userService.processOAuthRegister(provider, attributes, null, null);
+			return userAccountService.processOAuthRegister(provider, attributes, null, null);
 		} catch (AuthenticationException ex) {
 			throw ex;
 		} catch (Exception ex) {

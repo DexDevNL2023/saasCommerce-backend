@@ -1,9 +1,11 @@
 package io.dexproject.achatservice.generic.security.crud.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
+@NoArgsConstructor
 public class LoginRequest {
     @NotBlank(message = "Veillez renseignez votre login svp!")
     private String emailOrPhone;

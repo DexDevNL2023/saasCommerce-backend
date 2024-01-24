@@ -2,9 +2,11 @@ package io.dexproject.achatservice.generic.security.oauth2.users;
 
 import io.dexproject.achatservice.generic.exceptions.OAuth2AuthenticationProcessingException;
 import io.dexproject.achatservice.generic.security.crud.entities.enums.SocialProvider;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Component
 public class OAuth2UserInfoFactory {
 	public static OAuth2UserInfo getOAuth2UserInfo(String registrationId, Map<String, Object> attributes) {
 		if (registrationId.equalsIgnoreCase(SocialProvider.GOOGLE.getLabel())) {

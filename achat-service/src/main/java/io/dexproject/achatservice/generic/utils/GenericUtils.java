@@ -2,11 +2,13 @@ package io.dexproject.achatservice.generic.utils;
 
 import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
 import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.internal.bytebuddy.utility.RandomString;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -27,7 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Pattern;
 
-@Slf4j
+@Component
 public class GenericUtils {
 
   public static String upperCaseTrim(String str) {
@@ -251,5 +253,16 @@ public class GenericUtils {
         case "Esp" -> "Esp";
         default -> "Fr"; // default language
     };
+  }
+
+  public static boolean isValidEmailAddress(String email) {
+    boolean result = true;
+    try {
+      InternetAddress emailAddr = new InternetAddress(email);
+      emailAddr.validate();
+    } catch (AddressException ex) {
+      result = false;
+    }
+    return result;
   }
 }

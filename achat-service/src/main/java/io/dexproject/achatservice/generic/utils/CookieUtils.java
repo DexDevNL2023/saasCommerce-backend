@@ -3,7 +3,6 @@ package io.dexproject.achatservice.generic.utils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.SerializationUtils;
 
@@ -11,7 +10,6 @@ import java.util.Base64;
 import java.util.Optional;
 
 @Component
-@RequiredArgsConstructor
 public class CookieUtils {
 
 	public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {

@@ -9,8 +9,6 @@ import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.QRCodeGenerator;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -25,18 +23,20 @@ import java.util.Map;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class MailServiceImpl implements MailService {
 
-	@Autowired
-	private JavaMailSender mailSender;
+	private final JavaMailSender mailSender;
 
-	@Autowired
-	Configuration freemarkerConfiguration;
-	
-	@Autowired
-	private MessageService messageService;
-	
+	private final Configuration freemarkerConfiguration;
+
+	private final MessageService messageService;
+
+	public MailServiceImpl(JavaMailSender mailSender, Configuration freemarkerConfiguration, MessageService messageService) {
+		this.mailSender = mailSender;
+		this.freemarkerConfiguration = freemarkerConfiguration;
+		this.messageService = messageService;
+	}
+
 	@Async
 	@Override
 	public void sendVerificationToken(UserAccount user, String token) {

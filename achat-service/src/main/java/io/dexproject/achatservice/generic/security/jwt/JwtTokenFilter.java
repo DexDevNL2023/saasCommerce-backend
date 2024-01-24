@@ -8,7 +8,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -50,13 +49,12 @@ UserDetails userDetails =(UserDetails) SecurityContextHolder.getContext().getAut
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-	@Autowired
-	private JwtUtils jwtUtils;
+	private final JwtUtils jwtUtils;
+	private final UserAccountService userAccountService;
 
-	private final UserAccountService userService;
-
-    public JwtTokenFilter(UserAccountService userService) {
-		this.userService = userService;
+	public JwtTokenFilter(JwtUtils jwtUtils, UserAccountService userAccountService) {
+		this.jwtUtils = jwtUtils;
+		this.userAccountService = userAccountService;
 	}
 
 	// cette mtd s'exécute a chaque fois que le backend reçoit une requete
@@ -73,7 +71,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 		        String username = jwtUtils.getUserNameFromToken(jwt);
 		        System.out.println("Username from JWT accessToken: " + username);
 		        if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-		        	UserAccount user = userService.loadUserByEmailOrPhone(username);
+					UserAccount user = userAccountService.loadUserByEmailOrPhone(username);
 					Collection<? extends GrantedAuthority> authorities = GenericUtils.buildSimpleGrantedAuthorities(user.getRole());
 		            System.out.println("roles="+ authorities);
 	                SecurityContext context = SecurityContextHolder.createEmptyContext();

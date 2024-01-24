@@ -1,25 +1,30 @@
 package io.dexproject.achatservice.generic.security.crud.dto.request;
 
 import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.services.impl.UserAccountServiceImpl;
 import io.dexproject.achatservice.generic.validators.EnumValidator;
+import io.dexproject.achatservice.generic.validators.UniqueValidator;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
+@NoArgsConstructor
 public class SignupRequest {
 	private String emailOrPhone;
 	@NotBlank(message = "Le nom est obligatoire")
+	@UniqueValidator(service = UserAccountServiceImpl.class, fieldName = "lastName", message = "Le nom {} est déjà utilisé")
 	private String lastName;
-	@NotEmpty
 	private String firstName;
 	@NotBlank(message = "L'email est obligatoire")
 	@Email(message = "le format de l'email est incorrecte", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
-    private String email;
-    private String phone;
-    private String adresse;
+	@UniqueValidator(service = UserAccountServiceImpl.class, fieldName = "email", message = "L'e-mail {} est déjà utilisé")
+	private String email;
+	@UniqueValidator(service = UserAccountServiceImpl.class, fieldName = "phone", message = "Le téléphone {} est déjà utilisé")
+	private String phone;
+	private String adresse;
 	private boolean usingQr;
 	private String langKey;
 	@Size(max = 256, message = "La taille de l'image doit être inférieur ou égale à 256")

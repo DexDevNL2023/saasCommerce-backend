@@ -2,8 +2,10 @@ package io.dexproject.achatservice.generic.security.crud.dto.reponse;
 
 import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class UserReponse extends BaseReponseDto {
     private String displayName;
     private String lastName;

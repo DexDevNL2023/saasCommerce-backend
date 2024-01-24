@@ -12,17 +12,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomOidcUserService extends OidcUserService {
 
-	private final UserAccountService userService;
+	private final UserAccountService userAccountService;
 
-    public CustomOidcUserService(UserAccountService userService) {
-		this.userService = userService;
+	public CustomOidcUserService(UserAccountService userAccountService) {
+		this.userAccountService = userAccountService;
 	}
 
 	@Override
 	public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
 		OidcUser oidcUser = super.loadUser(userRequest);
 		try {
-			return userService.processOAuthRegister(userRequest.getClientRegistration().getRegistrationId(), oidcUser.getAttributes(), oidcUser.getIdToken(), oidcUser.getUserInfo());
+			return userAccountService.processOAuthRegister(userRequest.getClientRegistration().getRegistrationId(), oidcUser.getAttributes(), oidcUser.getIdToken(), oidcUser.getUserInfo());
 		} catch (AuthenticationException ex) {
 			throw ex;
 		} catch (Exception ex) {

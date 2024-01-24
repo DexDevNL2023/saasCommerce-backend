@@ -2,7 +2,6 @@ package io.dexproject.achatservice.generic.config;
 
 import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -13,8 +12,11 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
     private boolean alreadySetup = false;
 
-    @Autowired
-    private UserAccountService userAccountService;
+    private final UserAccountService userAccountService;
+
+    public SetupDataLoader(UserAccountService userAccountService) {
+        this.userAccountService = userAccountService;
+    }
 
     @Override
     @Transactional

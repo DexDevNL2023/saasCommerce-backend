@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public interface AppConstants {
-    String GENERIC_PREFIX="X";
+    String GENERIC_PREFIX = "ENTITY";
 
     String JWT_HEADER_NAME="Authorization";
     String SECRET="vnlangessama@gmail.com";

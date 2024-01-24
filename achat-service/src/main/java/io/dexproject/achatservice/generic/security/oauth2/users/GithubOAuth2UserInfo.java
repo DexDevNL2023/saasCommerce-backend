@@ -1,7 +1,12 @@
 package io.dexproject.achatservice.generic.security.oauth2.users;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Map;
 
+@Data
+@NoArgsConstructor
 public class GithubOAuth2UserInfo extends OAuth2UserInfo {
 
 	public GithubOAuth2UserInfo(Map<String, Object> attributes) {
