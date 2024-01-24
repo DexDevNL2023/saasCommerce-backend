@@ -7,11 +7,11 @@ import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntit
 
 import java.util.Optional;
 
-public abstract class GenericMapperImpl<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements GenericMapper<D, R, E> {
+public abstract class AbstractGenericMapper<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements GenericMapper<D, R, E> {
 
     protected final GenericRepository<E> repository;
 
-    protected GenericMapperImpl(GenericRepository<E> repository) {
+    protected AbstractGenericMapper(GenericRepository<E> repository) {
         this.repository = repository;
     }
 
@@ -30,9 +30,9 @@ public abstract class GenericMapperImpl<D extends BaseRequestDto, R extends Base
 
     @Override
     public final Long map(E entity) {
-        if (entity != null) {
-            return entity.getId();
+        if (entity == null) {
+            return null;
         }
-        return null;
+        return entity.getId();
     }
 }

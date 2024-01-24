@@ -15,9 +15,7 @@ public interface GenericMapper<D extends BaseRequestDto, R extends BaseReponseDt
     R toDto(E entity);
     List<E> toEntity(List<D> dtos);
     List<R> toDto(List<E> entities);
-
     E map(Long id);
-
     Long map(E entity);
     @Named("map")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
