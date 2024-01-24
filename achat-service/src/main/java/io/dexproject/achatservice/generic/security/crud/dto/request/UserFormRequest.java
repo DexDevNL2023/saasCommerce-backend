@@ -23,7 +23,7 @@ public class UserFormRequest extends BaseRequestDto {
     @UniqueValidator(service = UserAccountServiceImpl.class, fieldName = "phone", message = "Le téléphone {} est déjà utilisé")
     private String phone;
     private String adresse;
-    private boolean usingQr;
+    private boolean usingQr = false;
     private String langKey;
     @Size(max = 256, message = "La taille de l'image doit être inférieur ou égale à 256")
     private String imageUrl;

@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.mapper;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.modelmapper.convention.MatchingStrategies;
 
 import java.util.List;
@@ -30,12 +31,12 @@ public class ObjectMapperUtils {
      * <p>Remarque : l'objet outClass doit avoir un constructeur par défaut sans argument</p>
      *
      * @param <D>      type d'objet résultat.
-     * @param <T>      type d'objet source à partir duquel mapper.
+     * @param <S>      type d'objet source à partir duquel mapper.
      * @param entity   entité qui doit être cartographiée.
      * @param outClass classe d’objet de résultat.
      * @return nouvel objet de type <code>outClass</code>.
      */
-    public static <D, T> D map(final T entity, Class<D> outClass) {
+    public static <S, D> D map(final S entity, Class<D> outClass) {
         return modelMapper.map(entity, outClass);
     }
 
@@ -45,10 +46,10 @@ public class ObjectMapperUtils {
      * @param entityList liste des entités qui doivent être mappées
      * @param outCLass   classe de l'élément de liste de résultats
      * @param <D>        type d'objets dans la liste de résultats
-     * @param <T>        type d'entité dans <code>entityList</code>
+     * @param <S>        type d'entité dans <code>entityList</code>
      * @return liste des objets mappés de type <code><D></code>.
      */
-    public static <D, T> List<D> mapAll(final List<T> entityList, Class<D> outCLass) {
+    public static <S, D> List<D> mapAll(final List<S> entityList, Class<D> outCLass) {
         return entityList.stream()
                 .map(entity -> map(entity, outCLass))
                 .collect(Collectors.toList());
@@ -63,5 +64,18 @@ public class ObjectMapperUtils {
     public static <S, D> D map(final S source, D destination) {
         modelMapper.map(source, destination);
         return destination;
+    }
+
+    /**
+     * Convertit une source en une destination de type.
+     *
+     * @param source          L'objet source
+     * @param typeDestination Le type de destination
+     * @param mapping         Les propriétés du processus de mappage
+     * @return L'objet créé
+     */
+    public static <S, D> D mapperWithMapping(S source, Class<D> typeDestination, PropertyMap<S, D> mapping) {
+        modelMapper.addMappings(mapping);
+        return modelMapper.map(source, typeDestination);
     }
 }

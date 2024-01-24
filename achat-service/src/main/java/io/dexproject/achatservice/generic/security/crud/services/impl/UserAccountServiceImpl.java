@@ -4,7 +4,7 @@ import io.dexproject.achatservice.generic.email.MailService;
 import io.dexproject.achatservice.generic.exceptions.OAuth2AuthenticationProcessingException;
 import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
 import io.dexproject.achatservice.generic.mapper.GenericMapper;
-import io.dexproject.achatservice.generic.security.crud.converters.UserAccountConverter;
+import io.dexproject.achatservice.generic.mapper.ObjectMapperUtils;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.LoginReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.UserReponse;
@@ -54,15 +54,13 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
 
     private final PasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(10);
     private final MailService mailService;
-    private final UserAccountConverter userConverter;
     private final JwtUtils jwtUtils;
     private final UserAccountRepository repository;
     private final VerifyTokenRepository tokenRepository;
 
-    public UserAccountServiceImpl(JpaEntityInformation<UserAccount, Long> entityInformation, UserAccountRepository repository, GenericMapper<UserFormRequest, UserReponse, UserAccount> mapper, MailService mailService, UserAccountConverter userConverter, JwtUtils jwtUtils, VerifyTokenRepository tokenRepository) {
+    public UserAccountServiceImpl(JpaEntityInformation<UserAccount, Long> entityInformation, UserAccountRepository repository, GenericMapper<UserFormRequest, UserReponse, UserAccount> mapper, MailService mailService, JwtUtils jwtUtils, VerifyTokenRepository tokenRepository) {
         super(entityInformation, repository, mapper);
         this.mailService = mailService;
-        this.userConverter = userConverter;
         this.jwtUtils = jwtUtils;
         this.repository = repository;
         this.tokenRepository = tokenRepository;
@@ -75,7 +73,17 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
             throw new ResourceNotFoundException("L'e-mail ou le téléphone est déjà utilisé!");
         // Create new user's account
         // Mapper Dto
-        UserAccount newUser = userConverter.convertSignupTo(userForm);
+        UserAccount newUser = ObjectMapperUtils.map(userForm, UserAccount.class);
+        // On verifie que la langue q ete rensegnee
+        if (userForm.getLangKey() == null) {
+            newUser.setLangKey("Fr"); // default language
+        } else { // on verifie aue la langue est prise en co;pte dans l'application
+            newUser.setLangKey(GenericUtils.verifieFormatLangue(userForm.getLangKey()));
+        }
+        // Genered url de login
+        final String loginURL = AppConstants.AuthUrl + "usingqr?login=" + newUser.getEmailOrPhone();
+        newUser.setLoginUrl(loginURL);
+        newUser.setActived(newUser.isUsingQr());
         // Create user's account
         repository.saveAndFlush(newUser);
         if (newUser.isUsingQr()) {
@@ -161,7 +169,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
         loginUser.setConnected(true);
         repository.saveAndFlush(loginUser);
         // Mapper Dto
-        return userConverter.convertToLoginDto(loginUser);
+        return ObjectMapperUtils.map(loginUser, LoginReponse.class);
     }
 
     @Override
@@ -184,7 +192,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
         loginUser.setConnected(true);
         repository.saveAndFlush(loginUser);
         // Mapper Dto
-        return userConverter.convertToLoginDto(loginUser);
+        return ObjectMapperUtils.map(loginUser, LoginReponse.class);
     }
 
     @Override
@@ -208,12 +216,22 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
             throw new ResourceNotFoundException("L'e-mail ou le téléphone est déjà utilisé!");
         // Create new user's account
         // Mapper Dto
-        UserAccount newUser = userConverter.convertFromTo(userForm);
+        UserAccount newUser = ObjectMapperUtils.map(userForm, UserAccount.class);
+        // On verifie que la langue q ete rensegnee
+        if (userForm.getLangKey() == null) {
+            newUser.setLangKey("Fr"); // default language
+        } else { // on verifie aue la langue est prise en co;pte dans l'application
+            newUser.setLangKey(GenericUtils.verifieFormatLangue(userForm.getLangKey()));
+        }
+        // Genered url de login
+        final String loginURL = AppConstants.AuthUrl + "usingqr?login=" + newUser.getEmailOrPhone();
+        newUser.setLoginUrl(loginURL);
+        newUser.setActived(newUser.isUsingQr());
         newUser.setPassword(bCryptPasswordEncoder.encode(""));
         // Create user's account
         newUser = repository.saveAndFlush(newUser);
         // Mapper Dto
-        return userConverter.convertToUserDto(newUser);
+        return ObjectMapperUtils.map(newUser, UserReponse.class);
     }
 
     @Override
@@ -223,14 +241,24 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
             throw new ResourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");
         // Create new user's account
         // Mapper Dto
-        UserAccount updatedUser = userConverter.convertFromTo(userForm);
-        UserAccount findedUser = repository.findByEmailOrPhone(userForm.getEmailOrPhone())
+        UserAccount updatedUser = ObjectMapperUtils.map(userForm, UserAccount.class);
+        // On verifie que la langue q ete rensegnee
+        if (userForm.getLangKey() == null) {
+            updatedUser.setLangKey("Fr"); // default language
+        } else { // on verifie aue la langue est prise en co;pte dans l'application
+            updatedUser.setLangKey(GenericUtils.verifieFormatLangue(userForm.getLangKey()));
+        }
+        // Genered url de login
+        final String loginURL = AppConstants.AuthUrl + "usingqr?login=" + updatedUser.getEmailOrPhone();
+        updatedUser.setLoginUrl(loginURL);
+        updatedUser.setActived(updatedUser.isUsingQr());
+        UserAccount findUser = repository.findByEmailOrPhone(userForm.getEmailOrPhone())
                 .orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
-        updatedUser.setId(findedUser.getId());
+        updatedUser.setId(findUser.getId());
         // Create user's account
         updatedUser = repository.saveAndFlush(updatedUser);
         // Mapper Dto
-        return userConverter.convertToUserDto(updatedUser);
+        return ObjectMapperUtils.map(updatedUser, UserReponse.class);
     }
 
     @Override
@@ -249,7 +277,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
         updatedUser.setPassword(bCryptPasswordEncoder.encode(userForm.getNewPassword()));
         updatedUser = repository.saveAndFlush(updatedUser);
         // Mapper Dto
-        return userConverter.convertToUserDto(updatedUser);
+        return ObjectMapperUtils.map(updatedUser, UserReponse.class);
     }
 
     @Override
@@ -262,7 +290,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
         updatedUser.setActived(false);
         updatedUser = repository.saveAndFlush(updatedUser);
         // Mapper Dto
-        return userConverter.convertToUserDto(updatedUser);
+        return ObjectMapperUtils.map(updatedUser, UserReponse.class);
     }
 
     @Override
@@ -277,7 +305,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
     public UserReponse findUserById(Long id) {
         UserAccount userAccount = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
         // Mapper Dto
-        return userConverter.convertToUserDto(userAccount);
+        return ObjectMapperUtils.map(userAccount, UserReponse.class);
     }
 
     @Override
@@ -297,7 +325,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
 
     @Override
     public List<UserReponse> getAllUsers() {
-        return userConverter.convertToUserListDto(repository.findAll());
+        return ObjectMapperUtils.mapAll(repository.findAll(), UserReponse.class);
     }
 
     @Override
@@ -309,13 +337,14 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
         Page<UserAccount> allUsers = repository.findAll(pageable);
         if (allUsers.getNumberOfElements() == 0)
             throw new ResourceNotFoundException("La liste de recherche d'utilisateurs est vide!");
+        List<UserAccount> list = allUsers.stream().toList();
         // Mapper Dto
-        return new PagedResponse<>(userConverter.convertToUserPageDto(allUsers), allUsers.getNumber(), allUsers.getSize(), allUsers.getTotalElements(), allUsers.getTotalPages(), allUsers.isLast());
+        return new PagedResponse<>(ObjectMapperUtils.mapAll(list, UserReponse.class), allUsers.getNumber(), allUsers.getSize(), allUsers.getTotalElements(), allUsers.getTotalPages(), allUsers.isLast());
     }
 
     @Override
     public List<UserReponse> search(String motCle) {
-        return userConverter.convertToUserListDto(repository.search(motCle));
+        return ObjectMapperUtils.mapAll(repository.search(motCle), UserReponse.class);
     }
 
     @Override

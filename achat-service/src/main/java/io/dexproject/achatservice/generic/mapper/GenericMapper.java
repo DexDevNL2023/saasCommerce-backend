@@ -15,11 +15,11 @@ public interface GenericMapper<D extends BaseRequestDto, R extends BaseReponseDt
     R toDto(E entity);
     List<E> toEntity(List<D> dtos);
     List<R> toDto(List<E> entities);
+
+    E map(Long id);
+
+    Long map(E entity);
     @Named("map")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    E map(@MappingTarget Class<? extends E> entity, Object from);
-
-    @Named("partialUpdate")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void partialUpdate(@MappingTarget E entity, D dto);
+    E map(@MappingTarget E entity, Object from);
 }
