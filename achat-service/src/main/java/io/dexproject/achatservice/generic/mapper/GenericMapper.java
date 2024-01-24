@@ -18,4 +18,8 @@ public interface GenericMapper<D extends BaseRequestDto, R extends BaseReponseDt
     @Named("map")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     E map(@MappingTarget Class<? extends E> entity, Object from);
+
+    @Named("partialUpdate")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void partialUpdate(@MappingTarget E entity, D dto);
 }
