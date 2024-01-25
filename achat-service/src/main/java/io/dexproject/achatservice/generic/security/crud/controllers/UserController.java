@@ -4,7 +4,6 @@ import io.dexproject.achatservice.generic.security.crud.dto.reponse.ResourceResp
 import io.dexproject.achatservice.generic.security.crud.dto.request.LoginRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormPasswordRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormRequest;
-import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import jakarta.validation.Valid;
@@ -14,10 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @PreAuthorize("hasRole('admin') or hasRole('partner') or hasRole('merchant') or hasRole('customer')")
@@ -34,13 +29,7 @@ public class UserController {
 
     @GetMapping("/me")
 	public ResponseEntity<ResourceResponse> getCurrentUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-			return new ResponseEntity<>(new ResourceResponse(false, "L'utilisateur n'existe pas ou n'est pas activé!"), HttpStatus.OK);
-		}
-		UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
-		UserAccount profileAccount = userAccountService.loadUserByEmailOrPhone(userPrincipal.getUsername());
-		return new ResponseEntity<>(new ResourceResponse("Utilisateur trouvé avec succès!", profileAccount), HttpStatus.OK);
+		return new ResponseEntity<>(new ResourceResponse("Utilisateur trouvé avec succès!", userAccountService.loadCurrentUser()), HttpStatus.OK);
 	}
 
 	@PostMapping("/logout")

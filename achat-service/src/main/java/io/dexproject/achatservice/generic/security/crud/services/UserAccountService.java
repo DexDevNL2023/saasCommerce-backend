@@ -44,7 +44,7 @@ public interface UserAccountService extends ServiceGeneric<UserFormRequest, User
 
     UserReponse findUserById(Long id);
 
-    UserAccount loadUserByEmailOrPhone(String emailOrPhone);
+    UserAccount loadCurrentUser();
 
     UserDetails loadUserByUsername(String emailOrPhone) throws UsernameNotFoundException;
 

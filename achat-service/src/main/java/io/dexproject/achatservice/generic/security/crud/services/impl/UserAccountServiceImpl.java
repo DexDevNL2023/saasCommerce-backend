@@ -29,6 +29,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -309,8 +311,13 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
     }
 
     @Override
-    public UserAccount loadUserByEmailOrPhone(String emailOrPhone) {
-        return repository.findByEmailOrPhone(emailOrPhone)
+    public UserAccount loadCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            throw new ResourceNotFoundException("L'utilisateur n'existe pas ou n'est pas activé!");
+        }
+        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+        return repository.findByEmailOrPhone(userPrincipal.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
     }
 

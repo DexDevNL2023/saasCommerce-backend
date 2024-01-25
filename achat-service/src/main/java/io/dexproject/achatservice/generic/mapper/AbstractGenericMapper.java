@@ -5,7 +5,9 @@ import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponseD
 import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequestDto;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public abstract class AbstractGenericMapper<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements GenericMapper<D, R, E> {
 
@@ -19,13 +21,26 @@ public abstract class AbstractGenericMapper<D extends BaseRequestDto, R extends 
 
     @Override
     public final E byId(Long id) {
+        if (id == null) {
+            return null;
+        }
         E entity = newInstance();
-        if (id != null) {
-            Optional<E> find = repository.findById(id);
+        Optional<E> find = repository.findById(id);
+        if (find.isPresent()) {
             E dto = find.get();
             return map(entity, dto);
         }
         return null;
+    }
+
+    @Override
+    public final List<E> byId(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return null;
+        }
+        return ids.stream()
+                .map(this::byId)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -34,5 +49,15 @@ public abstract class AbstractGenericMapper<D extends BaseRequestDto, R extends 
             return null;
         }
         return entity.getId();
+    }
+
+    @Override
+    public final List<Long> toId(List<E> entities) {
+        if (entities.isEmpty()) {
+            return null;
+        }
+        return entities.stream()
+                .map(this::toId)
+                .collect(Collectors.toList());
     }
 }

@@ -1,5 +1,10 @@
 package io.dexproject.achatservice.generic.validators;
 
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.ResourceResponse;
+import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
+import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -7,27 +12,38 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
+@Slf4j
 public class AuthorizeUserAspect {
+
+    private final UserAccountService userAccountService;
+
+    public AuthorizeUserAspect(UserAccountService userAccountService) {
+        this.userAccountService = userAccountService;
+    }
 
     @Around("@annotation(AuthorizeUser)")
     public Object authorize(ProceedingJoinPoint joinPoint) throws Throwable {
 
         // AVANT L'EXÉCUTION DE LA MÉTHODE
-        Integer user_id = (Integer) joinPoint.getArgs()[0];
-        System.out.println("ID de l'utilisateur : " + user_id);
+        UserAccount account = userAccountService.loadCurrentUser();
+        log.info("ID de l'utilisateur : " + account.getId());
 
         // Seul l'ID utilisateur 33 est autorisé à se connecter, les autres utilisateurs ne sont pas des utilisateurs valides.
-        if (user_id != 33) {
+        if (hasAuthorized(account.getRole())) {
             // écrire la logique métier de vérification d'autorisation
-            System.out.println("Utilisateur invalide : " + user_id);
-            return user_id + " est un utilisateur invalide. Veuillez vous connecter avec les informations d'identification correctes.";
+            log.info("L'utilisateur n'a pas l'authorisation nécésaire pour effectuer cette action : " + joinPoint.toShortString());
+            return new ResourceResponse(false, "L'utilisateur n'a pas l'authorisation nécésaire pour effectuer cette action : " + joinPoint.toShortString());
         }
 
         // C'est là que la MÉTHODE RÉELLE sera invoquée
         Object result = joinPoint.proceed();
 
         // APRÈS L'EXÉCUTION DE LA MÉTHODE
-        System.out.println(result);
+        log.info(result.toString());
         return result;
+    }
+
+    private boolean hasAuthorized(RoleName authoritie) {
+        return authoritie.equals(RoleName.ADMIN);
     }
 }
