@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
+public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
 
   private final JpaEntityInformation<E, Long> entityInformation;
   protected final GenericRepository<E> repository;
@@ -157,6 +157,15 @@ public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseRe
       } else {
         return repository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
       }
+    } catch (Exception e) {
+      throw new InternalException(e.getMessage());
+    }
+  }
+
+  @Override
+  public List<R> getAll(List<Long> ids) throws RessourceNotFoundException {
+    try {
+      return repository.findAllById(ids).stream().map(mapper::toDto).collect(Collectors.toList());
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }

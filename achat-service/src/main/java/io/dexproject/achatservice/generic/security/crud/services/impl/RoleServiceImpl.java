@@ -82,7 +82,7 @@ public class RoleServiceImpl extends ServiceGenericImpl<RoleRequest, RoleReponse
             Droit droit = new Droit(dto.getKey(), dto.getLibelle(), dto.getVerbe(), "", dto.getIsDefault(), module);
             droit = droitRepository.save(droit);
             for (Role role : roleRepository.findAll()) {
-                Permission permission = new Permission(role, droit, role.getIsSuper());
+                Permission permission = new Permission(role, droit, role.getIsSuper() || dto.getIsDefault());
                 permissionRepository.save(permission);
             }
         }
