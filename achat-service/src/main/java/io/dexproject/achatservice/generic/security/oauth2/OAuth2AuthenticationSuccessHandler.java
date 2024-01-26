@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.generic.security.oauth2;
 
-import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
+import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.CookieUtils;
@@ -51,7 +51,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		Optional<String> redirectUri = CookieUtils.getCookie(request, AppConstants.REDIRECT_URI_PARAM_COOKIE_NAME).map(Cookie::getValue);
 
 		if (redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
-			throw new ResourceNotFoundException("Désolé! Nous avons un Url de redirection non autorisé et nous ne pouvons pas procéder à l'authentification");
+            throw new RessourceNotFoundException("Désolé! Nous avons un Url de redirection non autorisé et nous ne pouvons pas procéder à l'authentification");
 		}
 
 		String targetUrl = redirectUri.orElse(getDefaultTargetUrl());

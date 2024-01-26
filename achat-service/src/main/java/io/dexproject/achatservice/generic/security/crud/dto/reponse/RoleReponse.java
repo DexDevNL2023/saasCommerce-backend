@@ -2,12 +2,10 @@ package io.dexproject.achatservice.generic.security.crud.dto.reponse;
 
 import io.dexproject.achatservice.generic.security.crud.entities.Role;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 public class RoleReponse extends BaseReponse {
     private String libelle;
     private Boolean isSuper;

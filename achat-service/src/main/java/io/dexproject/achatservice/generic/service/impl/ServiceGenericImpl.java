@@ -1,7 +1,7 @@
 package io.dexproject.achatservice.generic.service.impl;
 
 import io.dexproject.achatservice.generic.exceptions.InternalException;
-import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
+import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
 import io.dexproject.achatservice.generic.exceptions.SuppressionException;
 import io.dexproject.achatservice.generic.filter.dto.Filter;
 import io.dexproject.achatservice.generic.filter.dto.FilterWrap;
@@ -54,12 +54,12 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
    * @param fields
    * @param limit
    * @return List<R>
-   * @throws ResourceNotFoundException
+   * @throws RessourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public List<R> search(String text, List<String> fields, int limit) throws ResourceNotFoundException {
+  public List<R> search(String text, List<String> fields, int limit) throws RessourceNotFoundException {
       List<String> fieldsToSearchBy = fields.isEmpty() ? AppConstants.SEARCHABLE_FIELDS : fields;
       boolean containsInvalidField = fieldsToSearchBy.stream().anyMatch(f -> !AppConstants.SEARCHABLE_FIELDS.contains(f));
     if(containsInvalidField) {
@@ -71,16 +71,15 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
   /**
    * @param dto
    * @return R
-   * @throws ResourceNotFoundException
+   * @throws RessourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public R save(D dto) throws ResourceNotFoundException {
+  public R save(D dto) throws RessourceNotFoundException {
     try {
       E e = mapper.toEntity(dto);
-      if (isFieldExist(e, AppConstants.CODE_FILTABLE_FIELD))
-        e.setNumOrder(repository.newNumOrder(e.getEntityPrefixe()));
+      e.setNumEnrg(repository.newNumEnrg(e.getEntityPrefixe()));
       e = repository.save(e);
       return getOne(e.getId());
     } catch (Exception e) {
@@ -91,12 +90,12 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
   /**
    * @param dtos
    * @return List<R>
-   * @throws ResourceNotFoundException
+   * @throws RessourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public List<R> saveAll(List<D> dtos) throws ResourceNotFoundException {
+  public List<R> saveAll(List<D> dtos) throws RessourceNotFoundException {
     try {
       dtos.forEach(this::save);
       return getAll(false);
@@ -109,15 +108,15 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
    * @param dto
    * @param id
    * @return R
-   * @throws ResourceNotFoundException
+   * @throws RessourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public R update(D dto, Long id) throws ResourceNotFoundException {
+  public R update(D dto, Long id) throws RessourceNotFoundException {
     try {
       if (equalsToDto(dto, id))
-        throw new RuntimeException("La ressource " + this.entityInformation.getEntityName() + " avec les données suivante : " + dto.toString() + " existe déjà");
+        throw new RessourceNotFoundException("La ressource " + this.entityInformation.getEntityName() + " avec les données suivante : " + dto.toString() + " existe déjà");
       E entity = getById(id);
       dto.setId(entity.getId());
       entity = repository.save(mapper.toEntity(dto));
@@ -130,12 +129,12 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
   /**
    * @param id
    * @return Boolean
-   * @throws ResourceNotFoundException
+   * @throws RessourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public Boolean exist(Long id) throws ResourceNotFoundException {
+  public Boolean exist(Long id) throws RessourceNotFoundException {
     try {
       return repository.existsById(id);
     } catch (Exception e) {
@@ -145,12 +144,12 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
 
   /**
    * @return List<R>
-   * @throws ResourceNotFoundException
+   * @throws RessourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public List<R> getAll(Boolean byPeriode) throws ResourceNotFoundException {
+  public List<R> getAll(Boolean byPeriode) throws RessourceNotFoundException {
     try {
       if (byPeriode) {
         return repository.filter(getFiltresByPeriode()).stream().map(mapper::toDto).collect(Collectors.toList());
@@ -165,15 +164,15 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
   /**
    * @param id
    * @return E
-   * @throws ResourceNotFoundException
+   * @throws RessourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public E getById(Long id) throws ResourceNotFoundException {
+  public E getById(Long id) throws RessourceNotFoundException {
     try {
       return repository.findById(id).orElseThrow(
-              () -> new ResourceNotFoundException("La ressource " + this.entityInformation.getEntityName() + " avec l'id " + id + " n'existe pas")
+              () -> new RessourceNotFoundException("La ressource " + this.entityInformation.getEntityName() + " avec l'id " + id + " n'existe pas")
       );
     } catch (Exception e) {
       throw new InternalException("Une erreur est survenue pendant le traitement de votre requête. Cause : " + e.getMessage());
@@ -183,12 +182,12 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
   /**
    * @param id
    * @return R
-   * @throws ResourceNotFoundException
+   * @throws RessourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public R getOne(Long id) throws ResourceNotFoundException {
+  public R getOne(Long id) throws RessourceNotFoundException {
     try {
       return mapper.toDto(getById(id));
     } catch (Exception e) {
@@ -200,12 +199,12 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
    * @param dto
    * @param id
    * @return Boolean
-   * @throws ResourceNotFoundException
+   * @throws RessourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public Boolean equalsToDto(D dto, Long id) throws ResourceNotFoundException {
+  public Boolean equalsToDto(D dto, Long id) throws RessourceNotFoundException {
     try {
       E entity = getById(id);
       return !entity.getId().equals(id) || !entity.equals(dto);
@@ -249,20 +248,21 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
    * @param page
    * @param size
    * @return PagedResponse<R>
-   * @throws ResourceNotFoundException
+   * @throws RessourceNotFoundException
    */
   @Override
   @Transactional
   @LogExecution
-  public PagedResponse<R> getByPage(Integer page, Integer size) throws ResourceNotFoundException {
+  public PagedResponse<R> getByPage(Integer page, Integer size) throws RessourceNotFoundException {
     try {
       // Vérifier la syntaxe de page et size
       GenericUtils.validatePageNumberAndSize(page, size);
       // Construire la pagination
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, AppConstants.PERIODE_FILTABLE_FIELD);
+      Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, AppConstants.PERIODE_FILTABLE_FIELD);
       // on récupere les données
       Page<E> list = repository.findAll(pageable);
-      if (list.getNumberOfElements() == 0) throw new ResourceNotFoundException("La recherche de " + this.entityInformation.getEntityName() + " est vide!");
+      if (list.getNumberOfElements() == 0)
+        throw new RessourceNotFoundException("La recherche de " + this.entityInformation.getEntityName() + " est vide!");
       // Mapper Dto
       List<R> listDto = mapper.toDto(list.getContent());
       return new PagedResponse<R>(listDto, list.getNumber(), list.getSize(), list.getTotalElements(), list.getTotalPages(), list.isLast());
@@ -272,7 +272,7 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
   }
 
   /**
-   * @throws ResourceNotFoundException
+   * @throws RessourceNotFoundException
    */
   @Override
   @Transactional

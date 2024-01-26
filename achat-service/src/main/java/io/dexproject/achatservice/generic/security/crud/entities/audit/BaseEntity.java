@@ -2,8 +2,6 @@ package io.dexproject.achatservice.generic.security.crud.entities.audit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -14,8 +12,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 
-@Data
-@NoArgsConstructor
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(
@@ -25,11 +21,11 @@ import java.time.Instant;
 public abstract class BaseEntity implements GenericEntity, Serializable {
     @Serial
     private static final long serialVersionUID = -8551160985498051566L;
-	@Transient
-    private String entityPrefixe;
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
+	@Column(unique = true, nullable = false, updatable = false)
+	protected String numEnrg;
 	@CreatedBy
 	@Column(name = "created_by", updatable = false)
 	private String createdBy;
@@ -44,12 +40,22 @@ public abstract class BaseEntity implements GenericEntity, Serializable {
     private Instant updatedAt;
 
 	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	@Override
 	public Long getId() {
 		return id;
 	}
 
-    @Override
-    public String getEntityPrefixe() {
-        return entityPrefixe;
-    }
+	@Override
+	public String getNumEnrg() {
+		return numEnrg;
+	}
+
+	@Override
+	public void setNumEnrg(String numEnrg) {
+		this.numEnrg = numEnrg;
+	}
 }

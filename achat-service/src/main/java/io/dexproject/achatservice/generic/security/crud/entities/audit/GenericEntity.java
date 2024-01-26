@@ -1,7 +1,11 @@
 package io.dexproject.achatservice.generic.security.crud.entities.audit;
 
 public interface GenericEntity {
+    void setId(Long id);
     Long getId();
-    void setNumOrder(String numberOrder);
+
+    String getNumEnrg();
+
+    void setNumEnrg(String numEnrg);
     String getEntityPrefixe();
 }

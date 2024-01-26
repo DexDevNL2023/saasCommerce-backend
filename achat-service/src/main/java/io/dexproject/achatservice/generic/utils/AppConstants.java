@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public interface AppConstants {
-    String GENERIC_PREFIX = "ENTITY";
-
     String JWT_HEADER_NAME="Authorization";
     String SECRET="vnlangessama@gmail.com";
     long EXPIRATION=24 * 60 * 60 * 1000; // 24 hour
@@ -37,7 +35,6 @@ public interface AppConstants {
 
     List<String> SEARCHABLE_FIELDS = Arrays.asList("id", "createdAt");
     String PERIODE_FILTABLE_FIELD = "createdAt";
-    String CODE_FILTABLE_FIELD = "numOrder";
 
     int THREAD_NUMBER = 4;
 

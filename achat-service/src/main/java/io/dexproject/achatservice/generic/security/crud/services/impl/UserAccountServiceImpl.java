@@ -2,7 +2,7 @@ package io.dexproject.achatservice.generic.security.crud.services.impl;
 
 import io.dexproject.achatservice.generic.email.MailService;
 import io.dexproject.achatservice.generic.exceptions.OAuth2AuthenticationProcessingException;
-import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
+import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
 import io.dexproject.achatservice.generic.mapper.GenericMapper;
 import io.dexproject.achatservice.generic.mapper.ObjectMapperUtils;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.LoginReponse;
@@ -72,7 +72,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     public UserAccount registerUser(SignupRequest userForm) {
         //Verifying whether user already exists
         if (repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
-            throw new ResourceNotFoundException("L'e-mail ou le téléphone est déjà utilisé!");
+            throw new RessourceNotFoundException("L'e-mail ou le téléphone est déjà utilisé!");
         // Create new user's account
         // Mapper Dto
         UserAccount newUser = ObjectMapperUtils.map(userForm, UserAccount.class);
@@ -125,10 +125,10 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     public String processOAuthLogin(UserDetails userPrincipal) {
         //Verifying whether user already exists
         if (!repository.existsByEmailOrPhone(userPrincipal.getUsername()))
-            throw new ResourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");
-        UserAccount loginUser = repository.findByEmailOrPhone(userPrincipal.getUsername()).orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
+            throw new RessourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");
+        UserAccount loginUser = repository.findByEmailOrPhone(userPrincipal.getUsername()).orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         // On vérifie que le compte utilisateur est activé
-        if (!loginUser.isActived()) throw new ResourceNotFoundException("Le compte utilisateur n'est pas activé!");
+        if (!loginUser.isActived()) throw new RessourceNotFoundException("Le compte utilisateur n'est pas activé!");
         //This constructor can only be used by AuthenticationManager
         // générer le JWT
         String jwt = jwtUtils.generateJwtTokens(loginUser);
@@ -143,11 +143,11 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     public LoginReponse loginUser(LoginRequest userForm) {
         //Verifying whether user already exists
         if (!repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
-            throw new ResourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");
+            throw new RessourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");
         UserAccount loginUser = repository.findByEmailOrPhone(userForm.getEmailOrPhone())
-                .orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
+                .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         // On vérifie que le compte utilisateur est activé
-        if (!loginUser.isActived()) throw new ResourceNotFoundException("Le compte utilisateur n'est pas activé!");
+        if (!loginUser.isActived()) throw new RessourceNotFoundException("Le compte utilisateur n'est pas activé!");
         String loginPass = bCryptPasswordEncoder.encode(userForm.getPasswordTxt());
         // le mot de passe est vide, donc le compte a été crée par quelqu'un d'autre et c'est sa première connexion
         if (loginUser.getPassword().isEmpty() ||
@@ -161,7 +161,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
             }
         } else { // le mot de passe a déjà été renseigner, on vérifie si son chiffrement est identique à celui de l'utilisateur enregistré
             if (!loginPass.equals(loginUser.getPassword()))
-                throw new ResourceNotFoundException("Le login ou le mot de passe n'est pas correct!");
+                throw new RessourceNotFoundException("Le login ou le mot de passe n'est pas correct!");
         }
         //This constructor can only be used by AuthenticationManager
         // générer le JWT
@@ -178,14 +178,14 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     public LoginReponse loginUsingQrCode(String emailOrPhone) {
         //Verifying whether user already exists
         if (!repository.existsByEmailOrPhone(emailOrPhone))
-            throw new ResourceNotFoundException("L'utilisateur n'existe pas par ce code QR!");
+            throw new RessourceNotFoundException("L'utilisateur n'existe pas par ce code QR!");
         UserAccount loginUser = repository.findByEmailOrPhone(emailOrPhone)
-                .orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
+                .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         // On vérifie que le compte utilisateur est activé
         if (!loginUser.isUsingQr())
-            throw new ResourceNotFoundException("Compte utilisateur non autorisé à se connecter avec le code QR!");
+            throw new RessourceNotFoundException("Compte utilisateur non autorisé à se connecter avec le code QR!");
         // On vérifie que le compte utilisateur est activé
-        if (!loginUser.isActived()) throw new ResourceNotFoundException("Le compte utilisateur n'est pas activé!");
+        if (!loginUser.isActived()) throw new RessourceNotFoundException("Le compte utilisateur n'est pas activé!");
         //This constructor can only be used by AuthenticationManager
         // générer le JWT
         String jwt = jwtUtils.generateJwtTokens(loginUser);
@@ -201,9 +201,9 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     public void logoutUser(LoginRequest userForm) {
         //Verifying whether user already exists
         if (!repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
-            throw new ResourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");
+            throw new RessourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");
         UserAccount logoutUser = repository.findByEmailOrPhone(userForm.getEmailOrPhone())
-                .orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
+                .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         // Update user's account
         logoutUser.setAccesToken("");
         logoutUser.setConnected(false);
@@ -215,7 +215,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     public UserReponse createUser(UserRequest userForm) {
         //Verifying whether user already exists
         if (repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
-            throw new ResourceNotFoundException("L'e-mail ou le téléphone est déjà utilisé!");
+            throw new RessourceNotFoundException("L'e-mail ou le téléphone est déjà utilisé!");
         // Create new user's account
         // Mapper Dto
         UserAccount newUser = ObjectMapperUtils.map(userForm, UserAccount.class);
@@ -240,7 +240,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     public UserReponse editUser(UserRequest userForm) {
         //Verifying whether user already exists
         if (!repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
-            throw new ResourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");
+            throw new RessourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");
         // Create new user's account
         // Mapper Dto
         UserAccount updatedUser = ObjectMapperUtils.map(userForm, UserAccount.class);
@@ -255,7 +255,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
         updatedUser.setLoginUrl(loginURL);
         updatedUser.setActived(updatedUser.isUsingQr());
         UserAccount findUser = repository.findByEmailOrPhone(userForm.getEmailOrPhone())
-                .orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
+                .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         updatedUser.setId(findUser.getId());
         // Create user's account
         updatedUser = repository.saveAndFlush(updatedUser);
@@ -266,15 +266,15 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     @Override
     public UserReponse editPassword(UserFormPasswordRequest userForm) {
         if (!userForm.getNewPassword().equals(userForm.getMatchingPassword()))
-            throw new ResourceNotFoundException("Veuillez confirmer votre mot de passe!");
+            throw new RessourceNotFoundException("Veuillez confirmer votre mot de passe!");
         //Verifying whether user already exists
         if (!repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
-            throw new ResourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");
+            throw new RessourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");
         UserAccount updatedUser = repository.findByEmailOrPhone(userForm.getEmailOrPhone())
-                .orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
+                .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         String lastPass = bCryptPasswordEncoder.encode(userForm.getLastPassword());
         if (!lastPass.equals(updatedUser.getPassword()))
-            throw new ResourceNotFoundException("Veuillez confirmer votre dernier mot de passe!");
+            throw new RessourceNotFoundException("Veuillez confirmer votre dernier mot de passe!");
         // Update user's account with new password
         updatedUser.setPassword(bCryptPasswordEncoder.encode(userForm.getNewPassword()));
         updatedUser = repository.saveAndFlush(updatedUser);
@@ -286,8 +286,8 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     public UserReponse suspendUserById(Long id) {
         //Verifying whether user already exists
         if (!repository.existsById(id))
-            throw new ResourceNotFoundException("L'utilisateur n'existe pas avec cet identifiant " + id);
-        UserAccount updatedUser = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
+            throw new RessourceNotFoundException("L'utilisateur n'existe pas avec cet identifiant " + id);
+        UserAccount updatedUser = repository.findById(id).orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         // Update user's account status
         updatedUser.setActived(false);
         updatedUser = repository.saveAndFlush(updatedUser);
@@ -299,13 +299,13 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     public void deleteUserById(Long id) {
         //Verifying whether user already exists
         if (!repository.existsById(id))
-            throw new ResourceNotFoundException("L'utilisateur n'existe pas avec cet identifiant " + id);
+            throw new RessourceNotFoundException("L'utilisateur n'existe pas avec cet identifiant " + id);
         repository.deleteById(id);
     }
 
     @Override
     public UserReponse findUserById(Long id) {
-        UserAccount userAccount = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
+        UserAccount userAccount = repository.findById(id).orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         // Mapper Dto
         return ObjectMapperUtils.map(userAccount, UserReponse.class);
     }
@@ -314,11 +314,11 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     public UserAccount loadCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-            throw new ResourceNotFoundException("L'utilisateur n'existe pas ou n'est pas activé!");
+            throw new RessourceNotFoundException("L'utilisateur n'existe pas ou n'est pas activé!");
         }
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
         return repository.findByEmailOrPhone(userPrincipal.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
+                .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
     }
 
     @Override
@@ -343,7 +343,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, AppConstants.PERIODE_FILTABLE_FIELD);
         Page<UserAccount> allUsers = repository.findAll(pageable);
         if (allUsers.getNumberOfElements() == 0)
-            throw new ResourceNotFoundException("La liste de recherche d'utilisateurs est vide!");
+            throw new RessourceNotFoundException("La liste de recherche d'utilisateurs est vide!");
         List<UserAccount> list = allUsers.stream().toList();
         // Mapper Dto
         return new PagedResponse<>(ObjectMapperUtils.mapAll(list, UserReponse.class), allUsers.getNumber(), allUsers.getSize(), allUsers.getTotalElements(), allUsers.getTotalPages(), allUsers.isLast());
@@ -388,11 +388,11 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     }
 
     @Override
-    public void forgotPassword(String email) throws ResourceNotFoundException {
+    public void forgotPassword(String email) throws RessourceNotFoundException {
         if (!GenericUtils.isValidEmailAddress(email))
-            throw new ResourceNotFoundException("L'email " + email + " est invalide.");
+            throw new RessourceNotFoundException("L'email " + email + " est invalide.");
         UserAccount userAccount = repository.findByEmailOrPhone(email)
-                .orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
+                .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         if (userAccount != null) {
             // Genered token
             String token = GenericUtils.generateTokenNumber();
@@ -401,12 +401,12 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
             // Send token activated with email
             mailService.sendForgotPasswordToken(userAccount, token);
         } else {
-            throw new ResourceNotFoundException("Impossible de trouver un compte utilisateur avec l'e-mail " + email);
+            throw new RessourceNotFoundException("Impossible de trouver un compte utilisateur avec l'e-mail " + email);
         }
     }
 
     @Override
-    public void resetPassword(String token) throws ResourceNotFoundException {
+    public void resetPassword(String token) throws RessourceNotFoundException {
         UserAccount userAccount = repository.findByResetPasswordToken(token);
         if (userAccount != null) {
             String encodedPassword = bCryptPasswordEncoder.encode("");
@@ -416,7 +416,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
             // Send token activated with email
             mailService.sendResetPassword(userAccount);
         } else {
-            throw new ResourceNotFoundException("Impossible de trouver un compte utilisateur avec le jeton " + token);
+            throw new RessourceNotFoundException("Impossible de trouver un compte utilisateur avec le jeton " + token);
         }
     }
 
@@ -479,7 +479,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     }
 
     private UserAccount updateExistingUser(UserAccount existingUser, OAuth2UserInfo oAuth2UserInfo) {
-        existingUser = repository.findByEmailOrPhone(existingUser.getEmailOrPhone()).orElseThrow(() -> new ResourceNotFoundException("L'utilisateur est introuvable."));
+        existingUser = repository.findByEmailOrPhone(existingUser.getEmailOrPhone()).orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         existingUser.setDisplayName(oAuth2UserInfo.getName());
         existingUser = repository.saveAndFlush(existingUser);
         return existingUser;

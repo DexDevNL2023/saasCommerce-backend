@@ -3,7 +3,7 @@ package io.dexproject.achatservice.generic.email;
 import com.google.zxing.WriterException;
 import freemarker.template.Configuration;
 import io.dexproject.achatservice.generic.config.MessageService;
-import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
+import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
 import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.QRCodeGenerator;
@@ -63,7 +63,7 @@ public class MailServiceImpl implements MailService {
     	    message.replace("[[company]]", AppConstants.COMPANY_NAME);
     		sendHtmlEmail(user, "Registration Confirmation", message);
         } catch (WriterException | IOException e) {
-        	throw new ResourceNotFoundException("Unable to generate QR code!");
+            throw new RessourceNotFoundException("Unable to generate QR code!");
         }
 	}
 

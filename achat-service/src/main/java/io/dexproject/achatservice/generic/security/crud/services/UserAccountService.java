@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.generic.security.crud.services;
 
-import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
+import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.LoginReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.UserReponse;
@@ -58,9 +58,9 @@ public interface UserAccountService extends ServiceGeneric<UserRequest, UserRepo
 
     String validateVerificationToken(String token);
 
-    void forgotPassword(String email) throws ResourceNotFoundException;
+    void forgotPassword(String email) throws RessourceNotFoundException;
 
-    void resetPassword(String token) throws ResourceNotFoundException;
+    void resetPassword(String token) throws RessourceNotFoundException;
 
     void addDefaultUsers(RoleName roleCle);
 }

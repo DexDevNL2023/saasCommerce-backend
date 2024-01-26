@@ -5,15 +5,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "modules_application")
 public class Module extends BaseEntity {
+
+    private static final String ENTITY_PREFIX = "MODULE";
 
     @Column(nullable = false, unique = true)
     private String name;
@@ -21,6 +23,7 @@ public class Module extends BaseEntity {
     private String description;
 
     @Override
-    public void setNumOrder(String numberOrder) {
+    public String getEntityPrefixe() {
+        return ENTITY_PREFIX;
     }
 }

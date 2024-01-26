@@ -22,9 +22,9 @@ import java.util.Locale;
 public class GlobalExceptionHandler {
 
     //handler specific exceptions
-    @ExceptionHandler(ResourceNotFoundException.class)
+    @ExceptionHandler(RessourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException exception, WebRequest request, Locale locale) {
+    public ResponseEntity<?> handleResourceNotFoundException(RessourceNotFoundException exception, WebRequest request, Locale locale) {
         ErrorDetails errorDetails = new ErrorDetails(exception.getMessage(), request.getDescription(true));
         return new ResponseEntity<>(new RessourceResponse(false, errorDetails), HttpStatus.NOT_FOUND);
     }

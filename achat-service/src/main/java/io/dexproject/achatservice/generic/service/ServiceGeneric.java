@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.generic.service;
 
-import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
+import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
 import io.dexproject.achatservice.generic.exceptions.SuppressionException;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
@@ -12,17 +12,26 @@ import org.apache.lucene.index.IndexNotFoundException;
 import java.util.List;
 
 public interface ServiceGeneric<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> extends FieldValueExists {
-  List<R> search(String text, List<String> fields, int limit) throws ResourceNotFoundException;
-  R save(D dto) throws ResourceNotFoundException;
-  List<R> saveAll(List<D> dtos) throws ResourceNotFoundException;
+    List<R> search(String text, List<String> fields, int limit) throws RessourceNotFoundException;
+
+    R save(D dto) throws RessourceNotFoundException;
+
+    List<R> saveAll(List<D> dtos) throws RessourceNotFoundException;
   void delete(Long id) throws SuppressionException;
   void deleteAll(List<Long> ids) throws SuppressionException;
-  Boolean exist(Long id) throws ResourceNotFoundException;
-  R getOne(Long id) throws ResourceNotFoundException;
-  E getById(Long id) throws ResourceNotFoundException;
-  List<R> getAll(Boolean byPeriode) throws ResourceNotFoundException;
-  PagedResponse<R> getByPage(Integer page, Integer size) throws ResourceNotFoundException;
-  R update(D dto, Long id) throws ResourceNotFoundException;
-  Boolean equalsToDto(D dto, Long id) throws ResourceNotFoundException;
+
+    Boolean exist(Long id) throws RessourceNotFoundException;
+
+    R getOne(Long id) throws RessourceNotFoundException;
+
+    E getById(Long id) throws RessourceNotFoundException;
+
+    List<R> getAll(Boolean byPeriode) throws RessourceNotFoundException;
+
+    PagedResponse<R> getByPage(Integer page, Integer size) throws RessourceNotFoundException;
+
+    R update(D dto, Long id) throws RessourceNotFoundException;
+
+    Boolean equalsToDto(D dto, Long id) throws RessourceNotFoundException;
   void reIndex() throws IndexNotFoundException;
 }

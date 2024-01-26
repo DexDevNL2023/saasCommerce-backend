@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.generic.utils;
 
-import io.dexproject.achatservice.generic.exceptions.ResourceNotFoundException;
+import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
 import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
@@ -95,7 +95,7 @@ public class GenericUtils {
     return pass;
   }
 
-  public static String GenerateNumOrder(String prefixe) {
+  public static String GenerateNumEnrg(String prefixe) {
     String randomCode = RandomString.make(64);
     String number = String.format("%04d", randomCode.charAt(10000));
     return prefixe+"-"+number;
@@ -186,11 +186,11 @@ public class GenericUtils {
 
   public static void validatePageNumberAndSize(final Integer page, final Integer size) {
     if(page < 0) {
-      throw new ResourceNotFoundException("Le numéro de page ne peut pas être inférieur à zéro.");
+      throw new RessourceNotFoundException("Le numéro de page ne peut pas être inférieur à zéro.");
     }
 
     if(size > AppConstants.MAX_PAGE_SIZE) {
-      throw new ResourceNotFoundException("La taille de la page ne doit pas être supérieure à " + AppConstants.MAX_PAGE_SIZE);
+      throw new RessourceNotFoundException("La taille de la page ne doit pas être supérieure à " + AppConstants.MAX_PAGE_SIZE);
     }
   }
 

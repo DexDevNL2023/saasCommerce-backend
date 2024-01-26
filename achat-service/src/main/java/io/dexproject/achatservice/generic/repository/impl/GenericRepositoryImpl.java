@@ -52,7 +52,7 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
     }
 
     @Override
-    public String newNumOrder(String prefixe) {
+    public String newNumEnrg(String prefixe) {
         String num = "";
         String fieldName = AppConstants.CODE_FILTABLE_FIELD;
         if (!isFieldExist(fieldName)) {
@@ -60,7 +60,7 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
         }
         entityManager.getTransaction().begin();
         do {
-            String newNum = GenericUtils.GenerateNumOrder(prefixe);
+            String newNum = GenericUtils.GenerateNumEnrg(prefixe);
             String queryString = String.format("select from %s x where %s = :newNum",
                     this.entityInformation.getEntityName(),
                     "%s",

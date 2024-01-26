@@ -6,9 +6,8 @@ import io.dexproject.achatservice.generic.security.oauth2.users.OAuth2UserInfo;
 import io.dexproject.achatservice.generic.utils.GenericUtils;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -20,46 +19,60 @@ import java.util.Collection;
 import java.util.Map;
 
 @Data
-@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "utilisateurs")
 public class UserAccount extends BaseEntity implements OAuth2User, OidcUser, Serializable {
+
+    private static final String ENTITY_PREFIX = "USER";
+
     @Transient
-    private final OidcIdToken idToken;
+    private OidcIdToken idToken;
+
     @Transient
-    private final OidcUserInfo userInfo;
+    private OidcUserInfo userInfo;
+
     @Transient
     private String displayName;
+
     private String lastName;
+
     private String firstName;
+
     @Transient
     private String emailOrPhone;
+
     private String email;
+
     private String phone;
+
     private String adresse;
+
     private String password;
-    @Column(name = "reset_password_token")
+
     private String resetPasswordToken;
+
     private boolean actived;
+
     private boolean connected;
+
     private String accesToken;
+
     private boolean usingQr;
+
     @Column(unique = true, nullable = false)
     private String loginUrl;
+
     private String langKey;
+
     private String imageUrl;
+
     @Enumerated(EnumType.STRING)
     private RoleName role;
-    @Setter
+
     @Transient
     private Map<String, Object> attributes;
-
-    public UserAccount() {
-        this.userInfo = null;
-        this.idToken = null;
-        this.attributes = null;
-    }
 
     public UserAccount(String username, String email, String password, String phone, String adresse, Boolean actived) {
         this.displayName = username;
@@ -129,6 +142,7 @@ public class UserAccount extends BaseEntity implements OAuth2User, OidcUser, Ser
     }
 
     @Override
-    public void setNumOrder(String numberOrder) {
+    public String getEntityPrefixe() {
+        return ENTITY_PREFIX;
     }
 }
