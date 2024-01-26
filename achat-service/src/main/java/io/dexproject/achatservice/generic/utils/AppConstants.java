@@ -35,6 +35,7 @@ public interface AppConstants {
 
     List<String> SEARCHABLE_FIELDS = Arrays.asList("id", "createdAt");
     String PERIODE_FILTABLE_FIELD = "createdAt";
+    String NUM_ENRG_FIELD = "numEnrg";
 
     int THREAD_NUMBER = 4;
 

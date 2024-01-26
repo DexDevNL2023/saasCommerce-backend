@@ -54,7 +54,7 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
     @Override
     public String newNumEnrg(String prefixe) {
         String num = "";
-        String fieldName = AppConstants.CODE_FILTABLE_FIELD;
+        String fieldName = AppConstants.NUM_ENRG_FIELD;
         if (!isFieldExist(fieldName)) {
             throw new UnsupportedOperationException("Le champ " + fieldName + " non pris en charge");
         }
