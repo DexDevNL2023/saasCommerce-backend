@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class DroitRequest {
-    private Long id;
+public class DroitRequest extends BaseRequest {
     @NotBlank(message = "La clé du droit est obligatoire")
     @Size(min = 2, message = "La clé doit être d'au moins 2 caractères")
     @UniqueValidator(service = DroitService.class, fieldName = "key", message = "La clé {} est déjà utilisé")

@@ -11,7 +11,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.reponse.UserReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.request.LoginRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.SignupRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormPasswordRequest;
-import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormRequest;
+import io.dexproject.achatservice.generic.security.crud.dto.request.UserRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 import io.dexproject.achatservice.generic.security.crud.entities.VerifyToken;
 import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
@@ -52,7 +52,7 @@ import java.util.Map;
 
 @Service
 @Transactional
-public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, UserReponse, UserAccount> implements UserAccountService, UserDetailsService {
+public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, UserReponse, UserAccount> implements UserAccountService, UserDetailsService {
 
     private final PasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(10);
     private final MailService mailService;
@@ -60,7 +60,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
     private final UserAccountRepository repository;
     private final VerifyTokenRepository tokenRepository;
 
-    public UserAccountServiceImpl(JpaEntityInformation<UserAccount, Long> entityInformation, UserAccountRepository repository, GenericMapper<UserFormRequest, UserReponse, UserAccount> mapper, MailService mailService, JwtUtils jwtUtils, VerifyTokenRepository tokenRepository) {
+    public UserAccountServiceImpl(JpaEntityInformation<UserAccount, Long> entityInformation, UserAccountRepository repository, GenericMapper<UserRequest, UserReponse, UserAccount> mapper, MailService mailService, JwtUtils jwtUtils, VerifyTokenRepository tokenRepository) {
         super(entityInformation, repository, mapper);
         this.mailService = mailService;
         this.jwtUtils = jwtUtils;
@@ -212,7 +212,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
     }
 
     @Override
-    public UserReponse createUser(UserFormRequest userForm) {
+    public UserReponse createUser(UserRequest userForm) {
         //Verifying whether user already exists
         if (repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
             throw new ResourceNotFoundException("L'e-mail ou le téléphone est déjà utilisé!");
@@ -237,7 +237,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserFormRequest, 
     }
 
     @Override
-    public UserReponse editUser(UserFormRequest userForm) {
+    public UserReponse editUser(UserRequest userForm) {
         //Verifying whether user already exists
         if (!repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
             throw new ResourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");

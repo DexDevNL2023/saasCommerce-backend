@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class UserFormRequest extends BaseRequest {
+public class UserRequest extends BaseRequest {
     private String emailOrPhone;
     @NotBlank(message = "Le nom est obligatoire")
     @UniqueValidator(service = UserAccountService.class, fieldName = "lastName", message = "Le nom {} est déjà utilisé")

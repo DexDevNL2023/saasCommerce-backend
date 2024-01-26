@@ -5,8 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class PermissionRequest extends BaseRequest {
-    private Long roleId;
+public class DroitFormRequest {
     private Long droitId;
-    private Boolean hasPermission;
+    private Boolean isDefault;
 }

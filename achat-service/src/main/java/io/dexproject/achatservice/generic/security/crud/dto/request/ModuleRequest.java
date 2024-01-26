@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ModuleRequest {
-    private Long id;
+public class ModuleRequest extends BaseRequest {
     @NotBlank(message = "le nom du module est obligatoire")
     @UniqueValidator(service = ModuleService.class, fieldName = "name", message = "Le nom {} est déjà utilisé")
     private String name;

@@ -3,7 +3,7 @@ package io.dexproject.achatservice.generic.security.crud.controllers;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.RessourceResponse;
 import io.dexproject.achatservice.generic.security.crud.dto.request.LoginRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormPasswordRequest;
-import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormRequest;
+import io.dexproject.achatservice.generic.security.crud.dto.request.UserRequest;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import jakarta.validation.Valid;
@@ -40,13 +40,13 @@ public class UserController {
 
 	@Secured({"admin", "partner"})
 	@PostMapping("/create")
-	public ResponseEntity<RessourceResponse> createUser(@NotEmpty @Valid @RequestBody UserFormRequest userFormRequest) {
-		return new ResponseEntity<>(new RessourceResponse("Utilisateur créé avec succès!", userAccountService.createUser(userFormRequest)), HttpStatus.OK);
+    public ResponseEntity<RessourceResponse> createUser(@NotEmpty @Valid @RequestBody UserRequest userRequest) {
+        return new ResponseEntity<>(new RessourceResponse("Utilisateur créé avec succès!", userAccountService.createUser(userRequest)), HttpStatus.OK);
 	}
 
 	@PostMapping("/update")
-	public ResponseEntity<RessourceResponse> editUser(@NotEmpty @Valid @RequestBody UserFormRequest userFormRequest) {
-		return new ResponseEntity<>(new RessourceResponse("L'utilisateur a été mis à jour avec succès!", userAccountService.editUser(userFormRequest)), HttpStatus.OK);
+    public ResponseEntity<RessourceResponse> editUser(@NotEmpty @Valid @RequestBody UserRequest userRequest) {
+        return new ResponseEntity<>(new RessourceResponse("L'utilisateur a été mis à jour avec succès!", userAccountService.editUser(userRequest)), HttpStatus.OK);
 	}
 
 	@PostMapping("/edit/password")

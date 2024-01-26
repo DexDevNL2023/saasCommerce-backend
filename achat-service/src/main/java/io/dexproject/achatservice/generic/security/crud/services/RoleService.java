@@ -1,16 +1,17 @@
 package io.dexproject.achatservice.generic.security.crud.services;
 
-import net.ktccenter.campusApi.dto.importation.administration.ImportRoleRequestDTO;
-import net.ktccenter.campusApi.dto.lite.administration.LiteRoleDTO;
-import net.ktccenter.campusApi.dto.reponse.administration.RoleDTO;
-import net.ktccenter.campusApi.dto.request.administration.RoleRequestDTO;
-import net.ktccenter.campusApi.entities.administration.Role;
-import net.ktccenter.campusApi.service.GenericService;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.RoleReponse;
+import io.dexproject.achatservice.generic.security.crud.dto.request.DroitFormRequest;
+import io.dexproject.achatservice.generic.security.crud.dto.request.DroitRequest;
+import io.dexproject.achatservice.generic.security.crud.dto.request.PermissionFormRequest;
+import io.dexproject.achatservice.generic.security.crud.dto.request.RoleRequest;
+import io.dexproject.achatservice.generic.security.crud.entities.Role;
+import io.dexproject.achatservice.generic.service.ServiceGeneric;
 
-public interface RoleService extends GenericService<Role, RoleRequestDTO, RoleDTO, LiteRoleDTO, ImportRoleRequestDTO> {
-    boolean existsByRoleName(String libelle);
+public interface RoleService extends ServiceGeneric<RoleRequest, RoleReponse, Role> {
+    void changeAutorisation(PermissionFormRequest dto);
 
-    boolean equalsByDto(RoleRequestDTO dto, Long id);
+    void changeIsDefaultDroit(DroitFormRequest dto);
 
-    Role findByLibelle(String libelle);
+    void addDroit(DroitRequest dto);
 }

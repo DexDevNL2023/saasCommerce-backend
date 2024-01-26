@@ -7,7 +7,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.reponse.UserReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.request.LoginRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.SignupRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormPasswordRequest;
-import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormRequest;
+import io.dexproject.achatservice.generic.security.crud.dto.request.UserRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
@@ -19,7 +19,7 @@ import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import java.util.List;
 import java.util.Map;
 
-public interface UserAccountService extends ServiceGeneric<UserFormRequest, UserReponse, UserAccount> {
+public interface UserAccountService extends ServiceGeneric<UserRequest, UserReponse, UserAccount> {
     UserAccount registerUser(SignupRequest userForm);
 
     UserAccount processOAuthRegister(String registrationId, Map<String, Object> attributes, OidcIdToken idToken, OidcUserInfo userInfo);
@@ -32,9 +32,9 @@ public interface UserAccountService extends ServiceGeneric<UserFormRequest, User
 
     void logoutUser(LoginRequest userForm);
 
-    UserReponse createUser(UserFormRequest userForm);
+    UserReponse createUser(UserRequest userForm);
 
-    UserReponse editUser(UserFormRequest userForm);
+    UserReponse editUser(UserRequest userForm);
 
     UserReponse editPassword(UserFormPasswordRequest userForm);
 

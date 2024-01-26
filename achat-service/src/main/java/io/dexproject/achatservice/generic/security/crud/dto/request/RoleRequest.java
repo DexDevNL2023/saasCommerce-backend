@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class RoleRequest {
-    private Long id;
+public class RoleRequest extends BaseRequest {
     @NotBlank(message = "le libelle du role est obligatoire")
     @UniqueValidator(service = RoleService.class, fieldName = "libelle", message = "Le libelle {} est déjà utilisé")
     private String libelle;
