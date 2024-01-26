@@ -5,30 +5,30 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ResourceResponse {
+public class RessourceResponse {
     private Boolean success;
 	private String message;
     private Object objectValue;
 
-	public ResourceResponse(String message) {
+	public RessourceResponse(String message) {
 	    this.success = true;
 	    this.message = message;
 	    this.objectValue = null;
 	}
 
-	public ResourceResponse(Boolean success, String message) {
+	public RessourceResponse(Boolean success, String message) {
 	    this.success = success;
 	    this.message = message;
 	    this.objectValue = null;
 	}
 
-	public ResourceResponse(String message, Object objectValue) {
+	public RessourceResponse(String message, Object objectValue) {
 	    this.success = true;
 	    this.message = message;
 	    this.objectValue = objectValue;
 	}
 
-    public ResourceResponse(Boolean success, Object objectValue) {
+	public RessourceResponse(Boolean success, Object objectValue) {
         this.success = success;
         this.message = "Une erreur est survenue pendant le traitement de votre requête.";
         this.objectValue = objectValue;

@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.generic.validators;
 
-import io.dexproject.achatservice.generic.security.crud.dto.reponse.ResourceResponse;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.RessourceResponse;
 import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
@@ -32,7 +32,7 @@ public class AuthorizeUserAspect {
         if (hasAuthorized(account.getRole())) {
             // écrire la logique métier de vérification d'autorisation
             log.info("L'utilisateur n'a pas l'authorisation nécésaire pour effectuer cette action : " + joinPoint.toShortString());
-            return new ResourceResponse(false, "L'utilisateur n'a pas l'authorisation nécésaire pour effectuer cette action : " + joinPoint.toShortString());
+            return new RessourceResponse(false, "L'utilisateur n'a pas l'authorisation nécésaire pour effectuer cette action : " + joinPoint.toShortString());
         }
 
         // C'est là que la MÉTHODE RÉELLE sera invoquée
