@@ -4,10 +4,12 @@ import io.dexproject.achatservice.generic.security.crud.services.DroitService;
 import io.dexproject.achatservice.generic.validators.UniqueValidator;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class DroitRequest extends BaseRequest {
     @NotBlank(message = "La clé du droit est obligatoire")

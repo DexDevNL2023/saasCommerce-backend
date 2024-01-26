@@ -2,10 +2,12 @@ package io.dexproject.achatservice.generic.security.crud.dto.request;
 
 import io.dexproject.achatservice.generic.validators.PasswordMatches;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @PasswordMatches
 public class UserFormPasswordRequest {

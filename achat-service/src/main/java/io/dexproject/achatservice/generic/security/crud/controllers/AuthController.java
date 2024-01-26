@@ -12,9 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/api/auth")
 @RefreshScope
+@RestController
+@CrossOrigin("*")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final UserAccountService userAccountService;

@@ -16,9 +16,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @PreAuthorize("hasRole('admin') or hasRole('partner') or hasRole('merchant') or hasRole('customer')")
-@RestController
-@RequestMapping("/api/users")
 @RefreshScope
+@RestController
+@CrossOrigin("*")
+@RequestMapping("/api/users")
 public class UserController {
 
 	private final UserAccountService userAccountService;
