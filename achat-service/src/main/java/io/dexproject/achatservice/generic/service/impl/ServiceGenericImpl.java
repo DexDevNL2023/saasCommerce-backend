@@ -10,9 +10,9 @@ import io.dexproject.achatservice.generic.filter.dto.ValueType;
 import io.dexproject.achatservice.generic.filter.dto.builder.FilterBuilder;
 import io.dexproject.achatservice.generic.mapper.GenericMapper;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
-import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponseDto;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
-import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequestDto;
+import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 import io.dexproject.achatservice.generic.utils.AppConstants;
@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class ServiceGenericImpl<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
+public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
 
   private final JpaEntityInformation<E, Long> entityInformation;
   protected final GenericRepository<E> repository;

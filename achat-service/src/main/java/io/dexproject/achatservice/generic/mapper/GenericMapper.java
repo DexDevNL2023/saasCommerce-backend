@@ -1,7 +1,7 @@
 package io.dexproject.achatservice.generic.mapper;
 
-import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponseDto;
-import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequestDto;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponse;
+import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.MappingTarget;
@@ -10,7 +10,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-public interface GenericMapper<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> {
+public interface GenericMapper<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> {
     E toEntity(D dto);
     List<E> toEntity(List<D> dtos);
 

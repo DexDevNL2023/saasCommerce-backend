@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class UserReponse extends BaseReponseDto {
+public class UserReponse extends BaseReponse {
     private String displayName;
     private String lastName;
     private String firstName;

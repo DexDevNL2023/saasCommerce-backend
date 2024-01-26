@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class PagedResponse<R extends BaseReponseDto> {
+public class PagedResponse<R extends BaseReponse> {
     private List<R> content;
     private int page;
     private int size;

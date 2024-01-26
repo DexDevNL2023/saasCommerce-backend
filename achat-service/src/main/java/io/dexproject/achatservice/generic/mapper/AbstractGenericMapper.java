@@ -1,15 +1,15 @@
 package io.dexproject.achatservice.generic.mapper;
 
 import io.dexproject.achatservice.generic.repository.GenericRepository;
-import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponseDto;
-import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequestDto;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponse;
+import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public abstract class AbstractGenericMapper<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements GenericMapper<D, R, E> {
+public abstract class AbstractGenericMapper<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> implements GenericMapper<D, R, E> {
 
     protected final GenericRepository<E> repository;
 

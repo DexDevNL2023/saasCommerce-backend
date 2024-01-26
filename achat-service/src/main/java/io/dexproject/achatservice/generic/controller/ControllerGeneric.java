@@ -1,16 +1,16 @@
 package io.dexproject.achatservice.generic.controller;
 
-import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponseDto;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.RessourceResponse;
-import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequestDto;
-import io.dexproject.achatservice.generic.security.crud.dto.request.SearchRequestDTO;
+import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequest;
+import io.dexproject.achatservice.generic.security.crud.dto.request.SearchRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-public interface ControllerGeneric<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> {
-  ResponseEntity<RessourceResponse> search(SearchRequestDTO dto);
+public interface ControllerGeneric<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> {
+  ResponseEntity<RessourceResponse> search(SearchRequest dto);
 
   ResponseEntity<RessourceResponse> save(D dto);
 

@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class SearchRequestDTO {
+public class SearchRequest {
     @NotBlank(message = "Veillez renseignez le mot recherché svp!")
     private String text;
     @NotEmpty

@@ -2,10 +2,10 @@ package io.dexproject.achatservice.generic.controller.impl;
 
 import io.dexproject.achatservice.generic.controller.ControllerGeneric;
 import io.dexproject.achatservice.generic.exceptions.InternalException;
-import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponseDto;
+import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.RessourceResponse;
-import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequestDto;
-import io.dexproject.achatservice.generic.security.crud.dto.request.SearchRequestDTO;
+import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequest;
+import io.dexproject.achatservice.generic.security.crud.dto.request.SearchRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 import io.dexproject.achatservice.generic.utils.AppConstants;
@@ -28,7 +28,7 @@ import java.util.List;
 @ResponseBody
 @Slf4j
 @RefreshScope
-public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseReponseDto, E extends BaseEntity> implements ControllerGeneric<D, R, E> {
+public class ControllerGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> implements ControllerGeneric<D, R, E> {
 
   private final ServiceGeneric<D, R, E> service;
 
@@ -48,7 +48,7 @@ public class ControllerGenericImpl<D extends BaseRequestDto, R extends BaseRepon
           @ApiResponse(responseCode = "200", description = "Liste d'entité retrouvée", content = @Content),
           @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
           @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<RessourceResponse> search(SearchRequestDTO dto) {
+  public ResponseEntity<RessourceResponse> search(SearchRequest dto) {
     try {
       log.info("Demande de recherche reçue avec les données : " + dto);
       return new ResponseEntity<>(new RessourceResponse("Recherche de donnée effectuée avec succès!", service.search(dto.getText(), dto.getFields(), dto.getLimit())), HttpStatus.OK);

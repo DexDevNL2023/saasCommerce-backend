@@ -9,7 +9,7 @@ import java.time.Instant;
 @Data
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class BaseReponseDto {
+public abstract class BaseReponse {
 	private Long id;
 	private String createdBy;
     private Instant createdAt;

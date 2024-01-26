@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class BaseRequestDto {
+public abstract class BaseRequest {
 	private Long id;
 }
