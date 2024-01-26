@@ -15,7 +15,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "modules_application")
 public class Module extends BaseEntity {
 
-    private static final String ENTITY_PREFIX = "MODULE";
+    private static final String ENTITY_NAME = "MODULE";
+
+    private static final String MODULE_NAME = "AUTORISATIONS";
 
     @Column(nullable = false, unique = true)
     private String name;
@@ -23,7 +25,12 @@ public class Module extends BaseEntity {
     private String description;
 
     @Override
-    public String getEntityPrefixe() {
-        return ENTITY_PREFIX;
+    public String getEntityName() {
+        return ENTITY_NAME;
+    }
+
+    @Override
+    public String getModuleName() {
+        return MODULE_NAME;
     }
 }

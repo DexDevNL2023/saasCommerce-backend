@@ -8,11 +8,12 @@ import io.dexproject.achatservice.generic.filter.dto.FilterWrap;
 import io.dexproject.achatservice.generic.filter.dto.InternalOperator;
 import io.dexproject.achatservice.generic.filter.dto.ValueType;
 import io.dexproject.achatservice.generic.filter.dto.builder.FilterBuilder;
-import io.dexproject.achatservice.generic.mapper.GenericMapper;
+import io.dexproject.achatservice.generic.mapper.AbstractGenericMapper;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
 import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequest;
+import io.dexproject.achatservice.generic.security.crud.dto.request.DroitAddRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 import io.dexproject.achatservice.generic.utils.AppConstants;
@@ -37,13 +38,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
+public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
 
   private final JpaEntityInformation<E, Long> entityInformation;
   protected final GenericRepository<E> repository;
-  private final GenericMapper<D, R, E> mapper;
+  private final AbstractGenericMapper<D, R, E> mapper;
 
-  public ServiceGenericImpl(JpaEntityInformation<E, Long> entityInformation, GenericRepository<E> repository, GenericMapper<D, R, E> mapper) {
+  public ServiceGenericImpl(JpaEntityInformation<E, Long> entityInformation, GenericRepository<E> repository, AbstractGenericMapper<D, R, E> mapper) {
     this.entityInformation = entityInformation;
     this.repository = repository;
     this.mapper = mapper;
@@ -79,7 +80,7 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
   public R save(D dto) throws RessourceNotFoundException {
     try {
       E e = mapper.toEntity(dto);
-      e.setNumEnrg(repository.newNumEnrg(e.getEntityPrefixe()));
+      e.setNumEnrg(repository.newNumEnrg(e.getEntityName()));
       e = repository.save(e);
       return getOne(e.getId());
     } catch (Exception e) {
@@ -283,6 +284,33 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
+  }
+
+  @Override
+  public String getEntityName() {
+    return this.entityInformation.getEntityName().toUpperCase();
+  }
+
+  @Override
+  public String getEntityLabel() {
+    return GenericUtils.camelOrSnakeToLabel(this.getEntityName());
+  }
+
+  @Override
+  public String getEntityKey(String key) {
+    return GenericUtils.camelOrSnakeToKey(this.getEntityName()) + "-" + key;
+  }
+
+  @Override
+  public String getModuleName() {
+    Class<?> objectClass = E.getClass();
+    E entity = objectClass.newInstance();
+    return entity.getEntityName();
+  }
+
+  @Override
+  public void addDroit(DroitAddRequest post) {
+
   }
 
   @Override

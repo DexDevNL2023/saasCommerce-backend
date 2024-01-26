@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "droits_utilisateur")
 public class Droit extends BaseEntity {
 
-	private static final String ENTITY_PREFIX = "DROIT";
+    private static final String ENTITY_NAME = "DROIT";
+
+    private static final String MODULE_NAME = "AUTORISATIONS";
 
 	@Column(nullable = false, unique = true)
 	private String key;
@@ -32,7 +34,12 @@ public class Droit extends BaseEntity {
 	private Module module;
 
 	@Override
-	public String getEntityPrefixe() {
-		return ENTITY_PREFIX;
+    public String getEntityName() {
+        return ENTITY_NAME;
+    }
+
+    @Override
+    public String getModuleName() {
+        return MODULE_NAME;
 	}
 }

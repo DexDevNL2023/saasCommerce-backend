@@ -8,13 +8,12 @@ import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 import org.mapstruct.Mapper;
 
 @Mapper
-public abstract class UserAccountMapperAbstract extends AbstractGenericMapper<UserRequest, UserReponse, UserAccount> {
+public abstract class UserAccountMapper extends AbstractGenericMapper<UserRequest, UserReponse, UserAccount> {
 
-    protected UserAccountMapperAbstract(GenericRepository<UserAccount> repository) {
+    protected UserAccountMapper(GenericRepository<UserAccount> repository) {
         super(repository);
     }
 
-    final ADto dto = Mappers.getMapper(AMapper.class).toDto(a);
     protected UserAccount newInstance() {
         return new UserAccount();
     }

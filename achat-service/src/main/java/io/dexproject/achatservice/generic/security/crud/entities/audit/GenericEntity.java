@@ -5,5 +5,8 @@ public interface GenericEntity {
     Long getId();
     String getNumEnrg();
     void setNumEnrg(String numEnrg);
-    String getEntityPrefixe();
+
+    String getEntityName();
+
+    String getModuleName();
 }

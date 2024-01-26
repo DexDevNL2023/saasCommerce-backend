@@ -25,7 +25,9 @@ import java.util.Map;
 @Table(name = "utilisateurs")
 public class UserAccount extends BaseEntity implements OAuth2User, OidcUser, Serializable {
 
-    private static final String ENTITY_PREFIX = "USER";
+    private static final String ENTITY_NAME = "USER";
+
+    private static final String MODULE_NAME = "UTILISATEURS";
 
     @Transient
     private OidcIdToken idToken;
@@ -142,7 +144,12 @@ public class UserAccount extends BaseEntity implements OAuth2User, OidcUser, Ser
     }
 
     @Override
-    public String getEntityPrefixe() {
-        return ENTITY_PREFIX;
+    public String getEntityName() {
+        return ENTITY_NAME;
+    }
+
+    @Override
+    public String getModuleName() {
+        return MODULE_NAME;
     }
 }

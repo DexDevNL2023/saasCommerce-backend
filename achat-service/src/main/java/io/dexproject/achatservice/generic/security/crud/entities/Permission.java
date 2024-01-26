@@ -14,7 +14,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "permissions_utilisateur")
 public class Permission extends BaseEntity {
 
-    private static final String ENTITY_PREFIX = "PERMISSION";
+    private static final String ENTITY_NAME = "PERMISSION";
+
+    private static final String MODULE_NAME = "AUTORISATIONS";
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Role role;
@@ -25,7 +27,12 @@ public class Permission extends BaseEntity {
     private Boolean hasDroit = false;
 
     @Override
-    public String getEntityPrefixe() {
-        return ENTITY_PREFIX;
+    public String getEntityName() {
+        return ENTITY_NAME;
+    }
+
+    @Override
+    public String getModuleName() {
+        return MODULE_NAME;
     }
 }

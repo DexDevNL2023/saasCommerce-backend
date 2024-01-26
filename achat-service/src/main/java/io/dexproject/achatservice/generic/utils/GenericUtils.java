@@ -265,4 +265,65 @@ public class GenericUtils {
     }
     return result;
   }
+
+  // Fonction pour convertir le camel casse en chaîne snake casse
+  public static String camelToSnake(String str) {
+    // Chaîne vide
+    String result = "";
+
+    // Ajoute le premier caractère (en minuscule) vers la chaîne de résultat
+    char c = str.charAt(0);
+    result = result + Character.toLowerCase(c);
+
+    // Parcourt la chaîne depuis est l'index jusqu'au dernier index
+    for (int i = 1; i < str.length(); i++) {
+      char ch = str.charAt(i);
+
+      // Vérifie si le caractère est en majuscule puis ajoutez '_' et ce caractère
+      // (en minuscules) vers la chaîne de résultat
+      if (Character.isUpperCase(ch)) {
+        result = result + '_';
+        result = result + Character.toLowerCase(ch);
+      }
+
+      // Si le caractère est en minuscule alors
+      // ajoute un tel caractère dans la chaîne de résultat
+      else {
+        result = result + ch;
+      }
+    }
+
+    // renvoie le résultat
+    return result;
+  }
+
+  public static String camelOrSnakeToKey(String str) {
+    // Expression régulière
+    String regex = "([a-z])([A-Z]+)" + ("_([a-z])");
+
+    // Chaîne de remplacement
+    String replacement = "$1-$2";
+
+    // Remplace l'expression régulière donnée avec chaîne de remplacement
+    // et convertissez-le en minuscules.
+    str = str.replaceAll(regex, replacement).toUpperCase();
+
+    // renvoie le résultat
+    return str;
+  }
+
+  public static String camelOrSnakeToLabel(String str) {
+    // Expression régulière
+    String regex = "([a-z])([A-Z]+)" + ("_([a-z])");
+
+    // Chaîne de remplacement
+    String replacement = "$1 $2";
+
+    // Remplace l'expression régulière donnée avec chaîne de remplacement
+    // et convertissez-le en minuscules.
+    str = str.replaceAll(regex, replacement).toLowerCase();
+
+    // renvoie le résultat
+    return str;
+  }
 }

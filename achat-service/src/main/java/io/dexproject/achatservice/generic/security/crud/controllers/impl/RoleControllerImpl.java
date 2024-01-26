@@ -33,14 +33,14 @@ public class RoleControllerImpl extends ControllerGenericImpl<RoleRequest, RoleR
     @Override
     @PutMapping("/change-autorisation")
     public ResponseEntity<RessourceResponse> changeAutorisation(PermissionFormRequest dto) {
-        service.addDroit(new DroitAddRequest(MODULE_NAME, "Changer une autorisation", "autorisation-change-permission", "POST", false));
+        service.addDroit(new DroitAddRequest(MODULE_NAME, "Changer une autorisation", "AUTORISATION-CHANGE-PERMISSION", "POST", false));
         return new ResponseEntity<>(new RessourceResponse("Permission changée avec succès!", service.changeAutorisation(dto)), HttpStatus.OK);
     }
 
     @Override
     @PutMapping("/make-is-default")
     public ResponseEntity<RessourceResponse> changeIsDefaultDroit(DroitFormRequest dto) {
-        service.addDroit(new DroitAddRequest(MODULE_NAME, "Définir un droit par défaut", "autorisation-droit-is-default", "PUT", false));
+        service.addDroit(new DroitAddRequest(MODULE_NAME, "Définir un droit par défaut", "AUTORISATION-DROIT-IS-DEFAULT", "PUT", false));
         return new ResponseEntity<>(new RessourceResponse("Permission changée avec succès!", service.changeIsDefaultDroit(dto)), HttpStatus.OK);
     }
 }

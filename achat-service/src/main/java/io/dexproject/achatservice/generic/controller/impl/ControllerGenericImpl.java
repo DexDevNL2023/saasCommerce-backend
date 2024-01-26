@@ -5,6 +5,7 @@ import io.dexproject.achatservice.generic.exceptions.InternalException;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.RessourceResponse;
 import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequest;
+import io.dexproject.achatservice.generic.security.crud.dto.request.DroitAddRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.SearchRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
@@ -41,7 +42,7 @@ public class ControllerGenericImpl<D extends BaseRequest, R extends BaseReponse,
    * @return List<R>
    */
   @Override
-  @AuthorizeUser
+  @AuthorizeUser(actionKey = service.getEntityName() + "-SEARCH")
   @GetMapping("/search")
   @Operation(summary = "Rechercher une entité par valeur de texte intégral")
   @ApiResponses(value = {
@@ -50,6 +51,7 @@ public class ControllerGenericImpl<D extends BaseRequest, R extends BaseReponse,
           @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
   public ResponseEntity<RessourceResponse> search(SearchRequest dto) {
     try {
+      service.addDroit(new DroitAddRequest(service.getModuleName(), "Rechercher un " + service.getEntityLabel(), service.getEntityName() + "-SEARCH", "POST", true));
       log.info("Demande de recherche reçue avec les données : " + dto);
       return new ResponseEntity<>(new RessourceResponse("Recherche de donnée effectuée avec succès!", service.search(dto.getText(), dto.getFields(), dto.getLimit())), HttpStatus.OK);
     } catch (InternalException e) {
@@ -62,7 +64,7 @@ public class ControllerGenericImpl<D extends BaseRequest, R extends BaseReponse,
    * @return R
    */
   @Override
-  @AuthorizeUser
+  @AuthorizeUser(actionKey = service.getEntityName() + "-ADD")
   @PostMapping
   @Operation(summary = "Enregistrer une entité")
   @ApiResponses(value = {
@@ -71,6 +73,7 @@ public class ControllerGenericImpl<D extends BaseRequest, R extends BaseReponse,
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
   public ResponseEntity<RessourceResponse> save(@Valid @RequestBody D dto) {
     try {
+      service.addDroit(new DroitAddRequest(service.getModuleName(), "Ajouter un " + service.getEntityLabel(), service.getEntityKey("ADD"), "POST", true));
       log.info("Demande de sauvegarde reçue avec les données : " + dto);
       return new ResponseEntity<>(new RessourceResponse("Enregistrement de donnée effectuée avec succès!", service.save(dto)), HttpStatus.CREATED);
     } catch (InternalException e) {
@@ -83,7 +86,7 @@ public class ControllerGenericImpl<D extends BaseRequest, R extends BaseReponse,
    * @return List<R>
    */
   @Override
-  @AuthorizeUser
+  @AuthorizeUser(actionKey = service.getEntityName() + "-ADD-LIST")
   @PostMapping("/all")
   @Operation(summary = "Enregistrer toute une entité de la liste")
   @ApiResponses(value = {
@@ -92,6 +95,7 @@ public class ControllerGenericImpl<D extends BaseRequest, R extends BaseReponse,
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
   public ResponseEntity<RessourceResponse> saveAll(@Valid @RequestBody List<D> dtos) {
     try {
+      service.addDroit(new DroitAddRequest(service.getModuleName(), "Ajouter plusieurs " + service.getEntityLabel(), service.getEntityName() + "-ADD-LIST", "POST", true));
       log.info("Demande de sauvegarde reçue avec les données : " + dtos);
       return new ResponseEntity<>(new RessourceResponse("Enregistrement de donnée effectuée avec succès!", service.saveAll(dtos)), HttpStatus.CREATED);
     } catch (InternalException e) {
@@ -104,7 +108,7 @@ public class ControllerGenericImpl<D extends BaseRequest, R extends BaseReponse,
    * @return String
    */
   @Override
-  @AuthorizeUser
+  @AuthorizeUser(actionKey = service.getEntityName() + "-DELET")
   @DeleteMapping("/{id}")
   @Operation(summary = "Supprimer une entité par son identifiant")
   @ApiResponses(value = {
@@ -113,6 +117,7 @@ public class ControllerGenericImpl<D extends BaseRequest, R extends BaseReponse,
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
   public ResponseEntity<RessourceResponse> deleteById(@PathVariable("id") Long id) {
     try {
+      service.addDroit(new DroitAddRequest(service.getModuleName(), "Supprimer un " + service.getEntityLabel(), service.getEntityName() + "-DELET", "DELET", true));
       log.info("Demande de suppression reçue pour la donnée avec l'id : " + id);
       service.delete(id);
       return new ResponseEntity<>(new RessourceResponse("Suppression de donnée effectuée avec succès!"), HttpStatus.OK);

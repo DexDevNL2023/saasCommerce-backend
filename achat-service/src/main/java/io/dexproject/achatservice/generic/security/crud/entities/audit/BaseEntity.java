@@ -21,6 +21,7 @@ import java.time.Instant;
 public abstract class BaseEntity implements GenericEntity, Serializable {
     @Serial
     private static final long serialVersionUID = -8551160985498051566L;
+
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
