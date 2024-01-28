@@ -1,19 +1,11 @@
 package io.dexproject.achatservice.generic.repository.impl;
 
-import io.dexproject.achatservice.generic.filter.dao.RepoUtil;
-import io.dexproject.achatservice.generic.filter.dto.Filter;
-import io.dexproject.achatservice.generic.filter.dto.FilterWrap;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.GenericUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 import org.apache.lucene.index.IndexNotFoundException;
 import org.hibernate.search.engine.search.query.SearchResult;
@@ -24,14 +16,11 @@ import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Transactional
-public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaRepository<E, Long> implements GenericRepository<E> {
+public abstract class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaRepository<E, Long> implements GenericRepository<E> {
     private final Class<E> clazz;
     private final JpaEntityInformation<E, Long> entityInformation;
     @PersistenceContext
@@ -79,7 +68,7 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
 
     @Override
     public List<E> searchBy(String text, int limit, String... fields) {
-        SearchResult<E> result = getSearchResult(text, limit, fields);
+        SearchResult<E> result = searchResult(text, limit, fields);
         return result.hits();
     }
 
@@ -88,7 +77,6 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
         if (!isFieldExist(fieldName)) {
             throw new UnsupportedOperationException("Le champ " + fieldName + " non pris en charge");
         }
-
         String queryString = String.format("select from %s x where %s = :value",
                 this.entityInformation.getEntityName(),
                 "%s",
@@ -96,7 +84,6 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
         final Optional<E> result = Optional.ofNullable(entityManager.createQuery(queryString, clazz).
                 setParameter("value", value.toString())
                 .getSingleResult());
-
         return result.isPresent();
     }
 
@@ -115,27 +102,7 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
         }
     }
 
-    @Override
-    public List<E> filter(FilterWrap filterWrap) {
-        entityManager.getTransaction().begin();
-        Collection<Filter> filters = filterWrap.getFilters();
-        List<Field> declaredClassFields = Arrays
-                .stream(clazz.getDeclaredFields())
-                .collect(Collectors.toList());
-        filters = RepoUtil.extractCorrectFilters(filters, declaredClassFields);
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<E> criteriaQuery = criteriaBuilder.createQuery(clazz);
-        Root<E> root = criteriaQuery.from(clazz);
-        List<Predicate> predicates = predicates(filters, criteriaBuilder, root);
-        criteriaQuery.select(root).where(predicates.toArray(new Predicate[0]));
-        final TypedQuery<E> query = entityManager.createQuery(criteriaQuery);
-        final List<E> resultList = query.getResultList();
-        entityManager.getTransaction().commit();
-        entityManager.close();
-        return resultList;
-    }
-
-    private SearchResult<E> getSearchResult(String text, int limit, String[] fields) {
+    private SearchResult<E> searchResult(String text, int limit, String[] fields) {
         for (String fieldName : fields) {
             if (!isFieldExist(fieldName)) {
                 throw new UnsupportedOperationException("Le champ " + fieldName + " non pris en charge");
@@ -149,12 +116,6 @@ public class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaReposi
         entityManager.getTransaction().commit();
         entityManager.close();
         return result;
-    }
-
-    private List<Predicate> predicates(Collection<Filter> filters, CriteriaBuilder criteriaBuilder, Root<E> root) {
-        return filters.stream()
-                .map(filter -> RepoUtil.extractCriteria(filter, criteriaBuilder, root))
-                .collect(Collectors.toList());
     }
 
     public boolean isFieldExist(String fieldName) {

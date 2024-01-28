@@ -3,8 +3,8 @@ package io.dexproject.achatservice.generic.security.crud.services.impl;
 import io.dexproject.achatservice.generic.email.MailService;
 import io.dexproject.achatservice.generic.exceptions.OAuth2AuthenticationProcessingException;
 import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
-import io.dexproject.achatservice.generic.mapper.GenericMapper;
-import io.dexproject.achatservice.generic.mapper.ObjectMapperUtils;
+import io.dexproject.achatservice.generic.mapper.AbstractGenericMapper;
+import io.dexproject.achatservice.generic.mapper.GenericMapperUtils;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.LoginReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.UserReponse;
@@ -60,7 +60,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     private final UserAccountRepository repository;
     private final VerifyTokenRepository tokenRepository;
 
-    public UserAccountServiceImpl(JpaEntityInformation<UserAccount, Long> entityInformation, UserAccountRepository repository, GenericMapper<UserRequest, UserReponse, UserAccount> mapper, MailService mailService, JwtUtils jwtUtils, VerifyTokenRepository tokenRepository) {
+    public UserAccountServiceImpl(JpaEntityInformation<UserAccount, Long> entityInformation, UserAccountRepository repository, AbstractGenericMapper<UserRequest, UserReponse, UserAccount> mapper, MailService mailService, JwtUtils jwtUtils, VerifyTokenRepository tokenRepository) {
         super(entityInformation, repository, mapper);
         this.mailService = mailService;
         this.jwtUtils = jwtUtils;
@@ -75,7 +75,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
             throw new RessourceNotFoundException("L'e-mail ou le téléphone est déjà utilisé!");
         // Create new user's account
         // Mapper Dto
-        UserAccount newUser = ObjectMapperUtils.map(userForm, UserAccount.class);
+        UserAccount newUser = GenericMapperUtils.map(userForm, UserAccount.class);
         // On verifie que la langue q ete rensegnee
         if (userForm.getLangKey() == null) {
             newUser.setLangKey("Fr"); // default language
@@ -171,7 +171,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
         loginUser.setConnected(true);
         repository.saveAndFlush(loginUser);
         // Mapper Dto
-        return ObjectMapperUtils.map(loginUser, LoginReponse.class);
+        return GenericMapperUtils.map(loginUser, LoginReponse.class);
     }
 
     @Override
@@ -194,7 +194,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
         loginUser.setConnected(true);
         repository.saveAndFlush(loginUser);
         // Mapper Dto
-        return ObjectMapperUtils.map(loginUser, LoginReponse.class);
+        return GenericMapperUtils.map(loginUser, LoginReponse.class);
     }
 
     @Override
@@ -218,7 +218,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
             throw new RessourceNotFoundException("L'e-mail ou le téléphone est déjà utilisé!");
         // Create new user's account
         // Mapper Dto
-        UserAccount newUser = ObjectMapperUtils.map(userForm, UserAccount.class);
+        UserAccount newUser = GenericMapperUtils.map(userForm, UserAccount.class);
         // On verifie que la langue q ete rensegnee
         if (userForm.getLangKey() == null) {
             newUser.setLangKey("Fr"); // default language
@@ -233,7 +233,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
         // Create user's account
         newUser = repository.saveAndFlush(newUser);
         // Mapper Dto
-        return ObjectMapperUtils.map(newUser, UserReponse.class);
+        return GenericMapperUtils.map(newUser, UserReponse.class);
     }
 
     @Override
@@ -243,7 +243,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
             throw new RessourceNotFoundException("L'utilisateur n'existe pas par cet e-mail ou ce téléphone!");
         // Create new user's account
         // Mapper Dto
-        UserAccount updatedUser = ObjectMapperUtils.map(userForm, UserAccount.class);
+        UserAccount updatedUser = GenericMapperUtils.map(userForm, UserAccount.class);
         // On verifie que la langue q ete rensegnee
         if (userForm.getLangKey() == null) {
             updatedUser.setLangKey("Fr"); // default language
@@ -260,7 +260,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
         // Create user's account
         updatedUser = repository.saveAndFlush(updatedUser);
         // Mapper Dto
-        return ObjectMapperUtils.map(updatedUser, UserReponse.class);
+        return GenericMapperUtils.map(updatedUser, UserReponse.class);
     }
 
     @Override
@@ -279,7 +279,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
         updatedUser.setPassword(bCryptPasswordEncoder.encode(userForm.getNewPassword()));
         updatedUser = repository.saveAndFlush(updatedUser);
         // Mapper Dto
-        return ObjectMapperUtils.map(updatedUser, UserReponse.class);
+        return GenericMapperUtils.map(updatedUser, UserReponse.class);
     }
 
     @Override
@@ -292,7 +292,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
         updatedUser.setActived(false);
         updatedUser = repository.saveAndFlush(updatedUser);
         // Mapper Dto
-        return ObjectMapperUtils.map(updatedUser, UserReponse.class);
+        return GenericMapperUtils.map(updatedUser, UserReponse.class);
     }
 
     @Override
@@ -307,7 +307,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
     public UserReponse findUserById(Long id) {
         UserAccount userAccount = repository.findById(id).orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         // Mapper Dto
-        return ObjectMapperUtils.map(userAccount, UserReponse.class);
+        return GenericMapperUtils.map(userAccount, UserReponse.class);
     }
 
     @Override
@@ -332,7 +332,7 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
 
     @Override
     public List<UserReponse> getAllUsers() {
-        return ObjectMapperUtils.mapAll(repository.findAll(), UserReponse.class);
+        return GenericMapperUtils.mapAll(repository.findAll(), UserReponse.class);
     }
 
     @Override
@@ -346,12 +346,12 @@ public class UserAccountServiceImpl extends ServiceGenericImpl<UserRequest, User
             throw new RessourceNotFoundException("La liste de recherche d'utilisateurs est vide!");
         List<UserAccount> list = allUsers.stream().toList();
         // Mapper Dto
-        return new PagedResponse<>(ObjectMapperUtils.mapAll(list, UserReponse.class), allUsers.getNumber(), allUsers.getSize(), allUsers.getTotalElements(), allUsers.getTotalPages(), allUsers.isLast());
+        return new PagedResponse<>(GenericMapperUtils.mapAll(list, UserReponse.class), allUsers.getNumber(), allUsers.getSize(), allUsers.getTotalElements(), allUsers.getTotalPages(), allUsers.isLast());
     }
 
     @Override
     public List<UserReponse> search(String motCle) {
-        return ObjectMapperUtils.mapAll(repository.search(motCle), UserReponse.class);
+        return GenericMapperUtils.mapAll(repository.search(motCle), UserReponse.class);
     }
 
     @Override

@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/auth")
-public class AuthController {
+public class AuthentificationController {
 
     private final UserAccountService userAccountService;
 
-    public AuthController(UserAccountService userAccountService) {
+    public AuthentificationController(UserAccountService userAccountService) {
         this.userAccountService = userAccountService;
     }
 

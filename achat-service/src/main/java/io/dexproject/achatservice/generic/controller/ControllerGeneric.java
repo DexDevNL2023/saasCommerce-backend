@@ -24,7 +24,9 @@ public interface ControllerGeneric<D extends BaseRequest, R extends BaseReponse,
 
   ResponseEntity<RessourceResponse> getById(Long id);
 
-  ResponseEntity<RessourceResponse> getAll(Boolean byPeriode);
+  ResponseEntity<RessourceResponse> getAll();
+
+  ResponseEntity<RessourceResponse> getAll(List<Long> ids);
 
   ResponseEntity<RessourceResponse> getByPage(Integer page, Integer size);
 

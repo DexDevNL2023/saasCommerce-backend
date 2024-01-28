@@ -11,13 +11,12 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractGenericMapper<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> implements GenericMapper<D, R, E> {
 
+    protected abstract E newInstance();
     protected final GenericRepository<E> repository;
 
     protected AbstractGenericMapper(GenericRepository<E> repository) {
         this.repository = repository;
     }
-
-    protected abstract E newInstance();
 
     @Override
     public final E byId(Long id) {

@@ -3,17 +3,11 @@ package io.dexproject.achatservice.generic.service.impl;
 import io.dexproject.achatservice.generic.exceptions.InternalException;
 import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
 import io.dexproject.achatservice.generic.exceptions.SuppressionException;
-import io.dexproject.achatservice.generic.filter.dto.Filter;
-import io.dexproject.achatservice.generic.filter.dto.FilterWrap;
-import io.dexproject.achatservice.generic.filter.dto.InternalOperator;
-import io.dexproject.achatservice.generic.filter.dto.ValueType;
-import io.dexproject.achatservice.generic.filter.dto.builder.FilterBuilder;
 import io.dexproject.achatservice.generic.mapper.AbstractGenericMapper;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
 import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequest;
-import io.dexproject.achatservice.generic.security.crud.dto.request.DroitAddRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 import io.dexproject.achatservice.generic.utils.AppConstants;
@@ -29,16 +23,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 
 import java.lang.reflect.Field;
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
+public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
 
   private final JpaEntityInformation<E, Long> entityInformation;
   protected final GenericRepository<E> repository;
@@ -99,7 +88,7 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
   public List<R> saveAll(List<D> dtos) throws RessourceNotFoundException {
     try {
       dtos.forEach(this::save);
-      return getAll(false);
+      return getAll();
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -150,13 +139,9 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
   @Override
   @Transactional
   @LogExecution
-  public List<R> getAll(Boolean byPeriode) throws RessourceNotFoundException {
+  public List<R> getAll() throws RessourceNotFoundException {
     try {
-      if (byPeriode) {
-        return repository.filter(getFiltresByPeriode()).stream().map(mapper::toDto).collect(Collectors.toList());
-      } else {
-        return repository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
-      }
+      return repository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -166,6 +151,33 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
   public List<R> getAll(List<Long> ids) throws RessourceNotFoundException {
     try {
       return repository.findAllById(ids).stream().map(mapper::toDto).collect(Collectors.toList());
+    } catch (Exception e) {
+      throw new InternalException(e.getMessage());
+    }
+  }
+
+  /**
+   * @param page
+   * @param size
+   * @return PagedResponse<R>
+   * @throws RessourceNotFoundException
+   */
+  @Override
+  @Transactional
+  @LogExecution
+  public PagedResponse<R> getAllByPage(Integer page, Integer size) throws RessourceNotFoundException {
+    try {
+      // Vérifier la syntaxe de page et size
+      GenericUtils.validatePageNumberAndSize(page, size);
+      // Construire la pagination
+      Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, AppConstants.PERIODE_FILTABLE_FIELD);
+      // on récupere les données
+      Page<E> list = repository.findAll(pageable);
+      if (list.getNumberOfElements() == 0)
+        throw new RessourceNotFoundException("La recherche de " + this.entityInformation.getEntityName() + " est vide!");
+      // Mapper Dto
+      List<R> listDto = mapper.toDto(list.getContent());
+      return new PagedResponse<R>(listDto, list.getNumber(), list.getSize(), list.getTotalElements(), list.getTotalPages(), list.isLast());
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
@@ -255,33 +267,6 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
   }
 
   /**
-   * @param page
-   * @param size
-   * @return PagedResponse<R>
-   * @throws RessourceNotFoundException
-   */
-  @Override
-  @Transactional
-  @LogExecution
-  public PagedResponse<R> getByPage(Integer page, Integer size) throws RessourceNotFoundException {
-    try {
-      // Vérifier la syntaxe de page et size
-      GenericUtils.validatePageNumberAndSize(page, size);
-      // Construire la pagination
-      Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, AppConstants.PERIODE_FILTABLE_FIELD);
-      // on récupere les données
-      Page<E> list = repository.findAll(pageable);
-      if (list.getNumberOfElements() == 0)
-        throw new RessourceNotFoundException("La recherche de " + this.entityInformation.getEntityName() + " est vide!");
-      // Mapper Dto
-      List<R> listDto = mapper.toDto(list.getContent());
-      return new PagedResponse<R>(listDto, list.getNumber(), list.getSize(), list.getTotalElements(), list.getTotalPages(), list.isLast());
-    } catch (Exception e) {
-      throw new InternalException(e.getMessage());
-    }
-  }
-
-  /**
    * @throws RessourceNotFoundException
    */
   @Override
@@ -296,77 +281,14 @@ public class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E 
   }
 
   @Override
-  public String getEntityName() {
-    return this.entityInformation.getEntityName().toUpperCase();
-  }
-
-  @Override
-  public String getEntityLabel() {
-    return GenericUtils.camelOrSnakeToLabel(this.getEntityName());
-  }
-
-  @Override
-  public String getEntityKey(String key) {
-    return GenericUtils.camelOrSnakeToKey(this.getEntityName()) + "-" + key;
-  }
-
-  @Override
-  public String getModuleName() {
-    Class<?> objectClass = E.getClass();
-    E entity = objectClass.newInstance();
-    return entity.getEntityName();
-  }
-
-  @Override
-  public void addDroit(DroitAddRequest post) {
-
-  }
-
-  @Override
   public boolean fieldValueExists(Object value, String fieldName) throws UnsupportedOperationException {
     try {
       if (value == null) {
         return false;
       }
-
       return this.repository.existsByFieldValue(value, fieldName);
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }
-  }
-
-  public boolean isFieldExist(Object object, String fieldName) {
-    Class<?> objectClass = object.getClass();
-    for (Field field : objectClass.getFields()) {
-      if (field.getName().equals(fieldName)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private static FilterWrap getFiltresByPeriode() throws ParseException {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-    int CurrentYear = Calendar.getInstance().get(Calendar.YEAR);
-    String financiyalYearFrom = "01-01-" + (CurrentYear) + " 07:00:00";
-    String financiyalYearTo = "31-12-" + (CurrentYear) + " 23:59:59";
-    LocalDate fromdayDateTime = LocalDate.parse(financiyalYearFrom, formatter);
-    LocalDate todayDateTime = LocalDate.parse(financiyalYearTo, formatter);
-    FilterWrap filterWrap = new FilterWrap();
-    List<Filter> filters = new ArrayList<>();
-    Filter filterDebut = FilterBuilder.createFilter(AppConstants.PERIODE_FILTABLE_FIELD)
-            .value(fromdayDateTime.toString())
-            .operator(InternalOperator.GREATER_THAN)
-            .type(ValueType.LOCAL_DATE_TIME)
-            .build();
-    filters.add(filterDebut);
-    Filter filterFin = FilterBuilder.createFilter(AppConstants.PERIODE_FILTABLE_FIELD)
-            .value(todayDateTime.toString())
-            .operator(InternalOperator.GREATER_THAN)
-            .type(ValueType.LOCAL_DATE_TIME)
-            .build();
-    filters.add(filterFin);
-    filterWrap.setFilters(filters);
-    return filterWrap;
   }
 }

@@ -7,7 +7,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ObjectMapperUtils {
+public class GenericMapperUtils {
 
     private static final ModelMapper modelMapper;
 
@@ -24,7 +24,7 @@ public class ObjectMapperUtils {
     /**
      * Cacher de l'usage public.
      */
-    private ObjectMapperUtils() {
+    private GenericMapperUtils() {
     }
 
     /**

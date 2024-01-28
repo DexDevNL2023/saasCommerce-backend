@@ -1,5 +1,6 @@
 package io.dexproject.achatservice.generic.security.crud.services.impl;
 
+import io.dexproject.achatservice.generic.mapper.AbstractGenericMapper;
 import io.dexproject.achatservice.generic.mapper.GenericMapper;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.DroitReponse;
@@ -14,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class DroitServiceImpl extends ServiceGenericImpl<DroitRequest, DroitReponse, Droit> implements DroitService {
-    public DroitServiceImpl(JpaEntityInformation<Droit, Long> entityInformation, GenericRepository<Droit> repository, GenericMapper<DroitRequest, DroitReponse, Droit> mapper) {
+    public DroitServiceImpl(JpaEntityInformation<Droit, Long> entityInformation, GenericRepository<Droit> repository, AbstractGenericMapper<DroitRequest, DroitReponse, Droit> mapper) {
         super(entityInformation, repository, mapper);
     }
 }

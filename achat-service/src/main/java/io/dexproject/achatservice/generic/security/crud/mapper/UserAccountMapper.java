@@ -14,6 +14,7 @@ public abstract class UserAccountMapper extends AbstractGenericMapper<UserReques
         super(repository);
     }
 
+    @Override
     protected UserAccount newInstance() {
         return new UserAccount();
     }
