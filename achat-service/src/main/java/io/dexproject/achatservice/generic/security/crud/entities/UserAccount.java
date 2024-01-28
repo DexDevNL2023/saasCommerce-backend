@@ -1,7 +1,6 @@
 package io.dexproject.achatservice.generic.security.crud.entities;
 
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
-import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
 import io.dexproject.achatservice.generic.security.oauth2.users.OAuth2UserInfo;
 import io.dexproject.achatservice.generic.utils.GenericUtils;
 import jakarta.persistence.*;
@@ -15,8 +14,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -70,8 +68,15 @@ public class UserAccount extends BaseEntity implements OAuth2User, OidcUser, Ser
 
     private String imageUrl;
 
-    @Enumerated(EnumType.STRING)
-    private RoleName role;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(  name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<Role> roles = new ArrayList<>();
+
+    public void addAuthorities(Role authority) {
+        this.roles.add(authority);
+    }
 
     @Transient
     private Map<String, Object> attributes;
@@ -83,12 +88,6 @@ public class UserAccount extends BaseEntity implements OAuth2User, OidcUser, Ser
         this.phone = phone;
         this.adresse = adresse;
         this.actived = actived;
-        this.connected = false;
-        this.accesToken = null;
-        this.role = RoleName.CUSTOMER;
-        this.userInfo = null;
-        this.idToken = null;
-        this.attributes = null;
     }
 
     public UserAccount(String name, String email, OidcIdToken idToken2, OidcUserInfo userInfo2) {
@@ -96,7 +95,6 @@ public class UserAccount extends BaseEntity implements OAuth2User, OidcUser, Ser
         this.email = email;
         this.idToken = idToken2;
         this.userInfo = userInfo2;
-        this.attributes = null;
     }
 
     public static UserAccount create(OAuth2UserInfo user, OidcIdToken idToken, OidcUserInfo userInfo) {
@@ -140,7 +138,7 @@ public class UserAccount extends BaseEntity implements OAuth2User, OidcUser, Ser
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return GenericUtils.buildSimpleGrantedAuthorities(this.getRole());
+        return GenericUtils.buildSimpleGrantedAuthorities(this.getRoles());
     }
 
     @Override

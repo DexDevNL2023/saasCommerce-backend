@@ -1,7 +1,7 @@
 package io.dexproject.achatservice.generic.utils;
 
 import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
-import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.entities.Role;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 public class GenericUtils {
@@ -178,10 +179,10 @@ public class GenericUtils {
     return uniqueId;
   }
 
-  public static List<SimpleGrantedAuthority> buildSimpleGrantedAuthorities(final RoleName role) {
-    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-    authorities.add(new SimpleGrantedAuthority(role.getLabel()));
-    return authorities;
+  public static List<SimpleGrantedAuthority> buildSimpleGrantedAuthorities(List<Role> roles) {
+    return roles.stream()
+            .map(role -> new SimpleGrantedAuthority(role.getLibelle().getLabel()))
+            .collect(Collectors.toList());
   }
 
   public static void validatePageNumberAndSize(final Integer page, final Integer size) {

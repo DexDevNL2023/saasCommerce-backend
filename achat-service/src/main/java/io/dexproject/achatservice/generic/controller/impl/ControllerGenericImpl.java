@@ -9,27 +9,25 @@ import io.dexproject.achatservice.generic.security.crud.dto.request.DroitAddRequ
 import io.dexproject.achatservice.generic.security.crud.dto.request.SearchRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.security.crud.services.AuthorizationService;
-import io.dexproject.achatservice.generic.security.crud.services.RoleService;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.GenericUtils;
-import io.dexproject.achatservice.generic.validators.AuthorizeUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.index.IndexNotFoundException;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
 @ResponseBody
 @Slf4j
 @RefreshScope
@@ -49,21 +47,20 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return List<R>
    */
   @Override
-  @AuthorizeUser(actionKey = service.getEntityName() + "-SEARCH")
   @GetMapping("/search")
   @Operation(summary = "Rechercher une entité par valeur de texte intégral")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = "Liste d'entité retrouvée", content = @Content),
           @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
           @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<RessourceResponse> search(SearchRequest dto) {
+  public ResponseEntity<RessourceResponse> search(@NotEmpty @Valid @RequestBody SearchRequest dto) {
     try {
       E entity = newInstance();
-      authorizationService.addDroit(new DroitAddRequest(entity.getModuleName(), "Rechercher un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName())+"-SEARCH", "GET", true));
+      authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Rechercher un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"-SEARCH"), "GET", true));
       log.info("Demande de recherche reçue avec les données : " + dto);
       return new ResponseEntity<>(new RessourceResponse("Recherche de donnée effectuée avec succès!", service.search(dto.getText(), dto.getFields(), dto.getLimit())), HttpStatus.OK);
     } catch (InternalException e) {
-      return new ResponseEntity(new RessourceResponse(false, "Erreur de recherche de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new RessourceResponse(false, "Erreur de recherche de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -72,21 +69,20 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return R
    */
   @Override
-  @AuthorizeUser(actionKey = service.getEntityName() + "-ADD")
   @PostMapping
   @Operation(summary = "Enregistrer une entité")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Entité enregistrée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<RessourceResponse> save(@Valid @RequestBody D dto) {
+  public ResponseEntity<RessourceResponse> save(@NotEmpty @Valid @RequestBody D dto) {
     try {
       E entity = newInstance();
-      authorizationService.addDroit(new DroitAddRequest(entity.getModuleName(), "Ajouter un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName())+"ADD", "POST", true));
+      authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Ajouter un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"-ADD"), "POST", true));
       log.info("Demande de sauvegarde reçue avec les données : " + dto);
       return new ResponseEntity<>(new RessourceResponse("Enregistrement de donnée effectuée avec succès!", service.save(dto)), HttpStatus.CREATED);
     } catch (InternalException e) {
-      return new ResponseEntity(new RessourceResponse(false, "Erreur de sauvegarde de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new RessourceResponse(false, "Erreur de sauvegarde de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -95,21 +91,20 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return List<R>
    */
   @Override
-  @AuthorizeUser(actionKey = service.getEntityName() + "-ADD-LIST")
   @PostMapping("/all")
   @Operation(summary = "Enregistrer toute une entité de la liste")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Liste d'entité enregistrée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<RessourceResponse> saveAll(@Valid @RequestBody List<D> dtos) {
+  public ResponseEntity<RessourceResponse> saveAll(@NotEmpty @RequestBody List<D> dtos) {
     try {
       E entity = newInstance();
-      authorizationService.addDroit(new DroitAddRequest(entity.getModuleName(), "Ajouter une liste de " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName())+"ADD-LIST", "POST", true));
+      authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Ajouter une liste de " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"-ADD-LIST"), "POST", true));
       log.info("Demande de sauvegarde reçue avec les données : " + dtos);
       return new ResponseEntity<>(new RessourceResponse("Enregistrement de donnée effectuée avec succès!", service.saveAll(dtos)), HttpStatus.CREATED);
     } catch (InternalException e) {
-      return new ResponseEntity(new RessourceResponse(false, "Erreur de sauvegarde de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new RessourceResponse(false, "Erreur de sauvegarde de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -118,22 +113,21 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return String
    */
   @Override
-  @AuthorizeUser(actionKey = service.getEntityName() + "-DELET")
   @DeleteMapping("/{id}")
   @Operation(summary = "Supprimer une entité par son identifiant")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Entité supprimée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<RessourceResponse> deleteById(@PathVariable("id") Long id) {
+  public ResponseEntity<RessourceResponse> deleteById(@NotNull @PathVariable("id") Long id) {
     try {
       E entity = newInstance();
-      authorizationService.addDroit(new DroitAddRequest(entity.getModuleName(), "Supprimer un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName())+"DELET", "DELET", false));
+      authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Supprimer un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"-DELET"), "DELET", false));
       log.info("Demande de suppression reçue pour la donnée avec l'id : " + id);
       service.delete(id);
       return new ResponseEntity<>(new RessourceResponse("Suppression de donnée effectuée avec succès!"), HttpStatus.OK);
     } catch (InternalException e) {
-      return new ResponseEntity(new RessourceResponse(false, "Erreur de suppression de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new RessourceResponse(false, "Erreur de suppression de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -142,21 +136,20 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return String
    */
   @Override
-  @AuthorizeUser(actionKey = service.getEntityName() + "-DELET-LIST")
   @Operation(summary = "Supprimer la liste d'entité par leur identifiant")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Liste d'entité supprimée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<RessourceResponse> deleteAll(@RequestBody List<Long> ids) {
+  public ResponseEntity<RessourceResponse> deleteAll(@NotEmpty @RequestBody List<Long> ids) {
     try {
       E entity = newInstance();
-      authorizationService.addDroit(new DroitAddRequest(entity.getModuleName(), "Supprimer une liste de " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName())+"DELET-LIST", "DELET", false));
+      authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Supprimer une liste de " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"-DELET-LIST"), "DELET", false));
       log.info("Demande de suppression reçue pour la donnée avec l'id : " + ids);
       service.deleteAll(ids);
       return new ResponseEntity<>(new RessourceResponse("Suppression de donnée effectuée avec succès!"), HttpStatus.OK);
     } catch (InternalException e) {
-      return new ResponseEntity(new RessourceResponse(false, "Erreur de suppression de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new RessourceResponse(false, "Erreur de suppression de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -165,21 +158,20 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return R
    */
   @Override
-  @AuthorizeUser(actionKey = service.getEntityName() + "-FIND")
   @GetMapping("/{id}")
   @Operation(summary = "Récupérer une entité par son identifiant")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Entité trouvée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<RessourceResponse> getOne(@PathVariable("id") Long id) {
+  public ResponseEntity<RessourceResponse> getOne(@NotNull @PathVariable("id") Long id) {
     try {
       E entity = newInstance();
-      authorizationService.addDroit(new DroitAddRequest(entity.getModuleName(), "Afficher un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName())+"FIND", "GET", true));
+      authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Afficher les details sur un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"-GET"), "GET", true));
       log.info("Demande d'affichage reçue pour la donnée avec l'id : " + id);
       return new ResponseEntity<>(new RessourceResponse("Recupération de donnée effectuée avec succès!", service.getOne(id)), HttpStatus.OK);
     } catch (InternalException e) {
-      return new ResponseEntity(new RessourceResponse(false, "Erreur de recupération de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new RessourceResponse(false, "Erreur de recupération de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -188,21 +180,20 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return E
    */
   @Override
-  @AuthorizeUser(actionKey = service.getEntityName() + "-FIND")
   @GetMapping("/{id}")
   @Operation(summary = "Récupérer une entité par son identifiant")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Entité trouvée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<RessourceResponse> getById(@PathVariable("id") Long id) {
+  public ResponseEntity<RessourceResponse> getById(@NotNull @PathVariable("id") Long id) {
     try {
       E entity = newInstance();
-      authorizationService.addDroit(new DroitAddRequest(entity.getModuleName(), "Afficher un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName())+"FIND", "GET", true));
+      authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Afficher les details sur un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"-GET"), "GET", true));
       log.info("Demande d'affichage reçue pour la donnée avec l'id : " + id);
       return new ResponseEntity<>(new RessourceResponse("Recupération de donnée effectuée avec succès!", service.getById(id)), HttpStatus.OK);
     } catch (InternalException e) {
-      return new ResponseEntity(new RessourceResponse(false, "Erreur de recupération de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new RessourceResponse(false, "Erreur de recupération de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -210,7 +201,6 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return List<R>
    */
   @Override
-  @AuthorizeUser(actionKey = service.getEntityName() + "-FIND-LIST")
   @GetMapping
   @Operation(summary = "Récupérer la liste de tous les entités")
   @ApiResponses(value = {
@@ -219,11 +209,11 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
   public ResponseEntity<RessourceResponse> getAll() {
     try {
       E entity = newInstance();
-      authorizationService.addDroit(new DroitAddRequest(entity.getModuleName(), "Afficher une liste " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName())+"FIND", "GET", true));
+      authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Afficher la liste des " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"GET-ALL"), "GET", true));
       log.info("Demande d'affichage reçue pour la liste de donnée");
       return new ResponseEntity<>(new RessourceResponse("Recupération de donnée effectuée avec succès!", service.getAll()), HttpStatus.OK);
     } catch (InternalException e) {
-      return new ResponseEntity(new RessourceResponse(false, "Erreur de recupération de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new RessourceResponse(false, "Erreur de recupération de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -231,7 +221,6 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return List<R>
    */
   @Override
-  @AuthorizeUser(actionKey = service.getEntityName() + "-FIND-LIST")
   @GetMapping
   @Operation(summary = "Récupérer la liste d'entité par leur identifiant")
   @ApiResponses(value = {
@@ -240,7 +229,7 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
   public ResponseEntity<RessourceResponse> getAll(List<Long> ids) {
     try {
       E entity = newInstance();
-      authorizationService.addDroit(new DroitAddRequest(entity.getModuleName(), "Afficher une liste " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName())+"FIND", "GET", true));
+      authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Afficher la liste des " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"GET-ALL"), "GET", true));
       log.info("Demande d'affichage reçue pour la liste de donnée pour les identifients {} ", ids);
       return new ResponseEntity<>(new RessourceResponse("Recupération de donnée effectuée avec succès!", service.getAll(ids)), HttpStatus.OK);
     } catch (InternalException e) {
@@ -254,7 +243,6 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return PagedResponse<R>
    */
   @Override
-  @AuthorizeUser(actionKey = service.getEntityName() + "-FIND-LIST")
   @GetMapping("/page")
   @Operation(summary = "Récupérer la liste d'entité par page")
   @ApiResponses(value = {
@@ -264,11 +252,11 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
                                                      @RequestParam(name = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
     try {
       E entity = newInstance();
-      authorizationService.addDroit(new DroitAddRequest(entity.getModuleName(), "Afficher une liste " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName())+"FIND", "GET", true));
+      authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Afficher la liste des " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"GET-ALL"), "GET", true));
       log.info("Demande d'affichage reçue pour la liste de donnée pour la page : " + page + ", nombre : " + size);
-      return new ResponseEntity<>(new RessourceResponse("Recupération de donnée effectuée avec succès!", service.getByPage(page, size)), HttpStatus.OK);
+      return new ResponseEntity<>(new RessourceResponse("Recupération de donnée effectuée avec succès!", service.getAllByPage(page, size)), HttpStatus.OK);
     } catch (InternalException e) {
-      return new ResponseEntity(new RessourceResponse(false, "Erreur de recupération de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new RessourceResponse(false, "Erreur de recupération de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -278,29 +266,26 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return R
    */
   @Override
-  @AuthorizeUser(actionKey = service.getEntityName() + "-UPDATE")
   @PostMapping("/{id}")
   @Operation(summary = "Mettre à jour une entité par son identifiant")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Etité mise à jour", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<RessourceResponse> update(@Valid @RequestBody D dto, @PathVariable("id") Long id) {
+  public ResponseEntity<RessourceResponse> update(@NotEmpty @Valid @RequestBody D dto, @PathVariable("id") Long id) {
     try {
       E entity = newInstance();
-      authorizationService.addDroit(new DroitAddRequest(entity.getModuleName(), "Modifier un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName())+"UPDATE", "PUT", false));
+      authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Modifier un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"-UPDATE"), "PUT", false));
       log.info("Demande de mise à jour reçue avec les données : " + dto + " pour l'entité avec l'id : " + id);
       return new ResponseEntity<>(new RessourceResponse("Modification de donnée effectuée avec succès!", service.update(dto, id)), HttpStatus.OK);
     } catch (InternalException e) {
-      return new ResponseEntity(new RessourceResponse(false, "Erreur de modification de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new RessourceResponse(false, "Erreur de modification de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   /**
    */
   @Override
-  @AuthorizeUser(actionKey = service.getEntityName() + "-REINDEX")
-  @PreAuthorize("hasRole('CREATE_USER')")
   @GetMapping
   @Operation(summary = "Reindex all a entity")
   @ApiResponses(value = {
@@ -309,12 +294,12 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
   public ResponseEntity<RessourceResponse> reIndex() {
     try {
       E entity = newInstance();
-      authorizationService.addDroit(new DroitAddRequest(entity.getModuleName(), "Re-indexer un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName())+"REINDEX", "GET", true));
+      authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Re-indexer un " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"-REINDEX"), "GET", true));
       log.info("Demande de reindexation des fichiers de données");
       service.reIndex();
       return new ResponseEntity<>(new RessourceResponse("Reindexation réussie!"), HttpStatus.OK);
     } catch (IndexNotFoundException e) {
-      return new ResponseEntity(new RessourceResponse(false, "Erreur de reindexation de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new RessourceResponse(false, "Erreur de reindexation de donnée.\n\n Cause : " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

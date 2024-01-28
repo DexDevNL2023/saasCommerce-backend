@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,6 +31,7 @@ public class UserRequest extends BaseRequest {
     private String langKey;
     @Size(max = 256, message = "La taille de l'image doit être inférieur ou égale à 256")
     private String imageUrl;
+    private List<Long> roles;
 
     public String getEmailOrPhone() {
         return this.emailOrPhone = this.email.isEmpty() ? this.phone : this.email;

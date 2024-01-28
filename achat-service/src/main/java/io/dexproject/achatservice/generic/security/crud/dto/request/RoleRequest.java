@@ -1,8 +1,9 @@
 package io.dexproject.achatservice.generic.security.crud.dto.request;
 
+import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
 import io.dexproject.achatservice.generic.security.crud.services.RoleService;
+import io.dexproject.achatservice.generic.validators.EnumValidator;
 import io.dexproject.achatservice.generic.validators.UniqueValidator;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,9 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoleRequest extends BaseRequest {
-    @NotBlank(message = "le libelle du role est obligatoire")
+    @EnumValidator(enumClass = RoleName.class)
     @UniqueValidator(service = RoleService.class, fieldName = "libelle", message = "Le libelle {} est déjà utilisé")
-    private String libelle;
+    private RoleName libelle;
     private Boolean isSuper;
     private Boolean isGrant = false;
 }

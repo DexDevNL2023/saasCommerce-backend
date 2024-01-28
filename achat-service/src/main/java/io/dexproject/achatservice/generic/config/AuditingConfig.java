@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.generic.config;
 
-import io.dexproject.achatservice.generic.security.crud.services.impl.UserAccountServiceImpl;
+import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +15,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories({AppConstants.DefaultPackageName + ".repositories..*"})
 public class AuditingConfig {
 
-    private final UserAccountServiceImpl userService;
+    private final UserAccountService userService;
 
-    public AuditingConfig(UserAccountServiceImpl userService) {
+    public AuditingConfig(UserAccountService userService) {
         this.userService = userService;
     }
 

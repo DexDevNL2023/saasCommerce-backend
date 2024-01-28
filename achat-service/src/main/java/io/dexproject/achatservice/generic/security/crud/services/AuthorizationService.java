@@ -7,16 +7,15 @@ import io.dexproject.achatservice.generic.security.crud.dto.reponse.PermissionRe
 import io.dexproject.achatservice.generic.security.crud.dto.request.DroitAddRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.DroitFormRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.PermissionFormRequest;
-import io.dexproject.achatservice.generic.security.crud.entities.Droit;
+import io.dexproject.achatservice.generic.security.crud.entities.*;
 import io.dexproject.achatservice.generic.security.crud.entities.Module;
-import io.dexproject.achatservice.generic.security.crud.entities.Permission;
-import io.dexproject.achatservice.generic.security.crud.entities.Role;
-import io.dexproject.achatservice.generic.security.crud.repositories.DroitRepository;
-import io.dexproject.achatservice.generic.security.crud.repositories.ModuleRepository;
-import io.dexproject.achatservice.generic.security.crud.repositories.PermissionRepository;
-import io.dexproject.achatservice.generic.security.crud.repositories.RoleRepository;
+import io.dexproject.achatservice.generic.security.crud.repositories.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,12 +23,14 @@ import java.util.Optional;
 @Service
 @Transactional
 public class AuthorizationService {
+    private final UserAccountRepository userRepository;
     private final RoleRepository roleRepository;
     private final DroitRepository droitRepository;
     private final ModuleRepository moduleRepository;
     private final PermissionRepository permissionRepository;
 
-    public AuthorizationService(RoleRepository roleRepository, DroitRepository droitRepository, ModuleRepository moduleRepository, PermissionRepository permissionRepository) {
+    public AuthorizationService(UserAccountRepository userRepository, RoleRepository roleRepository, DroitRepository droitRepository, ModuleRepository moduleRepository, PermissionRepository permissionRepository) {
+        this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.droitRepository = droitRepository;
         this.moduleRepository = moduleRepository;
@@ -61,7 +62,7 @@ public class AuthorizationService {
         return GenericMapperUtils.map(droit, DroitReponse.class);
     }
 
-    public void addDroit(DroitAddRequest dto) {
+    public void checkIfHasDroit(DroitAddRequest dto) {
         Module module = moduleRepository.findByName(dto.getModule()).orElse(null);
         if (module == null) {
             module = moduleRepository.save(new Module(dto.getModule(), ""));
@@ -75,5 +76,40 @@ public class AuthorizationService {
                 permissionRepository.save(permission);
             }
         }
+        if (!isAuthorized(dto.getKey()))
+            throw new RessourceNotFoundException("Vous n'etes pas autoriser a " + dto.getLibelle());
+    }
+
+    public List<PermissionReponse> getAutorisations(Long roleId) {
+        Role role = roleRepository.findById(roleId).orElseThrow(
+                () -> new RessourceNotFoundException("Le role avec l'id " + roleId + " n'existe pas!")
+        );
+        List<Permission> permissions = permissionRepository.findAllByRole(role);
+        // Mapper Dto
+        return GenericMapperUtils.mapAll(permissions, PermissionReponse.class);
+    }
+
+    public UserAccount getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            throw new RessourceNotFoundException("Impossible de retouver l'utilisateur courant!");
+        }
+        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+        return userRepository.findByEmailOrPhone(userPrincipal.getUsername())
+                .orElseThrow(() -> new RessourceNotFoundException("Aucun utilisateur n'existe avec le nom utilisateur " + userPrincipal.getUsername()));
+    }
+
+    public boolean isAuthorized(String actionKey) {
+        for (Role role : getCurrentUser().getRoles()) {
+            if (role.getIsSuper() || role.getIsGrant()) {
+                return true;
+            } else {
+                List<Permission> permissions = permissionRepository.findAllByRole(role);
+                for (Permission permission : permissions) {
+                    if (permission.getHasDroit() && permission.getDroit().getKey().equals(actionKey)) return true;
+                }
+            }
+        }
+        return false;
     }
 }

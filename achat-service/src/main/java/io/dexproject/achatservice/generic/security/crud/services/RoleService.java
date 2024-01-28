@@ -6,4 +6,5 @@ import io.dexproject.achatservice.generic.security.crud.entities.Role;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 
 public interface RoleService extends ServiceGeneric<RoleRequest, RoleReponse, Role> {
+    void addDefaultRoles();
 }

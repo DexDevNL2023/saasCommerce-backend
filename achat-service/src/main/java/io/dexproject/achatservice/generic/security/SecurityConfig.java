@@ -2,7 +2,6 @@ package io.dexproject.achatservice.generic.security;
 
 import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
-import io.dexproject.achatservice.generic.security.crud.services.impl.UserAccountServiceImpl;
 import io.dexproject.achatservice.generic.security.jwt.JwtTokenFilter;
 import io.dexproject.achatservice.generic.security.jwt.RestAuthenticationEntryPoint;
 import io.dexproject.achatservice.generic.security.oauth2.*;
@@ -59,7 +58,7 @@ public class SecurityConfig {
     private final UserAccountService userAccountService;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
-    public SecurityConfig(JwtUtils jwtUtils, UserAccountServiceImpl userAccountService, HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
+    public SecurityConfig(JwtUtils jwtUtils, UserAccountService userAccountService, HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
         this.jwtUtils = jwtUtils;
         this.userAccountService = userAccountService;
         this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;

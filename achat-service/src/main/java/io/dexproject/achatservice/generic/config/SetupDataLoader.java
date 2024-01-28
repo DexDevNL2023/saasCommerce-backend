@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.config;
 
 import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.services.RoleService;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -12,9 +13,11 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
     private boolean alreadySetup = false;
 
+    private final RoleService roleService;
     private final UserAccountService userAccountService;
 
-    public SetupDataLoader(UserAccountService userAccountService) {
+    public SetupDataLoader(RoleService roleService, UserAccountService userAccountService) {
+        this.roleService = roleService;
         this.userAccountService = userAccountService;
     }
 
@@ -25,10 +28,18 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             return;
         }
 
+        // Create initial default role
+        createRoleIfNotFound();
+
         // Create initial default user
         createUserIfNotFound(RoleName.ADMIN);
 
         alreadySetup = true;
+    }
+
+    @Transactional
+    private final void createRoleIfNotFound() {
+        roleService.addDefaultRoles();
     }
 
     @Transactional

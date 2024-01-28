@@ -1,9 +1,8 @@
 package io.dexproject.achatservice.generic.security.crud.entities;
 
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +19,8 @@ public class Role extends BaseEntity {
     private static final String MODULE_NAME = "AUTORISATIONS";
 
     @Column(nullable = false, unique = true)
-    private String libelle;
+    @Enumerated(EnumType.STRING)
+    private RoleName libelle;
 
     private Boolean isSuper = false;
 

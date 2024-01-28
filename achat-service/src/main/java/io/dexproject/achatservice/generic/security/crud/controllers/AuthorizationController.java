@@ -5,12 +5,12 @@ import io.dexproject.achatservice.generic.security.crud.dto.request.DroitAddRequ
 import io.dexproject.achatservice.generic.security.crud.dto.request.DroitFormRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.PermissionFormRequest;
 import io.dexproject.achatservice.generic.security.crud.services.AuthorizationService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
@@ -24,15 +24,21 @@ public class AuthorizationController {
         this.authorizationService = authorizationService;
     }
 
+    @PutMapping("/role-autorisations/{roleId}")
+    public ResponseEntity<RessourceResponse> getAllAutorisations(@NotNull @PathVariable("roleId") Long roleId) {
+        authorizationService.checkIfHasDroit(new DroitAddRequest(MODULE_NAME, "Afficher les permissions d'un role", MODULE_NAME+"-GET-PERMISSION-ROLE", "GET", false));
+        return new ResponseEntity<>(new RessourceResponse("Permissions trouvées avec succès!", authorizationService.getAutorisations(roleId)), HttpStatus.OK);
+    }
+
     @PutMapping("/change-autorisation")
-    public ResponseEntity<RessourceResponse> changeAutorisation(PermissionFormRequest dto) {
-        authorizationService.addDroit(new DroitAddRequest(MODULE_NAME, "Changer une autorisation", "AUTORISATION-CHANGE-PERMISSION", "PUT", false));
+    public ResponseEntity<RessourceResponse> changeAutorisation(@NotEmpty @Valid @RequestBody PermissionFormRequest dto) {
+        authorizationService.checkIfHasDroit(new DroitAddRequest(MODULE_NAME, "Changer une autorisation", MODULE_NAME+"-CHANGE-PERMISSION", "PUT", false));
         return new ResponseEntity<>(new RessourceResponse("Permission changée avec succès!", authorizationService.changeAutorisation(dto)), HttpStatus.OK);
     }
 
     @PutMapping("/make-is-default")
-    public ResponseEntity<RessourceResponse> changeIsDefaultDroit(DroitFormRequest dto) {
-        authorizationService.addDroit(new DroitAddRequest(MODULE_NAME, "Définir un droit par défaut", "AUTORISATION-DROIT-IS-DEFAULT", "PUT", false));
+    public ResponseEntity<RessourceResponse> changeIsDefaultDroit(@NotEmpty @Valid @RequestBody DroitFormRequest dto) {
+        authorizationService.checkIfHasDroit(new DroitAddRequest(MODULE_NAME, "Définir un droit par défaut", MODULE_NAME+"-DROIT-IS-DEFAULT", "PUT", false));
         return new ResponseEntity<>(new RessourceResponse("Permission changée avec succès!", authorizationService.changeIsDefaultDroit(dto)), HttpStatus.OK);
     }
 }
