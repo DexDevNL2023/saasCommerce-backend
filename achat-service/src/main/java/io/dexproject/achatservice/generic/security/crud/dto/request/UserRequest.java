@@ -17,14 +17,9 @@ import java.util.List;
 public class UserRequest extends BaseRequest {
     private String emailOrPhone;
     @NotBlank(message = "Le nom est obligatoire")
-    @UniqueValidator(service = UserAccountService.class, fieldName = "lastName", message = "Le nom {} est déjà utilisé")
     private String lastName;
     private String firstName;
-    @NotBlank(message = "L'email est obligatoire")
-    @Email(message = "le format de l'email est incorrecte", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
-    @UniqueValidator(service = UserAccountService.class, fieldName = "email", message = "L'e-mail {} est déjà utilisé")
     private String email;
-    @UniqueValidator(service = UserAccountService.class, fieldName = "phone", message = "Le téléphone {} est déjà utilisé")
     private String phone;
     private String adresse;
     private boolean usingQr = false;
