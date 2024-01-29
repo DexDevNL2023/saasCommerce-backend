@@ -7,6 +7,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.request.PermissionRe
 import io.dexproject.achatservice.generic.security.crud.entities.Permission;
 import io.dexproject.achatservice.generic.security.crud.services.AuthorizationService;
 import io.dexproject.achatservice.generic.security.crud.services.PermissionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/autorisation/permissions")
+@Tag(name = "Permissions", description = "API de gestion des permissions")
 public class PermissionControllerImpl extends ControllerGenericImpl<PermissionRequest, PermissionReponse, Permission> implements PermissionController {
     protected PermissionControllerImpl(PermissionService service, AuthorizationService authorizationService) {
         super(service, authorizationService);

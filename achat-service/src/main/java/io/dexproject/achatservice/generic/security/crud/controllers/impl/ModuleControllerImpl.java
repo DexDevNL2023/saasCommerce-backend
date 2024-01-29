@@ -7,6 +7,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.request.ModuleReques
 import io.dexproject.achatservice.generic.security.crud.entities.Module;
 import io.dexproject.achatservice.generic.security.crud.services.AuthorizationService;
 import io.dexproject.achatservice.generic.security.crud.services.ModuleService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/autorisation/modules")
+@Tag(name = "Modules", description = "API de gestion des modules applicatifs")
 public class ModuleControllerImpl extends ControllerGenericImpl<ModuleRequest, ModuleReponse, Module> implements ModuleController {
     protected ModuleControllerImpl(ModuleService service, AuthorizationService authorizationService) {
         super(service, authorizationService);

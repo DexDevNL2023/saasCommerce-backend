@@ -5,6 +5,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.reponse.RessourceRes
 import io.dexproject.achatservice.generic.security.crud.dto.request.LoginRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.SignupRequest;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/auth")
+@Tag(name = "Authentifications", description = "API de gestion des authentifications")
 public class AuthentificationController {
 
     private final UserAccountService userAccountService;

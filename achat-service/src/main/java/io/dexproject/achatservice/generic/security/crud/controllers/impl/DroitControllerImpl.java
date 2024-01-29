@@ -7,6 +7,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.request.DroitRequest
 import io.dexproject.achatservice.generic.security.crud.entities.Droit;
 import io.dexproject.achatservice.generic.security.crud.services.AuthorizationService;
 import io.dexproject.achatservice.generic.security.crud.services.DroitService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/autorisation/droits")
+@Tag(name = "Droits", description = "API de gestion des droits")
 public class DroitControllerImpl extends ControllerGenericImpl<DroitRequest, DroitReponse, Droit> implements DroitController {
     protected DroitControllerImpl(DroitService service, AuthorizationService authorizationService) {
         super(service, authorizationService);

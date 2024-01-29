@@ -5,6 +5,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.request.DroitAddRequ
 import io.dexproject.achatservice.generic.security.crud.dto.request.DroitFormRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.PermissionFormRequest;
 import io.dexproject.achatservice.generic.security.crud.services.AuthorizationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/autorisations")
+@Tag(name = "Authorisations", description = "API de gestion des authorisations")
 public class AuthorizationController {
 
     private static final String MODULE_NAME = "AUTORISATIONS";

@@ -7,6 +7,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.request.RoleRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.Role;
 import io.dexproject.achatservice.generic.security.crud.services.AuthorizationService;
 import io.dexproject.achatservice.generic.security.crud.services.RoleService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/autorisation/roles")
+@Tag(name = "Roles", description = "API de gestion des rôles")
 public class RoleControllerImpl extends ControllerGenericImpl<RoleRequest, RoleReponse, Role> implements RoleController {
     protected RoleControllerImpl(RoleService service, AuthorizationService authorizationService) {
         super(service, authorizationService);
