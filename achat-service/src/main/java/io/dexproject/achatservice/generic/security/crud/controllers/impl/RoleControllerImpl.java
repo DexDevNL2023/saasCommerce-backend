@@ -6,7 +6,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.reponse.RoleReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.request.RoleRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.Role;
 import io.dexproject.achatservice.generic.security.crud.services.AuthorizationService;
-import io.dexproject.achatservice.generic.service.ServiceGeneric;
+import io.dexproject.achatservice.generic.security.crud.services.RoleService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin("*")
 @RequestMapping("/api/autorisation/roles")
 public class RoleControllerImpl extends ControllerGenericImpl<RoleRequest, RoleReponse, Role> implements RoleController {
-    protected RoleControllerImpl(ServiceGeneric<RoleRequest, RoleReponse, Role> service, AuthorizationService authorizationService) {
+    protected RoleControllerImpl(RoleService service, AuthorizationService authorizationService) {
         super(service, authorizationService);
     }
 

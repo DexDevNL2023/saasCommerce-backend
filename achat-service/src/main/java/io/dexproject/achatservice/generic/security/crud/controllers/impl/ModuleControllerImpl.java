@@ -6,7 +6,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.reponse.ModuleRepons
 import io.dexproject.achatservice.generic.security.crud.dto.request.ModuleRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.Module;
 import io.dexproject.achatservice.generic.security.crud.services.AuthorizationService;
-import io.dexproject.achatservice.generic.service.ServiceGeneric;
+import io.dexproject.achatservice.generic.security.crud.services.ModuleService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin("*")
 @RequestMapping("/api/autorisation/modules")
 public class ModuleControllerImpl extends ControllerGenericImpl<ModuleRequest, ModuleReponse, Module> implements ModuleController {
-    protected ModuleControllerImpl(ServiceGeneric<ModuleRequest, ModuleReponse, Module> service, AuthorizationService authorizationService) {
+    protected ModuleControllerImpl(ModuleService service, AuthorizationService authorizationService) {
         super(service, authorizationService);
     }
 
