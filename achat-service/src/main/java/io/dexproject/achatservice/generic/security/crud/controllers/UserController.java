@@ -106,7 +106,7 @@ public class UserController {
 
 	@GetMapping("/search/{motCle}")
 	public ResponseEntity<RessourceResponse> searchUser(@NotNull @PathVariable("motCle") String motCle) {
-		authorizationService.checkIfHasDroit(new DroitAddRequest(MODULE_NAME, "Rechercher un utilisateur", MODULE_NAME+"-FIND-USER-ACCOUNT", "GET", false));
+		authorizationService.checkIfHasDroit(new DroitAddRequest(MODULE_NAME, "Rechercher un utilisateur", MODULE_NAME+"-SEARCH-USER-ACCOUNT", "GET", false));
 		return new ResponseEntity<>(new RessourceResponse("Utilisateur trouvé avec succès!", userAccountService.search(motCle)), HttpStatus.OK);
 	}
 

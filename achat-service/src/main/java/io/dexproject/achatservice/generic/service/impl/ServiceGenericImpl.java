@@ -3,7 +3,7 @@ package io.dexproject.achatservice.generic.service.impl;
 import io.dexproject.achatservice.generic.exceptions.InternalException;
 import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
 import io.dexproject.achatservice.generic.exceptions.SuppressionException;
-import io.dexproject.achatservice.generic.mapper.AbstractGenericMapper;
+import io.dexproject.achatservice.generic.mapper.GenericMapper;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
@@ -22,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,9 +30,9 @@ public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseRe
 
   private final JpaEntityInformation<E, Long> entityInformation;
   protected final GenericRepository<E> repository;
-  private final AbstractGenericMapper<D, R, E> mapper;
+  private final GenericMapper<D, R, E> mapper;
 
-  public ServiceGenericImpl(JpaEntityInformation<E, Long> entityInformation, GenericRepository<E> repository, AbstractGenericMapper<D, R, E> mapper) {
+  public ServiceGenericImpl(JpaEntityInformation<E, Long> entityInformation, GenericRepository<E> repository, GenericMapper<D, R, E> mapper) {
     this.entityInformation = entityInformation;
     this.repository = repository;
     this.mapper = mapper;

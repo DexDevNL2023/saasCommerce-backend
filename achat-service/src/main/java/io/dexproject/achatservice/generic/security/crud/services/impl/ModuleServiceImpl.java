@@ -1,7 +1,6 @@
 package io.dexproject.achatservice.generic.security.crud.services.impl;
 
-import io.dexproject.achatservice.generic.mapper.AbstractGenericMapper;
-import io.dexproject.achatservice.generic.mapper.GenericMapper;
+import io.dexproject.achatservice.generic.mapper.impl.GenericMapperImpl;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.ModuleReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.request.ModuleRequest;
@@ -15,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class ModuleServiceImpl extends ServiceGenericImpl<ModuleRequest, ModuleReponse, Module> implements ModuleService {
-    public ModuleServiceImpl(JpaEntityInformation<Module, Long> entityInformation, GenericRepository<Module> repository, AbstractGenericMapper<ModuleRequest, ModuleReponse, Module> mapper) {
+    public ModuleServiceImpl(JpaEntityInformation<Module, Long> entityInformation, GenericRepository<Module> repository, GenericMapperImpl<ModuleRequest, ModuleReponse, Module> mapper) {
         super(entityInformation, repository, mapper);
     }
 }

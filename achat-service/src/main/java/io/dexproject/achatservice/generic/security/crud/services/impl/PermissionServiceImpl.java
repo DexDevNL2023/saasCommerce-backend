@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.generic.security.crud.services.impl;
 
-import io.dexproject.achatservice.generic.mapper.AbstractGenericMapper;
+import io.dexproject.achatservice.generic.mapper.impl.GenericMapperImpl;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.PermissionReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.request.PermissionRequest;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class PermissionServiceImpl extends ServiceGenericImpl<PermissionRequest, PermissionReponse, Permission> implements PermissionService {
-    public PermissionServiceImpl(JpaEntityInformation<Permission, Long> entityInformation, GenericRepository<Permission> repository, AbstractGenericMapper<PermissionRequest, PermissionReponse, Permission> mapper) {
+    public PermissionServiceImpl(JpaEntityInformation<Permission, Long> entityInformation, GenericRepository<Permission> repository, GenericMapperImpl<PermissionRequest, PermissionReponse, Permission> mapper) {
         super(entityInformation, repository, mapper);
     }
 }

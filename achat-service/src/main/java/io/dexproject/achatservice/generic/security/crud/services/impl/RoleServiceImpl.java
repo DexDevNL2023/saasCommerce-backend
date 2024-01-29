@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.generic.security.crud.services.impl;
 
-import io.dexproject.achatservice.generic.mapper.AbstractGenericMapper;
+import io.dexproject.achatservice.generic.mapper.impl.GenericMapperImpl;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.RoleReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.request.RoleRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.Role;
@@ -18,7 +18,7 @@ public class RoleServiceImpl extends ServiceGenericImpl<RoleRequest, RoleReponse
 
     private  final RoleRepository repository;
 
-    public RoleServiceImpl(JpaEntityInformation<Role, Long> entityInformation, RoleRepository repository, AbstractGenericMapper<RoleRequest, RoleReponse, Role> mapper) {
+    public RoleServiceImpl(JpaEntityInformation<Role, Long> entityInformation, RoleRepository repository, GenericMapperImpl<RoleRequest, RoleReponse, Role> mapper) {
         super(entityInformation, repository, mapper);
         this.repository = repository;
     }
