@@ -8,7 +8,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import java.util.List;
 
 @NoRepositoryBean
-public interface GenericRepository<E extends BaseEntity> extends JpaRepository<E, Long> {
+public interface GenericRepository<E extends BaseEntity<E>> extends JpaRepository<E, Long> {
     String newNumEnrg(String prefixe);
 
     void reIndex() throws IndexNotFoundException;

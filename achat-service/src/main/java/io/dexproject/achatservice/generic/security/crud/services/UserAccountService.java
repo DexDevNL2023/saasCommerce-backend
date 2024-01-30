@@ -44,7 +44,6 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -88,10 +87,7 @@ public class UserAccountService implements UserDetailsService {
         newUser.setActived(newUser.isUsingQr());
         // Build user roles
         for (Long roleId : userForm.getRoles()) {
-            Role authority = roleRepository.findById(roleId).orElse(null);
-            if (authority != null) {
-                newUser.addAuthorities(authority);
-            }
+            roleRepository.findById(roleId).ifPresent(newUser::addAuthorities);
         }
         // Create user's account
         repository.saveAndFlush(newUser);
@@ -112,9 +108,9 @@ public class UserAccountService implements UserDetailsService {
     @Transactional
     public UserAccount processOAuthRegister(String registrationId, Map<String, Object> attributes, OidcIdToken idToken, OidcUserInfo userInfo) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, attributes);
-        if (StringUtils.isEmpty(oAuth2UserInfo.getName())) {
+        if (oAuth2UserInfo.getName().isEmpty()) {
             throw new OAuth2AuthenticationProcessingException("Le nom " + oAuth2UserInfo.getName() + " introuvable auprès du fournisseur OAuth2");
-        } else if (StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
+        } else if (oAuth2UserInfo.getEmail().isEmpty()) {
             throw new OAuth2AuthenticationProcessingException("E-mail " + oAuth2UserInfo.getEmail() + " introuvable auprès du fournisseur OAuth2");
         }
         UserAccount newOAuthUser = toUserRegistration(oAuth2UserInfo, idToken, userInfo);
@@ -475,8 +471,7 @@ public class UserAccountService implements UserDetailsService {
             Role authority = roleRepository.findByRoleName(roleName);
             if (authority == null) {
                 authority = new Role();
-                authority.setIsSuper(true);
-                authority.setIsGrant(false);
+                authority.setIsSuper(roleName.equals(RoleName.ADMIN));
                 authority.setLibelle(roleName);
                 authority = roleRepository.save(authority);
             }

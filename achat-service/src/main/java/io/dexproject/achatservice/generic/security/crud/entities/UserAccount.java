@@ -1,6 +1,5 @@
 package io.dexproject.achatservice.generic.security.crud.entities;
 
-import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.security.oauth2.users.OAuth2UserInfo;
 import io.dexproject.achatservice.generic.utils.GenericUtils;
 import jakarta.persistence.*;
@@ -13,19 +12,26 @@ import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "utilisateurs")
-public class UserAccount extends BaseEntity implements OAuth2User, OidcUser, Serializable {
+public class UserAccount implements OAuth2User, OidcUser, Serializable {
 
-    private static final String ENTITY_NAME = "USER";
+    @Serial
+    private static final long serialVersionUID = -8551160985498051566L;
 
-    private static final String MODULE_NAME = "UTILISATEURS";
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
 
     @Transient
     private OidcIdToken idToken;
@@ -139,15 +145,5 @@ public class UserAccount extends BaseEntity implements OAuth2User, OidcUser, Ser
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return GenericUtils.buildSimpleGrantedAuthorities(this.getRoles());
-    }
-
-    @Override
-    public String getEntityName() {
-        return ENTITY_NAME;
-    }
-
-    @Override
-    public String getModuleName() {
-        return MODULE_NAME;
     }
 }

@@ -1,13 +1,13 @@
 package io.dexproject.achatservice.generic.service.impl;
 
+import io.dexproject.achatservice.generic.dto.reponse.BaseReponse;
+import io.dexproject.achatservice.generic.dto.request.BaseRequest;
 import io.dexproject.achatservice.generic.exceptions.InternalException;
 import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
 import io.dexproject.achatservice.generic.exceptions.SuppressionException;
 import io.dexproject.achatservice.generic.mapper.GenericMapper;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
-import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
-import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 import io.dexproject.achatservice.generic.utils.AppConstants;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> implements ServiceGeneric<D, R, E> {
+public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity<E>> implements ServiceGeneric<D, R, E> {
 
   private final JpaEntityInformation<E, Long> entityInformation;
   protected final GenericRepository<E> repository;
@@ -104,11 +104,12 @@ public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseRe
   @LogExecution
   public R update(D dto, Long id) throws RessourceNotFoundException {
     try {
-      if (equalsToDto(dto, id))
-        throw new RessourceNotFoundException("La ressource " + this.entityInformation.getEntityName() + " avec les données suivante : " + dto.toString() + " existe déjà");
+      E source = mapper.toEntity(dto);
       E entity = getById(id);
-      dto.setId(entity.getId());
-      entity = repository.save(mapper.toEntity(dto));
+      if (entity.equalsToDto(source))
+        throw new RessourceNotFoundException("La ressource " + this.entityInformation.getEntityName() + " avec les données suivante : " + dto.toString() + " existe déjà");
+      entity.update(source);
+      entity = repository.save(entity);
       return getOne(entity.getId());
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
@@ -211,24 +212,6 @@ public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseRe
   public R getOne(Long id) throws RessourceNotFoundException {
     try {
       return mapper.toDto(getById(id));
-    } catch (Exception e) {
-      throw new InternalException(e.getMessage());
-    }
-  }
-
-  /**
-   * @param dto
-   * @param id
-   * @return Boolean
-   * @throws RessourceNotFoundException
-   */
-  @Override
-  @Transactional
-  @LogExecution
-  public Boolean equalsToDto(D dto, Long id) throws RessourceNotFoundException {
-    try {
-      E entity = getById(id);
-      return !entity.getId().equals(id) || !entity.equals(dto);
     } catch (Exception e) {
       throw new InternalException(e.getMessage());
     }

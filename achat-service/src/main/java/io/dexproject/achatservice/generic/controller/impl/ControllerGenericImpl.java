@@ -1,10 +1,10 @@
 package io.dexproject.achatservice.generic.controller.impl;
 
 import io.dexproject.achatservice.generic.controller.ControllerGeneric;
+import io.dexproject.achatservice.generic.dto.reponse.BaseReponse;
+import io.dexproject.achatservice.generic.dto.request.BaseRequest;
 import io.dexproject.achatservice.generic.exceptions.InternalException;
-import io.dexproject.achatservice.generic.security.crud.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.RessourceResponse;
-import io.dexproject.achatservice.generic.security.crud.dto.request.BaseRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.DroitAddRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.SearchRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
@@ -31,7 +31,7 @@ import java.util.List;
 @ResponseBody
 @Slf4j
 @RefreshScope
-public abstract class ControllerGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity> implements ControllerGeneric<D, R, E> {
+public abstract class ControllerGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity<E>> implements ControllerGeneric<D, R, E> {
 
   protected abstract E newInstance();
   private final ServiceGeneric<D, R, E> service;

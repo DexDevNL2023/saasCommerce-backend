@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.security.crud.dto.reponse;
+package io.dexproject.achatservice.generic.dto.reponse;
 
 import jakarta.persistence.MappedSuperclass;
 import lombok.Data;

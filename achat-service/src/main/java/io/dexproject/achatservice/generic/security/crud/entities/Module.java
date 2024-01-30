@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "modules_application")
-public class Module extends BaseEntity {
+public class Module extends BaseEntity<Module> {
 
     private static final String ENTITY_NAME = "MODULE";
 
@@ -23,6 +23,21 @@ public class Module extends BaseEntity {
     private String name;
 
     private String description;
+
+    @Override
+    public void update(Module source) {
+        this.name = source.getName();
+        this.description = source.getDescription();
+    }
+
+    @Override
+    public boolean equalsToDto(Module source) {
+        if (source == null) {
+            return false;
+        }
+        return name.equals(source.getName()) &&
+                description.equals(source.getDescription());
+    }
 
     @Override
     public String getEntityName() {

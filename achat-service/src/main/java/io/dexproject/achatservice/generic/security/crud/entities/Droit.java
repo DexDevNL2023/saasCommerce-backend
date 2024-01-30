@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "droits_utilisateur")
-public class Droit extends BaseEntity {
+public class Droit extends BaseEntity<Droit> {
 
     private static final String ENTITY_NAME = "DROIT";
 
@@ -32,6 +32,27 @@ public class Droit extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Module module;
+
+	@Override
+	public void update(Droit source) {
+		this.libelle = source.getLibelle();
+		this.verbe = source.getVerbe();
+		this.description = source.getDescription();
+		this.isDefault = source.getIsDefault();
+		this.module = source.getModule();
+	}
+
+	@Override
+	public boolean equalsToDto(Droit source) {
+		if (source == null) {
+			return false;
+		}
+		return libelle.equals(source.getLibelle()) &&
+				verbe.equals(source.getVerbe()) &&
+				description.equals(source.getDescription()) &&
+				isDefault.equals(source.getIsDefault()) &&
+				module.getId().equals(source.getModule().getId());
+	}
 
 	@Override
     public String getEntityName() {

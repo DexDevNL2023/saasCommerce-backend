@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.security.crud.entities.enums;
+package io.dexproject.achatservice.generic.enums;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import org.springframework.hateoas.server.core.Relation;

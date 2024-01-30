@@ -7,15 +7,15 @@ import io.dexproject.achatservice.generic.security.crud.dto.reponse.PermissionRe
 import io.dexproject.achatservice.generic.security.crud.dto.request.DroitAddRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.DroitFormRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.PermissionFormRequest;
-import io.dexproject.achatservice.generic.security.crud.entities.*;
 import io.dexproject.achatservice.generic.security.crud.entities.Module;
+import io.dexproject.achatservice.generic.security.crud.entities.*;
 import io.dexproject.achatservice.generic.security.crud.repositories.*;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -68,7 +68,7 @@ public class AuthorizationService {
             module = moduleRepository.save(new Module(dto.getModule(), ""));
         }
         Optional<Droit> exist = droitRepository.findByKey(dto.getKey());
-        if (!exist.isPresent()) {
+        if (exist.isEmpty()) {
             Droit droit = new Droit(dto.getKey(), dto.getLibelle(), dto.getVerbe(), "", dto.getIsDefault(), module);
             droit = droitRepository.save(droit);
             for (Role role : roleRepository.findAll()) {
@@ -101,7 +101,7 @@ public class AuthorizationService {
 
     public boolean isAuthorized(String actionKey) {
         for (Role role : getCurrentUser().getRoles()) {
-            if (role.getIsSuper() || role.getIsGrant()) {
+            if (role.getIsSuper()) {
                 return true;
             } else {
                 List<Permission> permissions = permissionRepository.findAllByRole(role);

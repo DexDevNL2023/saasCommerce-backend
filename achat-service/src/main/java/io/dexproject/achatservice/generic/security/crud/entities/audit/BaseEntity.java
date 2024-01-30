@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.security.crud.entities.audit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.dexproject.achatservice.generic.entity.GenericEntity;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -18,7 +19,7 @@ import java.time.Instant;
         value = {"createdBy", "createdAt", "updatedBy", "updatedAt"},
         allowGetters = true
 )
-public abstract class BaseEntity implements GenericEntity, Serializable {
+public abstract class BaseEntity<E> implements GenericEntity<E>, Serializable {
     @Serial
     private static final long serialVersionUID = -8551160985498051566L;
 

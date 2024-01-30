@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Transactional
-public abstract class GenericRepositoryImpl<E extends BaseEntity> extends SimpleJpaRepository<E, Long> implements GenericRepository<E> {
+public abstract class GenericRepositoryImpl<E extends BaseEntity<E>> extends SimpleJpaRepository<E, Long> implements GenericRepository<E> {
     private final Class<E> clazz;
     private final JpaEntityInformation<E, Long> entityInformation;
     @PersistenceContext

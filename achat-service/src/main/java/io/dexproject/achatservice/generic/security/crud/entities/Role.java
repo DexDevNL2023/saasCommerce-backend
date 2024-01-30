@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "roles_utilisateur")
-public class Role extends BaseEntity {
+public class Role extends BaseEntity<Role> {
 
     private static final String ENTITY_NAME = "ROLE";
 
@@ -24,7 +24,20 @@ public class Role extends BaseEntity {
 
     private Boolean isSuper = false;
 
-    private Boolean isGrant = false;
+    @Override
+    public void update(Role source) {
+        this.libelle = source.getLibelle();
+        this.isSuper = source.getIsSuper();
+    }
+
+    @Override
+    public boolean equalsToDto(Role source) {
+        if (source == null) {
+            return false;
+        }
+        return libelle.equals(source.getLibelle()) &&
+                isSuper.equals(source.getIsSuper());
+    }
 
     @Override
     public String getEntityName() {

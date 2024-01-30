@@ -1,8 +1,6 @@
 package io.dexproject.achatservice.generic.security.crud.dto.request;
 
-import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
-import io.dexproject.achatservice.generic.validators.UniqueValidator;
-import jakarta.validation.constraints.Email;
+import io.dexproject.achatservice.generic.dto.request.BaseRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

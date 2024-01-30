@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.security.crud.entities.enums;
+package io.dexproject.achatservice.generic.enums;
 
 import java.util.Optional;
 

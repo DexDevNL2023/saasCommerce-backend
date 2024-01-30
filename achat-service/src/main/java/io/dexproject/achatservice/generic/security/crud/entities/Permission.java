@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "permissions_utilisateur")
-public class Permission extends BaseEntity {
+public class Permission extends BaseEntity<Permission> {
 
     private static final String ENTITY_NAME = "PERMISSION";
 
@@ -25,6 +25,23 @@ public class Permission extends BaseEntity {
     private Droit droit;
 
     private Boolean hasDroit = false;
+
+    @Override
+    public void update(Permission source) {
+        this.role = source.getRole();
+        this.droit = source.getDroit();
+        this.hasDroit = source.getHasDroit();
+    }
+
+    @Override
+    public boolean equalsToDto(Permission source) {
+        if (source == null) {
+            return false;
+        }
+        return role.getId().equals(source.getRole().getId()) &&
+                droit.getId().equals(source.getDroit().getId()) &&
+                hasDroit.equals(source.getHasDroit());
+    }
 
     @Override
     public String getEntityName() {

@@ -3,6 +3,7 @@ package io.dexproject.achatservice.generic.security.crud.entities.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonValue;
+import io.dexproject.achatservice.generic.enums.GenericEnum;
 
 import java.util.ArrayList;
 import java.util.Arrays;
