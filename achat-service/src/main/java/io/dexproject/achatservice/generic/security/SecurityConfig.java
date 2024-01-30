@@ -6,6 +6,8 @@ import io.dexproject.achatservice.generic.security.jwt.JwtTokenFilter;
 import io.dexproject.achatservice.generic.security.jwt.RestAuthenticationEntryPoint;
 import io.dexproject.achatservice.generic.security.oauth2.*;
 import io.dexproject.achatservice.generic.utils.JwtUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,9 +22,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
-import org.springframework.web.cors.CorsConfiguration;
-
-import java.util.List;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -53,6 +54,8 @@ Let me explain the code above.
         prePostEnabled = true
 )
 public class SecurityConfig {
+    @Value("${management.endpoints.web.cors.allowed-mapping}")
+    private String allowedMapping;
 
     private final JwtUtils jwtUtils;
     private final UserAccountService userAccountService;
@@ -66,12 +69,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedHeaders(List.of("Access-Control-Allow-Headers","Access-Control-Allow-Origin","Access-Control-Request-Method","Access-Control-Request-Headers","Origin","Cache-Control","Content-Type","Authorization"));
-        corsConfiguration.setAllowedOrigins(List.of("*"));
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"));
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setExposedHeaders(List.of("Authorization"));
         // Si Spring MVC est sur le chemin de classe et qu'aucun CorsConfigurationSource n'est fourni,
         // Spring Security utilisera la configuration CORS fournie à Spring MVC
         http.cors(withDefaults())
@@ -177,5 +174,12 @@ public class SecurityConfig {
     @Bean
     protected CustomOidcUserService cOidcUserService() throws Exception {
         return new CustomOidcUserService(userAccountService);
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource(CorsEndpointProperties corsProperties) {
+        var source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration(allowedMapping, corsProperties.toCorsConfiguration());
+        return source;
     }
 }

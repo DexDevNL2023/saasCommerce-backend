@@ -24,10 +24,20 @@ import java.util.Locale;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-	private final long MAX_AGE_SECS = 3600;
-
-    @Value("${app.cors.allowedOrigins}")
+	@Value("${management.endpoints.web.cors.allowed-mapping}")
+	private String allowedMapping;
+	@Value("${management.endpoints.web.cors.allowed-origins}")
     private String[] allowedOrigins;
+	@Value("${management.endpoints.web.cors.allowed-methods}")
+	private String alloweMethods;
+	@Value("${management.endpoints.web.cors.allowed-headers}")
+	private String allowedHeaders;
+	@Value("${management.endpoints.web.cors.allowed-credentials}")
+	private Boolean allowCredentials;
+	@Value("${management.endpoints.web.cors.exposed-headers}")
+	private String exposedHeaders;
+	@Value("${management.endpoints.web.cors.max-age}")
+	private long maxAge;
 
 	private final Environment environment;
 
@@ -37,12 +47,13 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**")
+		registry.addMapping(allowedMapping)
                 .allowedOrigins(allowedOrigins)
-                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-				.maxAge(MAX_AGE_SECS);
+				.allowedMethods(alloweMethods)
+				.allowedHeaders(allowedHeaders)
+				.allowCredentials(allowCredentials)
+				.exposedHeaders(exposedHeaders)
+				.maxAge(maxAge);
 	}
 
 	@Override
