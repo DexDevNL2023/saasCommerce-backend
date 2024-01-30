@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.validators;
+package io.dexproject.achatservice.generic.validators.unique;
 
 public interface FieldValueExists {
     /**

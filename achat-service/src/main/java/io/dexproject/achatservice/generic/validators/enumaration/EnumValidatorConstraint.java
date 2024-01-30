@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.validators;
+package io.dexproject.achatservice.generic.validators.enumaration;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

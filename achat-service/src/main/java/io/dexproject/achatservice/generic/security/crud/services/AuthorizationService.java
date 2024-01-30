@@ -41,7 +41,7 @@ public class AuthorizationService {
         Permission permission = permissionRepository.findById(dto.getPermissionId()).orElseThrow(
                 () -> new RessourceNotFoundException("La permission avec l'id " + dto.getPermissionId() + " n'existe pas!")
         );
-        permission.setHasDroit(dto.getHasPermission());
+        permission.setHasPermission(dto.getHasPermission());
         permission = permissionRepository.save(permission);
         // Mapper Dto
         return GenericMapperUtils.map(permission, PermissionReponse.class);
@@ -55,7 +55,7 @@ public class AuthorizationService {
         droit = droitRepository.save(droit);
         if (droit.getIsDefault()) {
             List<Permission> permissions = permissionRepository.findAllByDroit(droit);
-            permissions.forEach(permission -> permission.setHasDroit(true));
+            permissions.forEach(permission -> permission.setHasPermission(true));
             permissionRepository.saveAll(permissions);
         }
         // Mapper Dto
@@ -106,7 +106,7 @@ public class AuthorizationService {
             } else {
                 List<Permission> permissions = permissionRepository.findAllByRole(role);
                 for (Permission permission : permissions) {
-                    if (permission.getHasDroit() && permission.getDroit().getKey().equals(actionKey)) return true;
+                    if (permission.getHasPermission() && permission.getDroit().getKey().equals(actionKey)) return true;
                 }
             }
         }

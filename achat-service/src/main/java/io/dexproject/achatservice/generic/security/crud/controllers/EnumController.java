@@ -1,6 +1,8 @@
-package io.dexproject.achatservice.generic.security.crud.entities.enums;
+package io.dexproject.achatservice.generic.security.crud.controllers;
 
 import io.dexproject.achatservice.generic.enums.EnumValue;
+import io.dexproject.achatservice.generic.security.crud.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.enums.SocialProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.web.bind.annotation.GetMapping;

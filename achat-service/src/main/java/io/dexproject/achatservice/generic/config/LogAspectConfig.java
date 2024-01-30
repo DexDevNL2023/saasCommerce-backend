@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.logging;
+package io.dexproject.achatservice.generic.config;
 
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import org.aspectj.lang.JoinPoint;
@@ -19,11 +19,11 @@ import java.util.Arrays;
  * Par défaut, il ne fonctionne qu'avec le profil "dev".
  */
 @Aspect
-public class LoggingAspect {
+public class LogAspectConfig {
 
     private final Environment env;
 
-    public LoggingAspect(Environment env) {
+    public LogAspectConfig(Environment env) {
         this.env = env;
     }
 

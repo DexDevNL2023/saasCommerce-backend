@@ -3,7 +3,7 @@ package io.dexproject.achatservice.generic.security.crud.services.impl;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.RoleReponse;
 import io.dexproject.achatservice.generic.security.crud.dto.request.RoleRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.Role;
-import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.enums.RoleName;
 import io.dexproject.achatservice.generic.security.crud.mapper.RoleMapper;
 import io.dexproject.achatservice.generic.security.crud.repositories.RoleRepository;
 import io.dexproject.achatservice.generic.security.crud.services.RoleService;
@@ -30,7 +30,6 @@ public class RoleServiceImpl extends ServiceGenericImpl<RoleRequest, RoleReponse
                 Role authority = new Role();
                 authority = new Role();
                 authority.setIsSuper(roleName.equals(RoleName.ADMIN));
-                authority.setIsGrant(false);
                 authority.setLibelle(roleName);
                 repository.save(authority);
             }

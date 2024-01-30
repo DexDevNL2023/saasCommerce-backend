@@ -1,7 +1,7 @@
 package io.dexproject.achatservice.generic.security.crud.dto.reponse;
 
 import io.dexproject.achatservice.generic.dto.reponse.BaseReponse;
-import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.enums.RoleName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

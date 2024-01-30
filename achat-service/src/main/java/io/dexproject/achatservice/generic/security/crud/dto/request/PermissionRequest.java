@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class PermissionRequest extends BaseRequest {
     private Long roleId;
     private Long droitId;
-    private Boolean hasPermission;
+    private Boolean hasPermission = false;
 }

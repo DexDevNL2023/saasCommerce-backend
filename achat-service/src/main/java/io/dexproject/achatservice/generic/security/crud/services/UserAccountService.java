@@ -16,7 +16,7 @@ import io.dexproject.achatservice.generic.security.crud.entities.Permission;
 import io.dexproject.achatservice.generic.security.crud.entities.Role;
 import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 import io.dexproject.achatservice.generic.security.crud.entities.VerifyToken;
-import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.enums.RoleName;
 import io.dexproject.achatservice.generic.security.crud.repositories.PermissionRepository;
 import io.dexproject.achatservice.generic.security.crud.repositories.RoleRepository;
 import io.dexproject.achatservice.generic.security.crud.repositories.UserAccountRepository;
@@ -329,9 +329,13 @@ public class UserAccountService implements UserDetailsService {
     public UserDetails loadUserByUsername(String emailOrPhone) throws UsernameNotFoundException {
         UserAccount userAccount = repository.findByEmailOrPhone(emailOrPhone)
                 .orElseThrow(() -> new UsernameNotFoundException("Nom utilisateur invalide"));
-        if (userAccount == null) throw new UsernameNotFoundException("Nom utilisateur invalide");
         Collection<? extends GrantedAuthority> authorities = GenericUtils.buildSimpleGrantedAuthorities(userAccount.getRoles());
         return new User(userAccount.getEmailOrPhone(), userAccount.getPassword(), authorities);
+    }
+
+    public UserAccount findByUsername(String emailOrPhone) throws UsernameNotFoundException {
+        return repository.findByEmailOrPhone(emailOrPhone)
+                .orElseThrow(() -> new UsernameNotFoundException("Nom utilisateur invalide"));
     }
 
     public List<UserReponse> getAllUsers() {

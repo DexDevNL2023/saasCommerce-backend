@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.generic.security;
 
-import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.enums.RoleName;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import io.dexproject.achatservice.generic.security.jwt.JwtTokenFilter;
 import io.dexproject.achatservice.generic.security.jwt.RestAuthenticationEntryPoint;

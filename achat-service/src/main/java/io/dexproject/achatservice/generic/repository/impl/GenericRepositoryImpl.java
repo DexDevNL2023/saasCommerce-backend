@@ -1,7 +1,8 @@
 package io.dexproject.achatservice.generic.repository.impl;
 
+import io.dexproject.achatservice.generic.dto.request.BaseRequest;
+import io.dexproject.achatservice.generic.entity.audit.BaseEntity;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
-import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.GenericUtils;
 import jakarta.persistence.EntityManager;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Transactional
-public abstract class GenericRepositoryImpl<E extends BaseEntity<E>> extends SimpleJpaRepository<E, Long> implements GenericRepository<E> {
+public abstract class GenericRepositoryImpl<D extends BaseRequest, E extends BaseEntity<E, D>> extends SimpleJpaRepository<E, Long> implements GenericRepository<D, E> {
     private final Class<E> clazz;
     private final JpaEntityInformation<E, Long> entityInformation;
     @PersistenceContext

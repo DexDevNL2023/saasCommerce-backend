@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.validators;
+package io.dexproject.achatservice.generic.validators.password;
 
 import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormPasswordRequest;
 import jakarta.validation.ConstraintValidator;

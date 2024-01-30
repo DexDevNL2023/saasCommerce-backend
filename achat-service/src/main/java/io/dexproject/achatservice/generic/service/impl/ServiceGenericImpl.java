@@ -2,17 +2,17 @@ package io.dexproject.achatservice.generic.service.impl;
 
 import io.dexproject.achatservice.generic.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.dto.request.BaseRequest;
+import io.dexproject.achatservice.generic.entity.audit.BaseEntity;
 import io.dexproject.achatservice.generic.exceptions.InternalException;
 import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
 import io.dexproject.achatservice.generic.exceptions.SuppressionException;
 import io.dexproject.achatservice.generic.mapper.GenericMapper;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
-import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import io.dexproject.achatservice.generic.service.ServiceGeneric;
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.GenericUtils;
-import io.dexproject.achatservice.generic.validators.LogExecution;
+import io.dexproject.achatservice.generic.validators.log.LogExecution;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.index.IndexNotFoundException;
@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity<E>> implements ServiceGeneric<D, R, E> {
+public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity<E, D>> implements ServiceGeneric<D, R, E> {
 
   private final JpaEntityInformation<E, Long> entityInformation;
-  protected final GenericRepository<E> repository;
+    protected final GenericRepository<D, E> repository;
   private final GenericMapper<D, R, E> mapper;
 
-  public ServiceGenericImpl(JpaEntityInformation<E, Long> entityInformation, GenericRepository<E> repository, GenericMapper<D, R, E> mapper) {
+    public ServiceGenericImpl(JpaEntityInformation<E, Long> entityInformation, GenericRepository<D, E> repository, GenericMapper<D, R, E> mapper) {
     this.entityInformation = entityInformation;
     this.repository = repository;
     this.mapper = mapper;
@@ -104,11 +104,10 @@ public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseRe
   @LogExecution
   public R update(D dto, Long id) throws RessourceNotFoundException {
     try {
-      E source = mapper.toEntity(dto);
       E entity = getById(id);
-      if (entity.equalsToDto(source))
+        if (entity.equalsToDto(dto))
         throw new RessourceNotFoundException("La ressource " + this.entityInformation.getEntityName() + " avec les données suivante : " + dto.toString() + " existe déjà");
-      entity.update(source);
+        entity.update(mapper.toEntity(dto));
       entity = repository.save(entity);
       return getOne(entity.getId());
     } catch (Exception e) {

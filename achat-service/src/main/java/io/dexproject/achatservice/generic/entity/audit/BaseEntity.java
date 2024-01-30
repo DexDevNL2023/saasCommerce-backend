@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.security.crud.entities.audit;
+package io.dexproject.achatservice.generic.entity.audit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.dexproject.achatservice.generic.entity.GenericEntity;
@@ -19,7 +19,7 @@ import java.time.Instant;
         value = {"createdBy", "createdAt", "updatedBy", "updatedAt"},
         allowGetters = true
 )
-public abstract class BaseEntity<E> implements GenericEntity<E>, Serializable {
+public abstract class BaseEntity<E, D> implements GenericEntity<E, D>, Serializable {
     @Serial
     private static final long serialVersionUID = -8551160985498051566L;
 

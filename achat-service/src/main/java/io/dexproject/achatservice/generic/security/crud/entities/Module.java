@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.security.crud.entities;
 
-import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
+import io.dexproject.achatservice.generic.entity.audit.BaseEntity;
+import io.dexproject.achatservice.generic.security.crud.dto.request.ModuleRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "modules_application")
-public class Module extends BaseEntity<Module> {
+public class Module extends BaseEntity<Module, ModuleRequest> {
 
     private static final String ENTITY_NAME = "MODULE";
 
@@ -31,7 +32,7 @@ public class Module extends BaseEntity<Module> {
     }
 
     @Override
-    public boolean equalsToDto(Module source) {
+    public boolean equalsToDto(ModuleRequest source) {
         if (source == null) {
             return false;
         }

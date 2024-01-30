@@ -1,8 +1,8 @@
 package io.dexproject.achatservice.generic.security.crud.repositories;
 
-import io.dexproject.achatservice.generic.repository.GenericRepository;
 import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
-import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.enums.RoleName;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserAccountRepository extends GenericRepository<UserAccount> {
+public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
     @Query("SELECT DISTINCT u FROM UserAccount u WHERE u.email = :emailOrPhone OR u.phone = :emailOrPhone")
     Optional<UserAccount> findByEmailOrPhone(String emailOrPhone);
 

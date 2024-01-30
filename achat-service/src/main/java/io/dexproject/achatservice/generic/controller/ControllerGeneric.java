@@ -2,14 +2,14 @@ package io.dexproject.achatservice.generic.controller;
 
 import io.dexproject.achatservice.generic.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.dto.request.BaseRequest;
+import io.dexproject.achatservice.generic.entity.audit.BaseEntity;
 import io.dexproject.achatservice.generic.security.crud.dto.reponse.RessourceResponse;
 import io.dexproject.achatservice.generic.security.crud.dto.request.SearchRequest;
-import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-public interface ControllerGeneric<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity<E>> {
+public interface ControllerGeneric<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity<E, D>> {
   ResponseEntity<RessourceResponse> search(SearchRequest dto);
 
   ResponseEntity<RessourceResponse> save(D dto);

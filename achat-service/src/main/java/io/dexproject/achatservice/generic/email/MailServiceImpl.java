@@ -87,10 +87,10 @@ public class MailServiceImpl implements MailService {
 		sendHtmlEmail(user, "Reset Password Confirmation", message);
 	}
 
-	private String geFreeMarkerTemplateContent(Map<String, Object> model, String templateName) {
-		StringBuffer content = new StringBuffer();
+	private String geFreeMarkerTemplateContent(Map<String, Object> model) {
+		StringBuilder content = new StringBuilder();
 		try {
-			content.append(FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerConfiguration.getTemplate(templateName), model));
+			content.append(FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerConfiguration.getTemplate("mail/confirmationpage.ftl"), model));
 			return content.toString();
 		} catch (Exception e) {
 			System.out.println("Exception occured while processing fmtemplate:" + e.getMessage());
@@ -105,7 +105,7 @@ public class MailServiceImpl implements MailService {
 		model.put("title", subject);
 		model.put("company", AppConstants.COMPANY_NAME);
 		try {
-			sendHtmlMail(AppConstants.SUPPORT_EMAIL, user.getEmail(), subject, geFreeMarkerTemplateContent(model, "mail/confirmationpage.ftl"));
+			sendHtmlMail(AppConstants.SUPPORT_EMAIL, user.getEmail(), subject, geFreeMarkerTemplateContent(model));
 		} catch (MessagingException e) {
 			System.out.println("Failed to send mail");
 		}

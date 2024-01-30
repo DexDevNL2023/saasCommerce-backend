@@ -9,6 +9,7 @@ import java.time.Instant;
 @MappedSuperclass
 public abstract class BaseReponse {
 	private Long id;
+    protected String numEnrg;
 	private String createdBy;
     private Instant createdAt;
 	private String updatedBy;

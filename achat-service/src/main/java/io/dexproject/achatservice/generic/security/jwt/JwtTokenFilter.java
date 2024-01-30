@@ -71,8 +71,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 		        String username = jwtUtils.getUserNameFromToken(jwt);
 		        System.out.println("Username from JWT accessToken: " + username);
 		        if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-					UserAccount user = userAccountService.loadUserByEmailOrPhone(username);
-					Collection<? extends GrantedAuthority> authorities = GenericUtils.buildSimpleGrantedAuthorities(user.getRole());
+                    UserAccount user = userAccountService.findByUsername(username);
+                    Collection<? extends GrantedAuthority> authorities = GenericUtils.buildSimpleGrantedAuthorities(user.getRoles());
 		            System.out.println("roles="+ authorities);
 	                SecurityContext context = SecurityContextHolder.createEmptyContext();
 	                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, null, authorities);

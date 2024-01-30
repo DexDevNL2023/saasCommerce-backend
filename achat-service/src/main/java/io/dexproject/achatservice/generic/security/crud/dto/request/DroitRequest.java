@@ -2,7 +2,7 @@ package io.dexproject.achatservice.generic.security.crud.dto.request;
 
 import io.dexproject.achatservice.generic.dto.request.BaseRequest;
 import io.dexproject.achatservice.generic.security.crud.services.DroitService;
-import io.dexproject.achatservice.generic.validators.UniqueValidator;
+import io.dexproject.achatservice.generic.validators.unique.UniqueValidator;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -23,5 +23,5 @@ public class DroitRequest extends BaseRequest {
     private String verbe;
     private String description;
     private Long moduleId;
-    private Boolean isDefault;
+    private Boolean isDefault = false;
 }

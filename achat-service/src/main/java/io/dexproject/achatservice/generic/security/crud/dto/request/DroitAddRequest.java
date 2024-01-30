@@ -12,7 +12,7 @@ public class DroitAddRequest {
     private String libelle;
     private String Key;
     private String verbe;
-    private Boolean isDefault;
+    private Boolean isDefault = false;
 }
 
 

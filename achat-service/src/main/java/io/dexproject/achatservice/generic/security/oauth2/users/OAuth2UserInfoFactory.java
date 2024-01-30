@@ -1,7 +1,7 @@
 package io.dexproject.achatservice.generic.security.oauth2.users;
 
 import io.dexproject.achatservice.generic.exceptions.OAuth2AuthenticationProcessingException;
-import io.dexproject.achatservice.generic.security.crud.entities.enums.SocialProvider;
+import io.dexproject.achatservice.generic.security.crud.enums.SocialProvider;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

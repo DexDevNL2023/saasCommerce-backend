@@ -1,7 +1,8 @@
 package io.dexproject.achatservice.generic.security.crud.entities;
 
-import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
-import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.entity.audit.BaseEntity;
+import io.dexproject.achatservice.generic.security.crud.dto.request.RoleRequest;
+import io.dexproject.achatservice.generic.security.crud.enums.RoleName;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "roles_utilisateur")
-public class Role extends BaseEntity<Role> {
+public class Role extends BaseEntity<Role, RoleRequest> {
 
     private static final String ENTITY_NAME = "ROLE";
 
@@ -22,7 +23,7 @@ public class Role extends BaseEntity<Role> {
     @Enumerated(EnumType.STRING)
     private RoleName libelle;
 
-    private Boolean isSuper = false;
+    private Boolean isSuper;
 
     @Override
     public void update(Role source) {
@@ -31,7 +32,7 @@ public class Role extends BaseEntity<Role> {
     }
 
     @Override
-    public boolean equalsToDto(Role source) {
+    public boolean equalsToDto(RoleRequest source) {
         if (source == null) {
             return false;
         }

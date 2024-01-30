@@ -5,7 +5,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.request.DroitAddRequ
 import io.dexproject.achatservice.generic.security.crud.dto.request.LoginRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.UserFormPasswordRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.UserRequest;
-import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.enums.RoleName;
 import io.dexproject.achatservice.generic.security.crud.services.AuthorizationService;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import io.dexproject.achatservice.generic.utils.AppConstants;

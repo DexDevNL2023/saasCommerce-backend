@@ -1,8 +1,7 @@
 package io.dexproject.achatservice.generic.security.crud.dto.reponse;
 
 import io.dexproject.achatservice.generic.dto.reponse.BaseReponse;
-import io.dexproject.achatservice.generic.security.crud.entities.Role;
-import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.enums.RoleName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,10 +15,4 @@ public class RoleReponse extends BaseReponse {
     private RoleName libelle;
     private Boolean isSuper;
     private List<PermissionReponse> permissions;
-
-    public RoleReponse(Role role) {
-        this.setId(role.getId());
-        this.libelle = role.getLibelle();
-        this.isSuper = role.getIsSuper();
-    }
 }

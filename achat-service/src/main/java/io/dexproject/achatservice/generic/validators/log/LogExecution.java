@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.validators;
+package io.dexproject.achatservice.generic.validators.log;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

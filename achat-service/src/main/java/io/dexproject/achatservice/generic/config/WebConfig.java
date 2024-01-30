@@ -53,6 +53,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+		// Va intercepter toutes les requetes http://localhost:8080/?language=fr
+		// permetant à l'utilisateur de modifier la langue d'affichage des informations
         LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
         localeChangeInterceptor.setParamName("language");
         registry.addInterceptor(localeChangeInterceptor);

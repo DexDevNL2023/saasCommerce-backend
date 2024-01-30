@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DroitFormRequest {
     private Long droitId;
-    private Boolean isDefault;
+    private Boolean isDefault = false;
 }

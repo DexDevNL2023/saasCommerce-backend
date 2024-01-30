@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.security.crud.entities;
 
-import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
+import io.dexproject.achatservice.generic.entity.audit.BaseEntity;
+import io.dexproject.achatservice.generic.security.crud.dto.request.PermissionRequest;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "permissions_utilisateur")
-public class Permission extends BaseEntity<Permission> {
+public class Permission extends BaseEntity<Permission, PermissionRequest> {
 
     private static final String ENTITY_NAME = "PERMISSION";
 
@@ -24,23 +25,23 @@ public class Permission extends BaseEntity<Permission> {
     @ManyToOne(fetch = FetchType.LAZY)
     private Droit droit;
 
-    private Boolean hasDroit = false;
+    private Boolean hasPermission;
 
     @Override
     public void update(Permission source) {
         this.role = source.getRole();
         this.droit = source.getDroit();
-        this.hasDroit = source.getHasDroit();
+        this.hasPermission = source.getHasPermission();
     }
 
     @Override
-    public boolean equalsToDto(Permission source) {
+    public boolean equalsToDto(PermissionRequest source) {
         if (source == null) {
             return false;
         }
-        return role.getId().equals(source.getRole().getId()) &&
-                droit.getId().equals(source.getDroit().getId()) &&
-                hasDroit.equals(source.getHasDroit());
+        return role.getId().equals(source.getRoleId()) &&
+                droit.getId().equals(source.getDroitId()) &&
+                hasPermission.equals(source.getHasPermission());
     }
 
     @Override

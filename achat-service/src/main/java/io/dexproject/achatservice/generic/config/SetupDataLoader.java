@@ -1,6 +1,6 @@
 package io.dexproject.achatservice.generic.config;
 
-import io.dexproject.achatservice.generic.security.crud.entities.enums.RoleName;
+import io.dexproject.achatservice.generic.security.crud.enums.RoleName;
 import io.dexproject.achatservice.generic.security.crud.services.RoleService;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import org.springframework.context.ApplicationListener;

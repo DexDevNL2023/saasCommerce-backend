@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.security.crud.entities;
 
-import io.dexproject.achatservice.generic.security.crud.entities.audit.BaseEntity;
+import io.dexproject.achatservice.generic.entity.audit.BaseEntity;
+import io.dexproject.achatservice.generic.security.crud.dto.request.DroitRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "droits_utilisateur")
-public class Droit extends BaseEntity<Droit> {
+public class Droit extends BaseEntity<Droit, DroitRequest> {
 
     private static final String ENTITY_NAME = "DROIT";
 
@@ -28,7 +29,7 @@ public class Droit extends BaseEntity<Droit> {
 
 	private String description;
 
-	private Boolean isDefault = false;
+    private Boolean isDefault;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Module module;
@@ -43,7 +44,7 @@ public class Droit extends BaseEntity<Droit> {
 	}
 
 	@Override
-	public boolean equalsToDto(Droit source) {
+    public boolean equalsToDto(DroitRequest source) {
 		if (source == null) {
 			return false;
 		}
@@ -51,7 +52,7 @@ public class Droit extends BaseEntity<Droit> {
 				verbe.equals(source.getVerbe()) &&
 				description.equals(source.getDescription()) &&
 				isDefault.equals(source.getIsDefault()) &&
-				module.getId().equals(source.getModule().getId());
+                module.getId().equals(source.getModuleId());
 	}
 
 	@Override

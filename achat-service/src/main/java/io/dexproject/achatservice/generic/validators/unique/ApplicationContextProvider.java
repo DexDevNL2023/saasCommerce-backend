@@ -1,4 +1,4 @@
-package io.dexproject.achatservice.generic.validators;
+package io.dexproject.achatservice.generic.validators.unique;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

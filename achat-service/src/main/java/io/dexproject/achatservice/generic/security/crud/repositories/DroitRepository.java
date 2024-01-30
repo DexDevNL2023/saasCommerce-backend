@@ -1,6 +1,7 @@
 package io.dexproject.achatservice.generic.security.crud.repositories;
 
 import io.dexproject.achatservice.generic.repository.GenericRepository;
+import io.dexproject.achatservice.generic.security.crud.dto.request.DroitRequest;
 import io.dexproject.achatservice.generic.security.crud.entities.Droit;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DroitRepository extends GenericRepository<Droit> {
+public interface DroitRepository extends GenericRepository<DroitRequest, Droit> {
     @Query("SELECT DISTINCT e FROM Droit e WHERE e.verbe = :verbe OR e.key = :key OR e.libelle = :libelle")
     Optional<Droit> findByVerbeAndKeyAndLibelle(String verbe, String key, String libelle);
 
