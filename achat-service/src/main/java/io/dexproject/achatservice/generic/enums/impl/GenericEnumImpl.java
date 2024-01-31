@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.dexproject.achatservice.generic.enums.GenericEnum;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.util.Arrays;
@@ -15,7 +14,7 @@ import java.util.Optional;
 @Relation(collectionRelation = "enums")
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public abstract class GenericEnumImpl<E extends Enum<E> & GenericEnum<E>> implements GenericEnum<E> {
+public abstract class GenericEnumImpl<E extends Enum<E>> { // & GenericEnum<E>> implements GenericEnum<E> {
     private final Class<E> enumCls;
     private final String value;
 
@@ -29,18 +28,18 @@ public abstract class GenericEnumImpl<E extends Enum<E> & GenericEnum<E>> implem
         return arr == null ? Collections.emptyList() : Arrays.asList(arr);
     }
 
-    @Override
+    //@Override
     public List<E> orderedValues() {
         return enumValuesInList(enumCls);
     }
 
-    @Override
+    //@Override
     @JsonValue
     public String getValue() {
         return this.value;
     }
 
-    @Override
+    //@Override
     @JsonCreator
     public Optional<E> toEnum(String value) {
         return orderedValues().stream().filter(e -> e.getValue().equals(value)).findFirst();
