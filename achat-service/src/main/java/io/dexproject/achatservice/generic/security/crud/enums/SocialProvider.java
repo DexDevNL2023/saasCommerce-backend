@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.dexproject.achatservice.generic.enums.GenericEnum;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -22,12 +22,6 @@ public enum SocialProvider implements GenericEnum<SocialProvider> {
 
     private final String value;
 
-    public static final List<SocialProvider> orderedValues = new ArrayList<>();
-
-    static {
-        orderedValues.addAll(Arrays.asList(SocialProvider.values()));
-    }
-
     SocialProvider(String value) {
         this.value = value;
     }
@@ -42,5 +36,10 @@ public enum SocialProvider implements GenericEnum<SocialProvider> {
     @JsonCreator
     public Optional<SocialProvider> toEnum(String label) {
         return Stream.of(SocialProvider.values()).filter(e -> e.getValue().equals(label)).findFirst();
+    }
+
+    public static List<SocialProvider> valuesInList() {
+        SocialProvider[] arr = SocialProvider.class.getEnumConstants();
+        return arr == null ? Collections.emptyList() : Arrays.asList(arr);
     }
 }

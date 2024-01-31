@@ -19,14 +19,14 @@ public class EnumController {
     //Ennumerateur
     @GetMapping(value = "/enums/roles", produces = MediaTypes.HAL_JSON_VALUE)
     public List<EnumValue> getRoleNames() {
-        return RoleName.orderedValues.stream()
+        return RoleName.valuesInList().stream()
                 .map(e -> new EnumValue(e.name(), e.getValue()))
                 .collect(Collectors.toList());
     }
 
     @GetMapping(value = "/enums/social-provider", produces = MediaTypes.HAL_JSON_VALUE)
     public List<EnumValue> getSocialProviders() {
-        return SocialProvider.orderedValues.stream()
+        return SocialProvider.valuesInList().stream()
                 .map(e -> new EnumValue(e.name(), e.getValue()))
                 .collect(Collectors.toList());
     }

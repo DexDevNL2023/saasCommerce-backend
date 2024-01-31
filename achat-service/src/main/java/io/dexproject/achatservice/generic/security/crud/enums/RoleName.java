@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.dexproject.achatservice.generic.enums.GenericEnum;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -19,12 +19,6 @@ public enum RoleName implements GenericEnum<RoleName> {
     ADMIN("admin");
 
     private final String value;
-
-    public static final List<RoleName> orderedValues = new ArrayList<>();
-
-    static {
-        orderedValues.addAll(Arrays.asList(RoleName.values()));
-    }
 
     RoleName(String value) {
         this.value = value;
@@ -40,5 +34,10 @@ public enum RoleName implements GenericEnum<RoleName> {
     @JsonCreator
     public Optional<RoleName> toEnum(String label) {
         return Stream.of(RoleName.values()).filter(e -> e.getValue().equals(label)).findFirst();
+    }
+
+    public static List<RoleName> valuesInList() {
+        RoleName[] arr = RoleName.class.getEnumConstants();
+        return arr == null ? Collections.emptyList() : Arrays.asList(arr);
     }
 }
