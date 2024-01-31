@@ -18,7 +18,7 @@ public enum RoleName implements GenericEnum<RoleName> {
     MERCHANT("merchant"),
     ADMIN("admin");
 
-    private final String label;
+    private final String value;
 
     public static final List<RoleName> orderedValues = new ArrayList<>();
 
@@ -26,19 +26,19 @@ public enum RoleName implements GenericEnum<RoleName> {
         orderedValues.addAll(Arrays.asList(RoleName.values()));
     }
 
-    RoleName(String label) {
-        this.label = label;
+    RoleName(String value) {
+        this.value = value;
     }
 
     @Override
     @JsonValue
-    public String getLabel() {
-        return this.label;
+    public String getValue() {
+        return this.value;
     }
 
     @Override
     @JsonCreator
     public Optional<RoleName> toEnum(String label) {
-        return Stream.of(RoleName.values()).filter(e -> e.getLabel().equals(label)).findFirst();
+        return Stream.of(RoleName.values()).filter(e -> e.getValue().equals(label)).findFirst();
     }
 }

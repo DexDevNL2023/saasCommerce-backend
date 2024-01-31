@@ -20,26 +20,27 @@ public enum SocialProvider implements GenericEnum<SocialProvider> {
     GITHUB("github"),
     LOCAL("local");
 
+    private final String value;
+
     public static final List<SocialProvider> orderedValues = new ArrayList<>();
-    private final String label;
 
     static {
         orderedValues.addAll(Arrays.asList(SocialProvider.values()));
     }
 
-    SocialProvider(String label) {
-        this.label = label;
+    SocialProvider(String value) {
+        this.value = value;
     }
 
     @Override
     @JsonValue
-    public String getLabel() {
-        return this.label;
+    public String getValue() {
+        return this.value;
     }
 
     @Override
     @JsonCreator
     public Optional<SocialProvider> toEnum(String label) {
-        return Stream.of(SocialProvider.values()).filter(e -> e.getLabel().equals(label)).findFirst();
+        return Stream.of(SocialProvider.values()).filter(e -> e.getValue().equals(label)).findFirst();
     }
 }
