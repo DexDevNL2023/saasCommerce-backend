@@ -1,0 +1,5 @@
+docker pull postgres
+docker run -it --name some-postgres -p 1000:1000 --network some-network --rm postgres -e POSTGRES_DB=mydb -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -d postgres:tags
+docker exec -it some-postgres bash
+docker logs some-postgres
+docker run -it --rm postgres:tag --verbose --help

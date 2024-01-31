@@ -19,15 +19,15 @@
     </properties>
 
     <modules>
-        <module>achat-service</module>
-        <module>client-service</module>
-        <module>comptabilite-service</module>
-        <module>config-service</module>
-        <module>produit-service</module>
-        <module>profil-service</module>
-        <module>proxy-service</module>
-        <module>societe-service</module>
-        <module>stock-service</module>
-        <module>vente-service</module>
+        <module>../achat-service</module>
+        <module>../client-service</module>
+        <module>../comptabilite-service</module>
+        <module>../config-service</module>
+        <module>../produit-service</module>
+        <module>../profil-service</module>
+        <module>../proxy-service</module>
+        <module>../societe-service</module>
+        <module>../stock-service</module>
+        <module>../vente-service</module>
     </modules>
 </project>
