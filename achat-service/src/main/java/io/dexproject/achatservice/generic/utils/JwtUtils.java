@@ -1,5 +1,6 @@
 package io.dexproject.achatservice.generic.utils;
 
+import io.dexproject.achatservice.generic.config.MyJWTConfig;
 import io.dexproject.achatservice.generic.security.crud.entities.UserAccount;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
@@ -19,7 +20,13 @@ validate a JWT
 */
 @Component
 public class JwtUtils {
-	
+
+	private final MyJWTConfig myJWTConfig;
+
+    public JwtUtils(MyJWTConfig myJWTConfig) {
+        this.myJWTConfig = myJWTConfig;
+    }
+
     // parse JWT token from request
 	public String getJwtFromRequest(HttpServletRequest request) {
 		String bearerToken = request.getHeader(AppConstants.JWT_HEADER_NAME);
@@ -32,25 +39,26 @@ public class JwtUtils {
     // generate JWT token
 	public String generateJwtTokens(UserAccount user) {
 		Date now = new Date();
-		Date expiryDate = new Date(now.getTime() + AppConstants.EXPIRATION);
+		Date expiryDate = new Date(now.getTime() + myJWTConfig.getExpiration());
 
 		return Jwts.builder()
 				.setSubject(user.getEmailOrPhone())
-				.claim("role", user.getRole().getLabel())
+				.claim("id", user.getId())
+				.claim("roles", user.getAuthorities())
 				.setIssuedAt(new Date())
 				.setExpiration(expiryDate)
-				.signWith(SignatureAlgorithm.HS512, AppConstants.SECRET)
+				.signWith(SignatureAlgorithm.HS512, myJWTConfig.getSecret())
 				.compact();
 	}
 	
 	public String getUserNameFromToken(String token) {
-		Claims claims = Jwts.parser().setSigningKey(AppConstants.SECRET).parseClaimsJws(token).getBody();
+		Claims claims = Jwts.parser().setSigningKey(myJWTConfig.getSecret()).parseClaimsJws(token).getBody();
 		return claims.getSubject();
 	}
 
 	public boolean validateToken(String authToken) {
 		try {
-			Jwts.parser().setSigningKey(AppConstants.SECRET).parseClaimsJws(authToken);
+			Jwts.parser().setSigningKey(myJWTConfig.getSecret()).parseClaimsJws(authToken);
 			return true;
 		} catch (SignatureException ex) {
 		    System.out.println("Invalid JWT signature");

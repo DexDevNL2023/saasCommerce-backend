@@ -181,7 +181,7 @@ public class GenericUtils {
 
   public static List<SimpleGrantedAuthority> buildSimpleGrantedAuthorities(List<Role> roles) {
     return roles.stream()
-            .map(role -> new SimpleGrantedAuthority(role.getLibelle().getLabel()))
+            .map(role -> new SimpleGrantedAuthority(role.getLibelle().getValue()))
             .collect(Collectors.toList());
   }
 

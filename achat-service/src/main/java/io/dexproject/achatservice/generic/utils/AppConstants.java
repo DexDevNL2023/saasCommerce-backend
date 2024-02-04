@@ -7,8 +7,6 @@ import java.util.List;
 
 public interface AppConstants {
     String JWT_HEADER_NAME="Authorization";
-    String SECRET="vnlangessama@gmail.com";
-    long EXPIRATION=24 * 60 * 60 * 1000; // 24 hour
     String HEADER_PREFIX="Bearer ";
 
     String TOKEN_INVALID = "INVALID";

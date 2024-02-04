@@ -1,5 +1,6 @@
 package io.dexproject.achatservice.generic.security;
 
+import io.dexproject.achatservice.generic.config.MyEndpointsManagementConfig;
 import io.dexproject.achatservice.generic.security.crud.enums.RoleName;
 import io.dexproject.achatservice.generic.security.crud.services.UserAccountService;
 import io.dexproject.achatservice.generic.security.jwt.JwtTokenFilter;
@@ -54,14 +55,13 @@ Let me explain the code above.
         prePostEnabled = true
 )
 public class SecurityConfig {
-    @Value("${management.endpoints.web.cors.allowed-mapping}")
-    private String allowedMapping;
-
+    private final MyEndpointsManagementConfig myEndpointsManagementConfig;
     private final JwtUtils jwtUtils;
     private final UserAccountService userAccountService;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
-    public SecurityConfig(JwtUtils jwtUtils, UserAccountService userAccountService, HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
+    public SecurityConfig(MyEndpointsManagementConfig myEndpointsManagementConfig, JwtUtils jwtUtils, UserAccountService userAccountService, HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
+        this.myEndpointsManagementConfig = myEndpointsManagementConfig;
         this.jwtUtils = jwtUtils;
         this.userAccountService = userAccountService;
         this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
@@ -96,9 +96,8 @@ public class SecurityConfig {
                 //Access configuration
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                        .requestMatchers("/**/*.pdf").permitAll()
-                        .requestMatchers("/api/auth/**", "/api/oauth2/**", "/public/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                        .requestMatchers("/management/**").hasAuthority(RoleName.ADMIN.getLabel())
+                        .requestMatchers(myEndpointsManagementConfig.getOpenApiEndpoints()).permitAll()
+                        .requestMatchers("/management/**").hasAuthority(RoleName.ADMIN.getValue())
                         .anyRequest().authenticated())
                 //######## OAUTH2-Login configuration ########
                 .oauth2Login(httpSecurityOAuth2LoginConfigurer -> {
@@ -179,7 +178,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(CorsEndpointProperties corsProperties) {
         var source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration(allowedMapping, corsProperties.toCorsConfiguration());
+        source.registerCorsConfiguration(myEndpointsManagementConfig.getAllowedMapping(), corsProperties.toCorsConfiguration());
         return source;
     }
 }
