@@ -1,0 +1,25 @@
+# Télécharger le docker image de consul
+docker pull consul
+
+
+# Exécute consul en mode developpement
+docker run -d --name=dev-consul -e CONSUL_BIND_INTERFACE=eth0 consul
+# Ajouter une instance
+docker run -d -e CONSUL_BIND_INTERFACE=eth0 consul agent -dev -join=localhost
+# Affiche la liste des instances serveurs exécutées
+docker exec -t dev-consul consul members
+
+# actualiser la configuration des propriétés de l'application des microservices
+curl post http://adresseip-microservice:port/actuator/refresh
+
+# Tout d'abord, obtenez l'adresse IP de la machine Docker en exécutant :
+docker-machine ip
+
+# Créez maintenant un serveur Consul à partir de la dernière image Docker Consul.
+docker run -d — name=consul-server -p 8500:8500 consul agent -server -bootstrap-expect=1 -ui -bind=0.0.0.0 -client=0.0.0.0
+
+# Après avoir exécuté la commande et vérifié que le conteneur est en cours d'exécution, accédez à l'URL suivante sur un navigateur :
+ http://ip-docker-machine:8500/
+
+# Exécite plusieur microservice à la fois
+docker-compose up -d

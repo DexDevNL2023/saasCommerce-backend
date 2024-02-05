@@ -1,0 +1,5 @@
+docker pull mysql
+docker run -it --name some-mysql -p 1000:1000 --network some-network --rm mysql -e MYSQL_DATABASE=test -e MYSQL_USER=root -e MYSQL_PASSWORD=2+2Font4 -d mysql:tags
+docker exec -it some-mysql bash
+docker logs some-mysql
+docker run -it --rm mysql:tag --verbose --help

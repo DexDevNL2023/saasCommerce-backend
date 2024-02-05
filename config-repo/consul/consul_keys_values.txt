@@ -1,0 +1,11 @@
+###### gateway-service ######
+# Creer ces cles / valeurs sur consul
+$ creer d'abord le dossier config/
+$ ensuite creer le sous dossier gateway-service/ dans config/
+NB : ces repertoires doient avoir le meme nom que le microservice
+$ et enfin ajouter chacune des cles / valeurs suivantes :
+NB : la cle portera le meme nom que la variable dans le code
+
+spring.cloud.gateway.discovery.locator.enabled=true
+spring.cloud.gateway.discovery.locator.lower-case-service-id=true
+spring.cloud.loadbalancer.ribbon.enabled=false

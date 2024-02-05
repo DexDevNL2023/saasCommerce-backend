@@ -1,0 +1,10 @@
+# Télécharger le docker image de consul
+docker pull vault
+
+
+# Exécute consul en mode developpement
+$ docker run --cap-add=IPC_LOCK -d --name=dev-vault vault
+
+# VAULT_DEV_ROOT_TOKEN_ID : ceci définit l'ID du jeton racine généré initialement sur la valeur donnée.
+# VAULT_DEV_LISTEN_ADDRESS : ceci définit l'IP : port de l'écouteur du serveur de développement (par défaut 0.0.0.0:8200).
+$ docker run --cap-add=IPC_LOCK -e 'VAULT_DEV_ROOT_TOKEN_ID=myroot' -e 'VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:1234' vault
