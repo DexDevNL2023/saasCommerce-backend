@@ -3,7 +3,6 @@ package io.dexproject.achatservice.generic.config;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.OAuthTokenCredential;
 import com.paypal.base.rest.PayPalRESTException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,23 +12,22 @@ import java.util.Map;
 @Configuration
 public class PaypalConfig {
 
-	@Value("${paypal.client.id}")
-	private String clientId;
-	@Value("${paypal.client.secret}")
-	private String clientSecret;
-	@Value("${paypal.mode}")
-	private String mode;
-	
+	private final MyPayPalConfig myPayPalConfig;
+
+	public PaypalConfig(MyPayPalConfig myPayPalConfig) {
+		this.myPayPalConfig = myPayPalConfig;
+	}
+
 	@Bean
 	public Map<String, String> paypalSdkConfig(){
 		Map<String, String> sdkConfig = new HashMap<>();
-		sdkConfig.put("mode", mode);
+		sdkConfig.put("mode", myPayPalConfig.getPaypalMode());
 		return sdkConfig;
 	}
 	
 	@Bean
 	public OAuthTokenCredential authTokenCredential() {
-		return new OAuthTokenCredential(clientId,clientSecret,paypalSdkConfig());
+		return new OAuthTokenCredential(myPayPalConfig.getPaypalClientId(), myPayPalConfig.getPaypalClientSecret(), paypalSdkConfig());
 	}
 
 	@Bean
