@@ -5,6 +5,7 @@ import io.dexproject.achatservice.generic.security.crud.dto.request.DroitAddRequ
 import io.dexproject.achatservice.generic.security.crud.dto.request.DroitFormRequest;
 import io.dexproject.achatservice.generic.security.crud.dto.request.PermissionFormRequest;
 import io.dexproject.achatservice.generic.security.crud.services.AuthorizationService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -27,18 +28,21 @@ public class AuthorizationController {
     }
 
     @PutMapping("/role-autorisations/{roleId}")
+    @SecurityRequirement(name = "Authorization")
     public ResponseEntity<RessourceResponse> getAllAutorisations(@NotNull @PathVariable("roleId") Long roleId) {
         authorizationService.checkIfHasDroit(new DroitAddRequest(MODULE_NAME, "Afficher les permissions d'un role", MODULE_NAME+"-GET-PERMISSION-ROLE", "GET", false));
         return new ResponseEntity<>(new RessourceResponse("Permissions trouvées avec succès!", authorizationService.getAutorisations(roleId)), HttpStatus.OK);
     }
 
     @PutMapping("/change-autorisation")
+    @SecurityRequirement(name = "Authorization")
     public ResponseEntity<RessourceResponse> changeAutorisation(@NotEmpty @Valid @RequestBody PermissionFormRequest dto) {
         authorizationService.checkIfHasDroit(new DroitAddRequest(MODULE_NAME, "Changer une autorisation", MODULE_NAME+"-CHANGE-PERMISSION", "PUT", false));
         return new ResponseEntity<>(new RessourceResponse("Permission changée avec succès!", authorizationService.changeAutorisation(dto)), HttpStatus.OK);
     }
 
     @PutMapping("/make-is-default")
+    @SecurityRequirement(name = "Authorization")
     public ResponseEntity<RessourceResponse> changeIsDefaultDroit(@NotEmpty @Valid @RequestBody DroitFormRequest dto) {
         authorizationService.checkIfHasDroit(new DroitAddRequest(MODULE_NAME, "Définir un droit par défaut", MODULE_NAME+"-DROIT-IS-DEFAULT", "PUT", false));
         return new ResponseEntity<>(new RessourceResponse("Permission changée avec succès!", authorizationService.changeIsDefaultDroit(dto)), HttpStatus.OK);

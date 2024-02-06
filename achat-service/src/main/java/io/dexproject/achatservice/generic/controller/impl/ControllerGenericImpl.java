@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -48,6 +49,7 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    */
   @Override
   @GetMapping("/search")
+  @SecurityRequirement(name = "Authorization")
   @Operation(summary = "Rechercher une entité par valeur de texte intégral")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = "Liste d'entité retrouvée", content = @Content),
@@ -70,6 +72,7 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    */
   @Override
   @PostMapping
+  @SecurityRequirement(name = "Authorization")
   @Operation(summary = "Enregistrer une entité")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Entité enregistrée", content = @Content),
@@ -92,6 +95,7 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    */
   @Override
   @PostMapping("/all")
+  @SecurityRequirement(name = "Authorization")
   @Operation(summary = "Enregistrer toute une entité de la liste")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Liste d'entité enregistrée", content = @Content),
@@ -114,6 +118,7 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    */
   @Override
   @DeleteMapping("/{id}")
+  @SecurityRequirement(name = "Authorization")
   @Operation(summary = "Supprimer une entité par son identifiant")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Entité supprimée", content = @Content),
@@ -136,12 +141,14 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return String
    */
   @Override
+  @DeleteMapping("/all")
+  @SecurityRequirement(name = "Authorization")
   @Operation(summary = "Supprimer la liste d'entité par leur identifiant")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Liste d'entité supprimée", content = @Content),
     @ApiResponse(responseCode = "400", description = "Identifiant fourni non valide", content = @Content),
     @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content) })
-  public ResponseEntity<RessourceResponse> deleteAll(@NotEmpty @RequestBody List<Long> ids) {
+  public ResponseEntity<RessourceResponse> deleteAll(@NotEmpty @RequestParam(value = "id") List<Long> ids) {
     try {
       E entity = newInstance();
       authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Supprimer une liste de " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"-DELET-LIST"), "DELET", false));
@@ -159,6 +166,7 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    */
   @Override
   @GetMapping("/{id}")
+  @SecurityRequirement(name = "Authorization")
   @Operation(summary = "Récupérer une entité par son identifiant")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Entité trouvée", content = @Content),
@@ -181,6 +189,7 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    */
   @Override
   @GetMapping("/{id}")
+  @SecurityRequirement(name = "Authorization")
   @Operation(summary = "Récupérer une entité par son identifiant")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Entité trouvée", content = @Content),
@@ -202,6 +211,7 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    */
   @Override
   @GetMapping
+  @SecurityRequirement(name = "Authorization")
   @Operation(summary = "Récupérer la liste de tous les entités")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Liste d'entité trouvée", content = @Content),
@@ -221,12 +231,13 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    * @return List<R>
    */
   @Override
-  @GetMapping
+  @GetMapping("/all")
+  @SecurityRequirement(name = "Authorization")
   @Operation(summary = "Récupérer la liste d'entité par leur identifiant")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = "Liste d'entité trouvée", content = @Content),
           @ApiResponse(responseCode = "404", description = "Entité introuvable", content = @Content)})
-  public ResponseEntity<RessourceResponse> getAll(List<Long> ids) {
+  public ResponseEntity<RessourceResponse> getAll(@NotEmpty @RequestParam(value = "id") List<Long> ids) {
     try {
       E entity = newInstance();
       authorizationService.checkIfHasDroit(new DroitAddRequest(entity.getModuleName(), "Afficher la liste des " + GenericUtils.camelOrSnakeToLabel(entity.getEntityName()), GenericUtils.camelOrSnakeToKey(entity.getEntityName()+"GET-ALL"), "GET", true));
@@ -244,6 +255,7 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    */
   @Override
   @GetMapping("/page")
+  @SecurityRequirement(name = "Authorization")
   @Operation(summary = "Récupérer la liste d'entité par page")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Liste d'entité trouvée", content = @Content),
@@ -267,6 +279,7 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
    */
   @Override
   @PostMapping("/{id}")
+  @SecurityRequirement(name = "Authorization")
   @Operation(summary = "Mettre à jour une entité par son identifiant")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Etité mise à jour", content = @Content),
@@ -286,7 +299,8 @@ public abstract class ControllerGenericImpl<D extends BaseRequest, R extends Bas
   /**
    */
   @Override
-  @GetMapping
+  @GetMapping("/re-index")
+  @SecurityRequirement(name = "Authorization")
   @Operation(summary = "Reindex all a entity")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = "Found the entity", content = @Content),
