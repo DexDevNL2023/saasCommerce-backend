@@ -1,0 +1,2 @@
+# actualiser la configuration des propriétés de l'application des microservices
+curl post http://adresseip-microservice:port/actuator/refresh

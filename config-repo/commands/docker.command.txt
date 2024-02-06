@@ -1,0 +1,20 @@
+
+# Tout d'abord, obtenez l'adresse IP de la machine Docker en exécutant :
+❯❯ docker-machine ip
+
+# Exécite plusieur microservice à la fois
+❯❯ docker-compose up -d
+
+# construire un docker consul
+❯❯ docker build -t consul:0.1
+
+# déployer le consul
+❯❯ docker-compose up -d consul
+
+# conteneurs en cours d'exécution
+❯❯ docker ps
+
+# Pour nettoyer votre environnement, exécutez la commande suivante.
+❯❯ docker-compose down --rmi all
+
+❯❯ docker restart consul

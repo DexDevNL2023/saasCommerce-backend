@@ -3,9 +3,29 @@ services:
   consul-server:
     container_name: consul-server
     image: consul:latest
+    restart: always
     ports:
       - 8500:8500
+      - 8600:8600/tcp
+      - 8600:8600/udp
     command: 'agent -server -bootstrap-expect=1 -ui -bind=0.0.0.0 -client=0.0.0.0'
+    networks:
+      - microservices-network
+  vault-server:
+    container_name: vault-server
+    image: vault:latest
+    ports:
+      - 8200:8200
+    environment:
+      VAULT_ADDR: 'https://0.0.0.0:8200'
+      VAULT_LOCAL_CONFIG: '{"listener": [{"tcp":{"address": "0.0.0.0:8200","tls_disable":"0", "tls_cert_file":"/data/vault-volume/certificate.pem", "tls_key_file":"/data/vault-volume/key.pem"}}], "default_lease_ttl": "168h", "max_lease_ttl": "720h"}, "ui": true}'
+      VAULT_DEV_ROOT_TOKEN_ID: 'd+QjDvYB9ys7+/BfOV1RdTHqg0LeSvurmpu6n4ZyWlw='
+      VAULT_TOKEN: 'hvs.JlliRG1MqI86QdEFOYafFGmP'
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - vault-volume:/data
+    command: 'server -dev -dev-root-token-id=d+QjDvYB9ys7+/BfOV1RdTHqg0LeSvurmpu6n4ZyWlw='
     networks:
       - microservices-network
   gateway-service:

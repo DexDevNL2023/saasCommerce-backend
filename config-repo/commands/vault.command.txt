@@ -7,4 +7,52 @@ $ docker run --cap-add=IPC_LOCK -d --name=dev-vault vault
 
 # VAULT_DEV_ROOT_TOKEN_ID : ceci définit l'ID du jeton racine généré initialement sur la valeur donnée.
 # VAULT_DEV_LISTEN_ADDRESS : ceci définit l'IP : port de l'écouteur du serveur de développement (par défaut 0.0.0.0:8200).
-$ docker run --cap-add=IPC_LOCK -e 'VAULT_DEV_ROOT_TOKEN_ID=myroot' -e 'VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:1234' vault
+
+# Lance l'image vault dans un contenaire docker
+$ docker run -d --name=dev-vault --cap-add=IPC_LOCK -e 'VAULT_DEV_ROOT_TOKEN_ID=d+QjDvYB9ys7+/BfOV1RdTHqg0LeSvurmpu6n4ZyWlw=' -e 'VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200' vault
+# se connecter au conteneur de vault
+$ docker exec -it dev-vault /bin/sh
+$ vault -v
+$ vault server -dev -dev-root-token-id="d+QjDvYB9ys7+/BfOV1RdTHqg0LeSvurmpu6n4ZyWlw="
+$ vault operator init
+# desceller le vault avec trois partages secrets
+$ vault operator unseal
+# Pour écrire des données dans Vault.
+$ vault kv put secret/password value=itsasecret
+# Pour lire des données dans Vault.
+> vault kv get secret/vault-ms
+# Pour indiquer à Vault l'uri par lequel on peut le joindre.
+> set VAULT_ADDR=http://127.0.0.1:8200
+# Pour indiquer à Vault la valeur de la key token.
+> set VAULT_DEV_ROOT_TOKEN_ID=http://127.0.0.1:8200
+
+export VAULT_CLIENT_CERT=/vault/concourse/cert.pem
+export VAULT_CLIENT_KEY=/vault/concourse/key.pem
+export VAULT_ADDR=https://vault:8200
+export VAULT_CACERT=/vault/concourse/server.crt
+
+> vault login -method=cert
+
+
+# Activation du moteur de certificat PKI
+$ vault secrets enable pki
+# Par défaut, Vault limite les certificats à un maximum de 720 heures ou 30 jours. Pour étendre cela, nous devons exécuter la commande suivante
+$ vault secrets tune -max-lease-ttl=87600h pki
+# La commande ci-dessous créera un certificat avec un ttl (durée de vie) de 10 ans, et il sera stocké dans le chemin pki/root/generate/internal.
+$ vault write -field=certificate pki/root/generate/internal common_name="example.com" issuer_name="vault-root-ca" ttl=87600h > vault-root-ca.crt
+# Vérifions ensuite les informations sur l’émission du certificat.
+$ vault list pki/issuers/
+# Pour supprimer le certificat expiré et nettoyer la CRL.
+$ vault write pki_int/tidy tidy_cert_store=true tidy_revoked_certs=true
+
+
+# Création d'une autorité de certification intermédiaire afin que nous n'ayons pas à exposer directement notre rootCA.
+$ vault secrets enable -path=pki_int pki
+# Cette fois, nous fixerons le délai d’expiration à un an.
+$ vault secrets tune -max-lease-ttl=48300h pki_int
+# Ensuite, nous allons générer un certificat intermédiaire. Nous devons d'abord créer une demande de signature de certificat et l'enregistrer sous pki_int.csr.
+$ vault write -format=json pki_int/intermediate/generate/internal common_name="example.com Intermediate Authority" issuer_name="example-dot-net-intermediate" | jq -r '.data.csr' > pki_intermediate.csr
+# une fois cette commande terminée avec succès, nous devons demander à rootCA de signer le certificat et nous enregistrerons ce certificat sous le nom planetvm-int.cert.pem.
+$ vault write -format=json pki/root/sign-intermediate issuer_ref="example-ca" csr=@pki_intermediate.csr format=pem_bundle ttl="43800h" | jq -r '.data.certificate' > example-int.cert.pem
+# La dernière étape de la création du certificat consiste à importer le certificat dans vault
+$ vault write pki_int/Intermediate/set-signed certificate=@example-int.cert.pem
