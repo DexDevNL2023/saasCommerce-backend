@@ -3,10 +3,10 @@ package io.dexproject.achatservice.generic.service;
 import io.dexproject.achatservice.generic.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.dto.request.BaseRequest;
 import io.dexproject.achatservice.generic.entity.audit.BaseEntity;
-import io.dexproject.achatservice.generic.exceptions.RessourceNotFoundException;
-import io.dexproject.achatservice.generic.exceptions.SuppressionException;
-import io.dexproject.achatservice.generic.security.crud.dto.reponse.PagedResponse;
-import io.dexproject.achatservice.generic.validators.unique.FieldValueExists;
+import io.dexproject.achatservice.exceptions.RessourceNotFoundException;
+import io.dexproject.achatservice.exceptions.SuppressionException;
+import io.dexproject.achatservice.generic.dto.reponse.PagedResponse;
+import io.dexproject.achatservice.validators.unique.FieldValueExists;
 import org.apache.lucene.index.IndexNotFoundException;
 
 import java.util.List;

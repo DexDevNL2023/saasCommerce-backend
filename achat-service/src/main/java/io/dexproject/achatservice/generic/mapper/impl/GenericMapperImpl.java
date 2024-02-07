@@ -4,7 +4,7 @@ import io.dexproject.achatservice.generic.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.dto.request.BaseRequest;
 import io.dexproject.achatservice.generic.entity.audit.BaseEntity;
 import io.dexproject.achatservice.generic.mapper.GenericMapper;
-import io.dexproject.achatservice.generic.mapper.GenericMapperUtils;
+import io.dexproject.achatservice.utils.GenericMapperUtils;
 import io.dexproject.achatservice.generic.repository.GenericRepository;
 
 import java.util.List;

@@ -3,8 +3,8 @@ package io.dexproject.achatservice.generic.controller;
 import io.dexproject.achatservice.generic.dto.reponse.BaseReponse;
 import io.dexproject.achatservice.generic.dto.request.BaseRequest;
 import io.dexproject.achatservice.generic.entity.audit.BaseEntity;
-import io.dexproject.achatservice.generic.security.crud.dto.reponse.RessourceResponse;
-import io.dexproject.achatservice.generic.security.crud.dto.request.SearchRequest;
+import io.dexproject.achatservice.generic.dto.reponse.RessourceResponse;
+import io.dexproject.achatservice.generic.dto.request.SearchRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
