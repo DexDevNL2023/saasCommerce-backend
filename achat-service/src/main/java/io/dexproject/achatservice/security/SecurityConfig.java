@@ -94,6 +94,8 @@ public class SecurityConfig {
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 //Access configuration
+                .requiresChannel(channel ->
+                        channel.anyRequest().requiresSecure())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .requestMatchers(myEndpointsManagementConfig.getOpenApiEndpoints()).permitAll()
