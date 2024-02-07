@@ -26,6 +26,8 @@ import io.dexproject.achatservice.generic.security.oauth2.users.OAuth2UserInfoFa
 import io.dexproject.achatservice.generic.utils.AppConstants;
 import io.dexproject.achatservice.generic.utils.GenericUtils;
 import io.dexproject.achatservice.generic.utils.JwtUtils;
+import io.dexproject.achatservice.generic.validators.log.LogExecution;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,7 +45,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -68,6 +69,8 @@ public class UserAccountService implements UserDetailsService {
         this.tokenRepository = tokenRepository;
     }
 
+    @Transactional
+    @LogExecution
     public UserAccount registerUser(SignupRequest userForm) {
         //Verifying whether user already exists
         if (repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
@@ -106,6 +109,7 @@ public class UserAccountService implements UserDetailsService {
     }
 
     @Transactional
+    @LogExecution
     public UserAccount processOAuthRegister(String registrationId, Map<String, Object> attributes, OidcIdToken idToken, OidcUserInfo userInfo) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, attributes);
         if (oAuth2UserInfo.getName().isEmpty()) {
@@ -123,6 +127,8 @@ public class UserAccountService implements UserDetailsService {
         return newOAuthUser;
     }
 
+    @Transactional
+    @LogExecution
     public String processOAuthLogin(UserDetails userPrincipal) {
         //Verifying whether user already exists
         if (!repository.existsByEmailOrPhone(userPrincipal.getUsername()))
@@ -140,6 +146,8 @@ public class UserAccountService implements UserDetailsService {
         return loginUser.getAccesToken();
     }
 
+    @Transactional
+    @LogExecution
     public LoginReponse loginUser(LoginRequest userForm) {
         //Verifying whether user already exists
         if (!repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
@@ -174,6 +182,8 @@ public class UserAccountService implements UserDetailsService {
         return GenericMapperUtils.map(loginUser, LoginReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     public LoginReponse loginUsingQrCode(String emailOrPhone) {
         //Verifying whether user already exists
         if (!repository.existsByEmailOrPhone(emailOrPhone))
@@ -196,6 +206,8 @@ public class UserAccountService implements UserDetailsService {
         return GenericMapperUtils.map(loginUser, LoginReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     public void logoutUser(LoginRequest userForm) {
         //Verifying whether user already exists
         if (!repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
@@ -209,6 +221,8 @@ public class UserAccountService implements UserDetailsService {
         SecurityContextHolder.clearContext();
     }
 
+    @Transactional
+    @LogExecution
     public UserReponse createUser(UserRequest userForm) {
         //Verifying whether user already exists
         if (repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
@@ -240,6 +254,8 @@ public class UserAccountService implements UserDetailsService {
         return GenericMapperUtils.map(newUser, UserReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     public UserReponse editUser(UserRequest userForm) {
         //Verifying whether user already exists
         if (!repository.existsByEmailOrPhone(userForm.getEmailOrPhone()))
@@ -273,6 +289,8 @@ public class UserAccountService implements UserDetailsService {
         return GenericMapperUtils.map(updatedUser, UserReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     public UserReponse editPassword(UserFormPasswordRequest userForm) {
         if (!userForm.getNewPassword().equals(userForm.getMatchingPassword()))
             throw new RessourceNotFoundException("Veuillez confirmer votre mot de passe!");
@@ -291,6 +309,8 @@ public class UserAccountService implements UserDetailsService {
         return GenericMapperUtils.map(updatedUser, UserReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     public UserReponse suspendUserById(Long id) {
         //Verifying whether user already exists
         if (!repository.existsById(id))
@@ -303,6 +323,8 @@ public class UserAccountService implements UserDetailsService {
         return GenericMapperUtils.map(updatedUser, UserReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     public void deleteUserById(Long id) {
         //Verifying whether user already exists
         if (!repository.existsById(id))
@@ -310,12 +332,16 @@ public class UserAccountService implements UserDetailsService {
         repository.deleteById(id);
     }
 
+    @Transactional
+    @LogExecution
     public UserReponse findUserById(Long id) {
         UserAccount userAccount = repository.findById(id).orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         // Mapper Dto
         return GenericMapperUtils.map(userAccount, UserReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     public UserAccount loadCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
@@ -326,6 +352,8 @@ public class UserAccountService implements UserDetailsService {
                 .orElseThrow(() -> new RessourceNotFoundException("Aucun utilisateur n'existe avec le nom utilisateur " + userPrincipal.getUsername()));
     }
 
+    @Transactional
+    @LogExecution
     public UserDetails loadUserByUsername(String emailOrPhone) throws UsernameNotFoundException {
         UserAccount userAccount = repository.findByEmailOrPhone(emailOrPhone)
                 .orElseThrow(() -> new UsernameNotFoundException("Nom utilisateur invalide"));
@@ -333,19 +361,27 @@ public class UserAccountService implements UserDetailsService {
         return new User(userAccount.getEmailOrPhone(), userAccount.getPassword(), authorities);
     }
 
+    @Transactional
+    @LogExecution
     public UserAccount findByUsername(String emailOrPhone) throws UsernameNotFoundException {
         return repository.findByEmailOrPhone(emailOrPhone)
                 .orElseThrow(() -> new UsernameNotFoundException("Nom utilisateur invalide"));
     }
 
+    @Transactional
+    @LogExecution
     public List<UserReponse> getAllUsers() {
         return GenericMapperUtils.mapAll(repository.findAll(), UserReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     public List<UserReponse> getAllUsersByRole(RoleName roleName) {
         return GenericMapperUtils.mapAll(repository.findAllByRolename(roleName), UserReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     public PagedResponse<UserReponse> getAllUsersByPage(Integer page, Integer size) {
         // Vérifier la syntaxe de page et size
         GenericUtils.validatePageNumberAndSize(page, size);
@@ -359,11 +395,14 @@ public class UserAccountService implements UserDetailsService {
         return new PagedResponse<>(GenericMapperUtils.mapAll(list, UserReponse.class), allUsers.getNumber(), allUsers.getSize(), allUsers.getTotalElements(), allUsers.getTotalPages(), allUsers.isLast());
     }
 
+    @Transactional
+    @LogExecution
     public List<UserReponse> search(String motCle) {
         return GenericMapperUtils.mapAll(repository.search(motCle), UserReponse.class);
     }
 
     @Transactional
+    @LogExecution
     public Boolean resendVerificationToken(String existingVerificationToken) {
         VerifyToken vToken = tokenRepository.findByToken(existingVerificationToken);
         if (vToken != null) {
@@ -378,6 +417,8 @@ public class UserAccountService implements UserDetailsService {
         return false;
     }
 
+    @Transactional
+    @LogExecution
     public String validateVerificationToken(String token) {
         VerifyToken vToken = tokenRepository.findByToken(token);
         if (vToken == null) {
@@ -394,6 +435,8 @@ public class UserAccountService implements UserDetailsService {
         return AppConstants.TOKEN_VALID;
     }
 
+    @Transactional
+    @LogExecution
     public void forgotPassword(String email) throws RessourceNotFoundException {
         if (!GenericUtils.isValidEmailAddress(email))
             throw new RessourceNotFoundException("L'email " + email + " est invalide.");
@@ -411,6 +454,8 @@ public class UserAccountService implements UserDetailsService {
         }
     }
 
+    @Transactional
+    @LogExecution
     public void resetPassword(String token) throws RessourceNotFoundException {
         UserAccount userAccount = repository.findByResetPasswordToken(token);
         if (userAccount != null) {
@@ -425,6 +470,8 @@ public class UserAccountService implements UserDetailsService {
         }
     }
 
+    @Transactional
+    @LogExecution
     public void addDefaultUsers(RoleName roleCle) {
         UserAccount user = null;
         String userEmail;
@@ -487,6 +534,8 @@ public class UserAccountService implements UserDetailsService {
         }
     }
 
+    @Transactional
+    @LogExecution
     public List<PermissionReponse> getAutorisations(Long userId) {
         List<Permission> permissions = new ArrayList<>();
         UserAccount user = repository.findById(userId).orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
@@ -497,10 +546,14 @@ public class UserAccountService implements UserDetailsService {
         return GenericMapperUtils.mapAll(permissions, PermissionReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     private UserAccount toUserRegistration(OAuth2UserInfo oAuth2UserInfo, OidcIdToken idToken, OidcUserInfo userInfo) {
         return UserAccount.create(oAuth2UserInfo, idToken, userInfo);
     }
 
+    @Transactional
+    @LogExecution
     private UserAccount updateExistingUser(UserAccount existingUser, OAuth2UserInfo oAuth2UserInfo) {
         existingUser = repository.findByEmailOrPhone(existingUser.getEmailOrPhone()).orElseThrow(() -> new RessourceNotFoundException("L'utilisateur est introuvable."));
         existingUser.setDisplayName(oAuth2UserInfo.getName());
@@ -508,6 +561,8 @@ public class UserAccountService implements UserDetailsService {
         return existingUser;
     }
 
+    @Transactional
+    @LogExecution
     private SignupRequest toSignUpRequest(OAuth2UserInfo oAuth2UserInfo) {
         return SignupRequest.getBuilder().addLastName(oAuth2UserInfo.getName())
                 .addEmail(oAuth2UserInfo.getEmail())

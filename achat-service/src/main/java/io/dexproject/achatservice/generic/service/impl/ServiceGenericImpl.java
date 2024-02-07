@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Transactional
 public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseReponse, E extends BaseEntity<E, D>> implements ServiceGeneric<D, R, E> {
 
   private final JpaEntityInformation<E, Long> entityInformation;
@@ -147,6 +148,8 @@ public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseRe
   }
 
   @Override
+  @Transactional
+  @LogExecution
   public List<R> getAll(List<Long> ids) throws RessourceNotFoundException {
     try {
       return repository.findAllById(ids).stream().map(mapper::toDto).collect(Collectors.toList());
@@ -262,6 +265,8 @@ public abstract class ServiceGenericImpl<D extends BaseRequest, R extends BaseRe
   }
 
   @Override
+  @Transactional
+  @LogExecution
   public boolean fieldValueExists(Object value, String fieldName) throws UnsupportedOperationException {
     try {
       if (value == null) {

@@ -10,12 +10,13 @@ import io.dexproject.achatservice.generic.security.crud.dto.request.PermissionFo
 import io.dexproject.achatservice.generic.security.crud.entities.Module;
 import io.dexproject.achatservice.generic.security.crud.entities.*;
 import io.dexproject.achatservice.generic.security.crud.repositories.*;
+import io.dexproject.achatservice.generic.validators.log.LogExecution;
+import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +38,8 @@ public class AuthorizationService {
         this.permissionRepository = permissionRepository;
     }
 
+    @Transactional
+    @LogExecution
     public PermissionReponse changeAutorisation(PermissionFormRequest dto) {
         Permission permission = permissionRepository.findById(dto.getPermissionId()).orElseThrow(
                 () -> new RessourceNotFoundException("La permission avec l'id " + dto.getPermissionId() + " n'existe pas!")
@@ -47,6 +50,8 @@ public class AuthorizationService {
         return GenericMapperUtils.map(permission, PermissionReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     public DroitReponse changeIsDefaultDroit(DroitFormRequest dto) {
         Droit droit = droitRepository.findById(dto.getDroitId()).orElseThrow(
                 () -> new RessourceNotFoundException("Le droit avec l'id " + dto.getDroitId() + " n'existe pas!")
@@ -62,6 +67,8 @@ public class AuthorizationService {
         return GenericMapperUtils.map(droit, DroitReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     public void checkIfHasDroit(DroitAddRequest dto) {
         Module module = moduleRepository.findByName(dto.getModule()).orElse(null);
         if (module == null) {
@@ -80,6 +87,8 @@ public class AuthorizationService {
             throw new RessourceNotFoundException("Vous n'etes pas autoriser a " + dto.getLibelle());
     }
 
+    @Transactional
+    @LogExecution
     public List<PermissionReponse> getAutorisations(Long roleId) {
         Role role = roleRepository.findById(roleId).orElseThrow(
                 () -> new RessourceNotFoundException("Le role avec l'id " + roleId + " n'existe pas!")
@@ -89,6 +98,8 @@ public class AuthorizationService {
         return GenericMapperUtils.mapAll(permissions, PermissionReponse.class);
     }
 
+    @Transactional
+    @LogExecution
     public UserAccount getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
@@ -99,6 +110,8 @@ public class AuthorizationService {
                 .orElseThrow(() -> new RessourceNotFoundException("Aucun utilisateur n'existe avec le nom utilisateur " + userPrincipal.getUsername()));
     }
 
+    @Transactional
+    @LogExecution
     public boolean isAuthorized(String actionKey) {
         for (Role role : getCurrentUser().getRoles()) {
             if (role.getIsSuper()) {
