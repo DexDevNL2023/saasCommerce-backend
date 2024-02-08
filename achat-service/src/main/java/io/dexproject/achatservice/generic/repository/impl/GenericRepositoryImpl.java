@@ -7,7 +7,6 @@ import io.dexproject.achatservice.utils.AppConstants;
 import io.dexproject.achatservice.utils.GenericUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import org.apache.lucene.index.IndexNotFoundException;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.mapper.orm.Search;
@@ -15,6 +14,7 @@ import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -111,7 +111,7 @@ public abstract class GenericRepositoryImpl<D extends BaseRequest, E extends Bas
         }
         entityManager.getTransaction().begin();
         SearchSession searchSession = Search.session(entityManager);
-        SearchResult<E> result = searchSession.search(getDomainClass())
+        SearchResult<E> result = searchSession.search(clazz)
                 .where(f -> f.match().fields(fields).matching(text).fuzzy(2))
                 .fetch(limit);
         entityManager.getTransaction().commit();
